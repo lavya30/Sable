@@ -83,13 +83,8 @@ export default function LibraryPage() {
             )}
           </div>
 
-          {/* Decorative icons — non-functional per spec */}
+          {/* Decorative avatar — non-functional */}
           <div className="hidden md:flex items-center gap-4 pointer-events-none select-none opacity-40">
-            <div className="w-10 h-10 flex items-center justify-center rounded-full border-2 border-ink">
-              <span className="material-symbols-outlined text-xl">
-                notifications
-              </span>
-            </div>
             <div className="w-10 h-10 rounded-full border-2 border-ink bg-peach flex items-center justify-center">
               <span className="material-symbols-outlined text-ink">person</span>
             </div>
