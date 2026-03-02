@@ -1,26 +1,224 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ── Design Tokens ───────────────────────────────────────────────────────── */
+@theme {
+  /* Colors */
+  --color-ink:              #2D3436;
+  --color-canvas:           #FFFFFF;
+  --color-mint:             #A7F3D0;
+  --color-lavender:         #DDD6FE;
+  --color-peach:            #FDBA74;
+  --color-rose:             #FDA4AF;
+  --color-primary:          #13ec75;
+  --color-background-light: #f6f8f7;
+  --color-background-dark:  #102218;
+  --color-surface:          #F9FAFB;
+  --color-paper:            #FFFFFF;
+
+  /* Fonts */
+  --font-heading: var(--font-varela-round, "Varela Round"), sans-serif;
+  --font-body:    var(--font-nunito, "Nunito"), sans-serif;
+  --font-marker:  var(--font-patrick-hand, "Patrick Hand"), cursive;
+  --font-mono:    var(--font-fira-code, "Fira Code"), monospace;
+  --font-display: var(--font-manrope, "Manrope"), sans-serif;
+
+  /* Box Shadows */
+  --shadow-hard:       3px 3px 0px #2D3436;
+  --shadow-hard-sm:    2px 2px 0px #2D3436;
+  --shadow-hard-hover: 5px 5px 0px #2D3436;
+  --shadow-hard-lg:    6px 6px 0px #2D3436;
+
+  /* Border Radii */
+  --radius-rough:    255px 15px 225px 15px / 15px 225px 15px 255px;
+  --radius-rough-sm: 255px 15px 225px 15px / 15px 225px 5px 255px;
+  --radius-notebook: 2px 12px 12px 2px;
+  --radius-wobble:   255px 15px 225px 15px / 15px 225px 15px 255px;
+
+  /* Animations */
+  --animate-blink:      blink 1s step-end infinite;
+  --animate-slide-down: slideDown 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes slideDown {
+  0%   { transform: translateY(-110%); opacity: 0; }
+  100% { transform: translateY(0);      opacity: 1; }
+}
+
+/* ── Custom Utilities ────────────────────────────────────────────────────── */
+@layer utilities {
+  .wobbly-border {
+    border: 2px solid #2D3436;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+  .wobbly-border-sm {
+    border: 2px solid #2D3436;
+    border-radius: 255px 15px 225px 15px / 5px 25px 5px 25px;
+  }
+  .wobbly-dashed {
+    border: 2px dashed #2D3436;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+  .notebook-spine {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.05) 0%,
+      rgba(0, 0, 0, 0) 20%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    border-left: 4px solid rgba(45, 52, 54, 0.2);
+  }
+  .dot-grid {
+    background-image: url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%232D3436' fill-opacity='0.08' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='1'/%3E%3C/g%3E%3C/svg%3E");
+  }
+  .bg-dot-grid-sketch {
+    background-image: radial-gradient(#2D3436 1px, transparent 1px);
+    background-size: 20px 20px;
+  }
+  .sketch-border {
+    border: 2px solid #2D3436;
+  }
+  .scribble-underline {
+    position: relative;
+  }
+  .scribble-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -4px;
+    width: 100%;
+    height: 6px;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='6' viewBox='0 0 100 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M2 3C15.3333 1.33333 34 -1 48 3C62 7 85 5 98 2' stroke='%2313ec75' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+  .torn-paper-top { position: relative; }
+  .torn-paper-top::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 0;
+    width: 100%;
+    height: 12px;
+    background-color: #ffffff;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg width='20' height='10' viewBox='0 0 20 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 L2.5 0 L5 10 L7.5 0 L10 10 L12.5 0 L15 10 L17.5 0 L20 10' fill='%23000'/%3E%3C/svg%3E");
+    mask-image: url("data:image/svg+xml,%3Csvg width='20' height='10' viewBox='0 0 20 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 10 L2.5 0 L5 10 L7.5 0 L10 10 L12.5 0 L15 10 L17.5 0 L20 10' fill='%23000'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    z-index: 10;
+  }
+  .focus-mode-active .focus-hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.5s ease;
+  }
+  .custom-caret {
+    display: inline-block;
+    width: 3px;
+    height: 1.2em;
+    background-color: #A7F3D0;
+    vertical-align: text-bottom;
+    margin-left: 1px;
+    animation: blink 1s step-end infinite;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Global Base ─────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+::selection {
+  background-color: #A7F3D0;
+  color: #2D3436;
 }
+
+/* Tiptap editor content styling */
+.tiptap-editor { outline: none; }
+.tiptap-editor .ProseMirror { min-height: 70vh; outline: none; cursor: text; }
+.tiptap-editor p { margin-bottom: 1.5rem; line-height: 1.8; }
+.tiptap-editor h1 {
+  font-family: var(--font-heading);
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+.tiptap-editor h2 {
+  font-family: var(--font-heading);
+  font-size: 1.75rem;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+.tiptap-editor h3 {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  font-weight: 700;
+}
+.tiptap-editor blockquote {
+  border-left: 4px solid #A7F3D0;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: #636e72;
+  font-style: italic;
+}
+.tiptap-editor code {
+  background: #f1f3f4;
+  padding: 0.15em 0.4em;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.tiptap-editor pre { background: #f1f3f4; padding: 1rem; border-radius: 6px; overflow-x: auto; }
+.tiptap-editor pre code { background: none; padding: 0; }
+.tiptap-editor mark { background-color: #FDBA74; padding: 0.05em 0.2em; border-radius: 2px; }
+.tiptap-editor ul  { padding-left: 1.5rem; list-style-type: disc;    margin-bottom: 1.5rem; }
+.tiptap-editor ol  { padding-left: 1.5rem; list-style-type: decimal; margin-bottom: 1.5rem; }
+.tiptap-editor li  { margin-bottom: 0.4rem; line-height: 1.8; }
+.tiptap-editor hr  { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
+.tiptap-editor a   { color: #13ec75; text-decoration: underline; }
+.tiptap-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  color: #adb5bd;
+  pointer-events: none;
+  height: 0;
+}
+
+/* Dark mode */
+.dark body { background-color: #102218; color: #e8f4f0; }
+.dark .tiptap-editor code { background: #1e3a2e; }
+.dark .tiptap-editor pre  { background: #1e3a2e; }
+.dark .tiptap-editor mark { background-color: #d97706; }
+
+/* Range input */
+input[type='range'] { -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer; }
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 24px; width: 24px;
+  border-radius: 50%;
+  background: #2D3436;
+  cursor: pointer;
+  margin-top: -10px;
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+input[type='range']::-moz-range-thumb {
+  height: 24px; width: 24px;
+  border-radius: 50%;
+  background: #2D3436;
+  cursor: pointer;
+  border: none;
+}
+input[type='range']::-webkit-slider-runnable-track { height: 4px; background: transparent; }
