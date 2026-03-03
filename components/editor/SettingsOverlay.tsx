@@ -2,7 +2,6 @@
 
 import { useEffect, useRef } from 'react';
 import { useSettings } from '@/context/SettingsContext';
-import { AMBIENT_SOUNDS } from '@/hooks/useAmbientSound';
 
 interface Props {
   isOpen: boolean;
@@ -16,7 +15,9 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
   // Close on outside click
   useEffect(() => {
     function handler(e: MouseEvent) {
-      if (overlayRef.current && !overlayRef.current.contains(e.target as Node)) {
+      const target = e.target as HTMLElement;
+      if (target.closest('[data-settings-trigger]')) return;
+      if (overlayRef.current && !overlayRef.current.contains(target)) {
         onClose();
       }
     }
@@ -29,9 +30,9 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed bottom-24 right-8 z-50 w-72 origin-bottom-right"
+      className="fixed bottom-24 right-8 z-50 w-72 origin-bottom-right max-h-[calc(100vh-7rem)] flex flex-col"
     >
-      <div className="relative bg-white text-ink border-2 border-ink shadow-hard rounded-tl-lg rounded-tr-lg rounded-bl-wobble rounded-br-wobble torn-paper-top p-6 flex flex-col gap-6">
+      <div className="relative bg-white text-ink border-2 border-ink shadow-hard rounded-tl-lg rounded-tr-lg rounded-bl-wobble rounded-br-wobble torn-paper-top p-6 flex flex-col gap-6 overflow-y-auto scrollbar-hide">
         {/* Tape decoration */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-mint/30 rotate-1 skew-x-12 z-20 pointer-events-none border border-white/40" />
 
@@ -171,109 +172,10 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
           </div>
         </div>
 
-        {/* Keystroke Sounds */}
-        <div className="space-y-3 pt-1">
-          <div className="font-marker text-lg flex items-center gap-2">
-            <span>Keystroke Sounds</span>
-            <span className="material-symbols-outlined text-sm text-primary">
-              music_note
-            </span>
-          </div>
-          <div className="flex gap-3 flex-wrap">
-            {([
-              { value: 'off', icon: 'volume_off', label: 'Off' },
-              { value: 'typewriter', icon: 'keyboard', label: 'Typewriter' },
-              { value: 'mechanical', icon: 'keyboard_keys', label: 'Mechanical' },
-              { value: 'pen', icon: 'edit', label: 'Pen' },
-            ] as const).map(({ value, icon, label }) => (
-              <label key={value} className="cursor-pointer flex flex-col items-center gap-1">
-                <input
-                  type="radio"
-                  name="keystrokeSounds"
-                  value={value}
-                  checked={settings.keystrokeSounds === value}
-                  onChange={() => updateSettings({ keystrokeSounds: value })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-11 bg-white border-2 border-ink/20 rounded-lg flex items-center justify-center peer-checked:border-ink peer-checked:bg-primary/20 peer-checked:shadow-hard-sm transition-all hover:border-ink/40">
-                  <span className="material-symbols-outlined text-ink text-[18px]">
-                    {icon}
-                  </span>
-                </div>
-                <span className="font-marker text-[10px] text-gray-500">{label}</span>
-              </label>
-            ))}
-          </div>
-          {settings.keystrokeSounds !== 'off' && (
-            <div className="flex items-center gap-2 pt-1">
-              <span className="material-symbols-outlined text-sm text-gray-400">volume_down</span>
-              <input
-                type="range"
-                min={0}
-                max={10}
-                value={Math.round(settings.keystrokeVolume * 10)}
-                onChange={(e) =>
-                  updateSettings({ keystrokeVolume: parseInt(e.target.value, 10) / 10 })
-                }
-                className="flex-1"
-                aria-label="Keystroke volume"
-              />
-              <span className="material-symbols-outlined text-sm text-gray-400">volume_up</span>
-            </div>
-          )}
-        </div>
-
-        {/* Ambient Sounds */}
-        <div className="space-y-3 pt-1">
-          <div className="font-marker text-lg flex items-center gap-2">
-            <span>Ambient Sounds</span>
-            <span className="material-symbols-outlined text-sm text-primary">
-              headphones
-            </span>
-          </div>
-          <div className="flex gap-2 flex-wrap">
-            {AMBIENT_SOUNDS.map(({ value, icon, label }) => (
-              <label key={value} className="cursor-pointer flex flex-col items-center gap-1">
-                <input
-                  type="radio"
-                  name="ambientSound"
-                  value={value}
-                  checked={settings.ambientSound === value}
-                  onChange={() => updateSettings({ ambientSound: value })}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-11 bg-white border-2 border-ink/20 rounded-lg flex items-center justify-center peer-checked:border-ink peer-checked:bg-lavender/30 peer-checked:shadow-hard-sm transition-all hover:border-ink/40">
-                  <span className="material-symbols-outlined text-ink text-[18px]">
-                    {icon}
-                  </span>
-                </div>
-                <span className="font-marker text-[10px] text-gray-500">{label}</span>
-              </label>
-            ))}
-          </div>
-          {settings.ambientSound !== 'off' && (
-            <div className="flex items-center gap-2 pt-1">
-              <span className="material-symbols-outlined text-sm text-gray-400">volume_down</span>
-              <input
-                type="range"
-                min={0}
-                max={10}
-                value={Math.round(settings.ambientVolume * 10)}
-                onChange={(e) =>
-                  updateSettings({ ambientVolume: parseInt(e.target.value, 10) / 10 })
-                }
-                className="flex-1"
-                aria-label="Ambient volume"
-              />
-              <span className="material-symbols-outlined text-sm text-gray-400">volume_up</span>
-            </div>
-          )}
-        </div>
-
         {/* Version */}
         <div className="text-center">
           <p className="font-marker text-xs text-gray-400 rotate-1">
-            Sable v1.0 • Made with ☕
+            Sable v1.0 • Made with love
           </p>
         </div>
       </div>
