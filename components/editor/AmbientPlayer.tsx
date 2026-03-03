@@ -72,7 +72,7 @@ export function AmbientPlayer() {
       {expanded && (
         <div
           ref={pillRef}
-          className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-64 bg-white border-2 border-ink rounded-xl shadow-hard p-4 flex flex-col gap-4"
+          className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-72 bg-white border-2 border-ink rounded-xl shadow-hard p-4 flex flex-col gap-4"
         >
           {/* Title */}
           <div className="flex items-center justify-between">
@@ -136,6 +136,53 @@ export function AmbientPlayer() {
               <span className="material-symbols-outlined text-[16px] text-gray-400">volume_up</span>
             </div>
           )}
+
+          <div className="border-t border-ink/10 pt-3 flex flex-col gap-3">
+            <h4 className="font-marker text-base text-ink flex items-center gap-1.5">
+              <span className="material-symbols-outlined text-primary text-[18px]">music_note</span>
+              Keystroke Sounds
+            </h4>
+            <div className="grid grid-cols-4 gap-2">
+              {([
+                { value: 'off', icon: 'volume_off', label: 'Off' },
+                { value: 'typewriter', icon: 'keyboard', label: 'Typewriter' },
+                { value: 'mechanical', icon: 'keyboard_keys', label: 'Mechanical' },
+                { value: 'pen', icon: 'edit', label: 'Pen' },
+              ] as const).map(({ value, icon, label }) => (
+                <button
+                  key={value}
+                  onClick={() => updateSettings({ keystrokeSounds: value })}
+                  className={`flex flex-col items-center gap-1 p-2 rounded-lg border-2 transition-all hover:-translate-y-0.5 ${
+                    settings.keystrokeSounds === value
+                      ? 'bg-lavender/30 border-ink shadow-hard-sm'
+                      : 'bg-white border-ink/20 hover:border-ink/40 hover:shadow-hard-sm'
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-[18px] ${
+                    settings.keystrokeSounds === value ? 'text-ink' : 'text-gray-400'
+                  }`}>{icon}</span>
+                  <span className="font-marker text-[9px] text-gray-600 text-center leading-tight">{label}</span>
+                </button>
+              ))}
+            </div>
+            {settings.keystrokeSounds !== 'off' && (
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[16px] text-gray-400">volume_down</span>
+                <input
+                  type="range"
+                  min={0}
+                  max={10}
+                  value={Math.round(settings.keystrokeVolume * 10)}
+                  onChange={(e) =>
+                    updateSettings({ keystrokeVolume: parseInt(e.target.value, 10) / 10 })
+                  }
+                  className="flex-1 accent-primary"
+                  aria-label="Keystroke volume"
+                />
+                <span className="material-symbols-outlined text-[16px] text-gray-400">volume_up</span>
+              </div>
+            )}
+          </div>
 
           {/* Tip */}
           <p className="text-[10px] font-marker text-gray-400 text-center">

@@ -205,7 +205,7 @@ html.lenis, html.lenis body {
 /* Tiptap editor content styling */
 .tiptap-editor { outline: none; }
 .tiptap-editor .ProseMirror { min-height: 70vh; outline: none; cursor: text; }
-.tiptap-editor p { margin-bottom: 1.5rem; line-height: 1.8; }
+.tiptap-editor p { margin-bottom: 1.5rem; line-height: inherit; }
 .tiptap-editor h1 {
   font-family: var(--font-heading);
   font-size: 2.5rem;
@@ -246,7 +246,7 @@ html.lenis, html.lenis body {
 .tiptap-editor mark { background-color: #FDBA74; padding: 0.05em 0.2em; border-radius: 2px; }
 .tiptap-editor ul  { padding-left: 1.5rem; list-style-type: disc;    margin-bottom: 1.5rem; }
 .tiptap-editor ol  { padding-left: 1.5rem; list-style-type: decimal; margin-bottom: 1.5rem; }
-.tiptap-editor li  { margin-bottom: 0.4rem; line-height: 1.8; }
+.tiptap-editor li  { margin-bottom: 0.4rem; line-height: inherit; }
 .tiptap-editor hr  { border: none; border-top: 2px solid #e5e7eb; margin: 2rem 0; }
 .tiptap-editor a   { color: #13ec75; text-decoration: underline; }
 .tiptap-editor p.is-editor-empty:first-child::before {
@@ -257,11 +257,66 @@ html.lenis, html.lenis body {
   height: 0;
 }
 
-/* Dark mode */
-.dark body { background-color: #102218; color: #e8f4f0; }
-.dark .tiptap-editor code { background: #1e3a2e; }
+/* ── Dark Mode ───────────────────────────────────────────────────────────── */
+
+/* Flip the ink token so every text-ink / border-ink class automatically inverts */
+.dark {
+  --color-ink:     #e2f4ee;
+  --color-canvas:  #102218;
+  --color-surface: #172e22;
+  --color-paper:   #1e3a2e;
+}
+
+/* bg-ink is intentionally used as a dark backdrop (BubbleMenu, tooltips, buttons)
+   — keep those dark even though the token is now light */
+.dark .bg-ink {
+  background-color: #172e22 !important;
+}
+
+/* White surfaces become dark in dark mode */
+.dark .bg-white   { background-color: #172e22 !important; }
+.dark .bg-gray-100 { background-color: #1e3a2e !important; }
+
+/* Body base */
+.dark body { background-color: #102218; color: #e2f4ee; }
+
+/* Tiptap editor content */
+.dark .tiptap-editor .ProseMirror {
+  color: #e2f4ee;
+}
+.dark .tiptap-editor h1,
+.dark .tiptap-editor h2,
+.dark .tiptap-editor h3 {
+  color: #e2f4ee;
+}
+.dark .tiptap-editor blockquote {
+  color: #93b5a8;
+  border-left-color: #13ec75;
+}
+.dark .tiptap-editor code {
+  background: #1e3a2e;
+  color: #a7f3d0;
+}
 .dark .tiptap-editor pre  { background: #1e3a2e; }
 .dark .tiptap-editor mark { background-color: #d97706; }
+.dark .tiptap-editor hr   { border-top-color: #2d5443; }
+.dark .tiptap-editor p.is-editor-empty:first-child::before {
+  color: #4a7060;
+}
+
+/* Focus-mode word highlight in dark mode */
+.dark .focus-mode-active .tiptap-editor .ProseMirror {
+  color: rgba(226, 244, 238, 0.18);
+  caret-color: #e2f4ee;
+}
+.dark .focus-mode-active .tiptap-editor .ProseMirror h1,
+.dark .focus-mode-active .tiptap-editor .ProseMirror h2,
+.dark .focus-mode-active .tiptap-editor .ProseMirror h3 {
+  color: rgba(226, 244, 238, 0.18);
+}
+.dark .focus-mode-active .tiptap-editor .ProseMirror .is-focus-word {
+  color: #e2f4ee;
+}
 
 /* Range input */
 input[type='range'] { -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer; }

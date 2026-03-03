@@ -83,7 +83,7 @@ export function EditorCanvas({ docId }: Props) {
   if (!doc || doc.isDeleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-canvas">
-        <p className="font-marker text-xl text-gray-400">Loadingâ€¦</p>
+        <p className="font-marker text-xl text-gray-400">Loading...</p>
       </div>
     );
   }
@@ -223,6 +223,7 @@ export function EditorCanvas({ docId }: Props) {
 
         {/* Settings gear */}
         <button
+          data-settings-trigger
           onClick={() => setShowSettings((v) => !v)}
           aria-label="Settings"
           className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-ink text-white border-2 border-ink rounded-rough-sm shadow-hard hover:shadow-hard-hover transition-all"
