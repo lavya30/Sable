@@ -118,9 +118,9 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
               </>
             ) : (
               <>
-                Make it Real
+                {selected === 'pdf' ? 'Print / Save as PDF' : 'Make it Real'}
                 <span className="material-symbols-outlined text-2xl">
-                  arrow_forward
+                  {selected === 'pdf' ? 'print' : 'arrow_forward'}
                 </span>
               </>
             )}

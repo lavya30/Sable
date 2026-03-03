@@ -99,35 +99,79 @@ export async function exportMarkdown(doc: SableDocument, html: string): Promise<
 }
 
 export async function exportPDF(doc: SableDocument, html: string): Promise<void> {
-  const html2pdf = (await import('html2pdf.js')).default;
-
-  // Build styled content in a temporary off-screen container
-  const container = document.createElement('div');
-  container.innerHTML = buildStyledHTML(
-    doc,
-    `<h1>${escapeHtml(doc.title)}</h1>\n${html}`
+  // Replace <hr> with page-break markers so chapters start on new pages
+  const contentWithBreaks = html.replace(
+    /<hr\s*\/?>/gi,
+    '<div class="page-break"></div>'
   );
-  // Style the container so it renders properly but stays invisible
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
-  container.style.top = '0';
-  container.style.width = '900px';
-  document.body.appendChild(container);
 
-  const filename = `${sanitizeFilename(doc.title)}.pdf`;
+  const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>${escapeHtml(doc.title)}</title>
+  <style>
+    @page { margin: 20mm; size: A4; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Georgia', serif;
+      font-size: 12pt;
+      line-height: 1.8;
+      color: #2D3436;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    h1 { font-size: 24pt; margin: 0 0 1rem; line-height: 1.2; }
+    h2 { font-size: 18pt; margin: 2rem 0 1rem; }
+    h3 { font-size: 14pt; margin: 1.5rem 0 0.75rem; }
+    p  { margin: 0 0 1.2rem; }
+    blockquote { border-left: 4px solid #A7F3D0; padding-left: 1rem; margin: 1.5rem 0; color: #636e72; }
+    code { background: #f1f3f4; padding: 0.1em 0.35em; border-radius: 3px; font-family: 'Courier New', monospace; font-size: 10pt; }
+    pre { background: #f1f3f4; padding: 0.75rem 1rem; border-radius: 6px; margin: 0 0 1.2rem; }
+    pre code { background: none; padding: 0; }
+    mark { background-color: #FDBA74; padding: 0.1em 0.2em; border-radius: 2px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    strong { font-weight: 700; }
+    em { font-style: italic; }
+    ul, ol { padding-left: 1.5rem; margin: 0 0 1.2rem; }
+    li { margin-bottom: 0.4rem; }
+    a { color: #13ec75; text-decoration: underline; }
+    .page-break { page-break-after: always; break-after: page; height: 0; margin: 0; padding: 0; border: none; }
+    @media print {
+      body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <h1>${escapeHtml(doc.title)}</h1>
+  ${contentWithBreaks}
+</body>
+</html>`;
 
-  try {
-    await html2pdf()
-      .set({
-        margin: [10, 10, 10, 10],
-        filename,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      })
-      .from(container)
-      .save();
-  } finally {
-    document.body.removeChild(container);
-  }
+  // Use a hidden iframe so no new tab ever appears
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
+  document.body.appendChild(iframe);
+
+  await new Promise<void>((resolve, reject) => {
+    iframe.onload = () => {
+      try {
+        iframe.contentWindow!.focus();
+        iframe.contentWindow!.print();
+        // Remove iframe after a short delay (gives browser time to spool the print job)
+        setTimeout(() => {
+          document.body.removeChild(iframe);
+          resolve();
+        }, 1000);
+      } catch (e) {
+        document.body.removeChild(iframe);
+        reject(e);
+      }
+    };
+
+    const doc2 = iframe.contentDocument!;
+    doc2.open();
+    doc2.write(fullHtml);
+    doc2.close();
+  });
 }

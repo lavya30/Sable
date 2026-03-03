@@ -26,12 +26,11 @@ export function EditorToolbar({
   onPreviewToggle,
   docTitle,
 }: Props) {
-  if (!editor) return null;
-
   const toolbarInnerRef = useRef<HTMLDivElement>(null);
 
   // GSAP: initial reveal animation for toolbar buttons
   useEffect(() => {
+    if (!editor) return;
     const el = toolbarInnerRef.current;
     if (!el) return;
     const buttons = el.querySelectorAll('button, a');
@@ -39,7 +38,9 @@ export function EditorToolbar({
       { y: -8, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', delay: 0.3, overwrite: true }
     );
-  }, []);
+  }, [editor]);
+
+  if (!editor) return null;
 
   const fmtBtn = (
     label: string,

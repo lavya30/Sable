@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { Editor } from '@tiptap/react';
@@ -48,10 +48,6 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Find in document
-  const [findQuery, setFindQuery] = useState('');
-  const findRef = useRef<HTMLInputElement>(null);
-
   // Writing goal
   const goalKey = `sable-goal-${docId}`;
   const [goalInput, setGoalInput] = useState('');
@@ -100,29 +96,6 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
       }
     });
   }
-
-  function findInDoc(backwards = false) {
-    if (!findQuery.trim()) return;
-    // window.find is available in all modern browsers
-    (window as unknown as Record<string, (...a: unknown[]) => void>).find?.(
-      findQuery, false, backwards, true, false, true, false
-    );
-  }
-
-  const quickFormats = [
-    { label: 'Bold',    icon: 'format_bold',          action: () => editor?.chain().focus().toggleBold().run(),             isActive: () => !!editor?.isActive('bold') },
-    { label: 'Italic',  icon: 'format_italic',         action: () => editor?.chain().focus().toggleItalic().run(),           isActive: () => !!editor?.isActive('italic') },
-    { label: 'H1',      icon: 'format_h1',             action: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(), isActive: () => !!editor?.isActive('heading', { level: 1 }) },
-    { label: 'H2',      icon: 'format_h2',             action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(), isActive: () => !!editor?.isActive('heading', { level: 2 }) },
-    { label: 'Quote',   icon: 'format_quote',          action: () => editor?.chain().focus().toggleBlockquote().run(),       isActive: () => !!editor?.isActive('blockquote') },
-    { label: 'Bullets', icon: 'format_list_bulleted',  action: () => editor?.chain().focus().toggleBulletList().run(),       isActive: () => !!editor?.isActive('bulletList') },
-    { label: 'Numbers', icon: 'format_list_numbered',  action: () => editor?.chain().focus().toggleOrderedList().run(),      isActive: () => !!editor?.isActive('orderedList') },
-    { label: 'Code',    icon: 'code',                  action: () => editor?.chain().focus().toggleCodeBlock().run(),        isActive: () => !!editor?.isActive('codeBlock') },
-    { label: 'HR',      icon: 'horizontal_rule',       action: () => editor?.chain().focus().setHorizontalRule().run(),      isActive: () => false },
-    { label: 'Undo',    icon: 'undo',                  action: () => editor?.chain().focus().undo().run(),                   isActive: () => false },
-    { label: 'Redo',    icon: 'redo',                  action: () => editor?.chain().focus().redo().run(),                   isActive: () => false },
-    { label: 'Clear',   icon: 'format_clear',          action: () => editor?.chain().focus().unsetAllMarks().clearNodes().run(), isActive: () => false },
-  ];
 
   const goalPct = goal > 0 ? Math.min(100, Math.round((stats.words / goal) * 100)) : 0;
 
@@ -220,62 +193,6 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
                 </div>
               )}
             </div>
-          </div>
-
-          {/* â”€â”€ Quick Format â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Quick Format</h3>
-            <div className="grid grid-cols-6 gap-1.5">
-              {quickFormats.map((f) => (
-                <button
-                  key={f.label}
-                  title={f.label}
-                  onMouseDown={(e) => { e.preventDefault(); f.action(); }}
-                  className={`flex flex-col items-center justify-center gap-0.5 p-2 rounded-lg border-2 transition-all hover:-translate-y-0.5 ${
-                    f.isActive()
-                      ? 'bg-primary border-ink text-ink shadow-hard-sm'
-                      : 'bg-white border-ink/20 text-gray-500 hover:border-ink hover:text-ink hover:shadow-hard-sm'
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-[18px]">{f.icon}</span>
-                  <span className="text-[9px] font-marker leading-none">{f.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* â”€â”€ Find in Document â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-          <div className="flex flex-col gap-3">
-            <h3 className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Find in Document</h3>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[18px] text-gray-400">search</span>
-                <input
-                  ref={findRef}
-                  type="text"
-                  value={findQuery}
-                  onChange={(e) => setFindQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && findInDoc(e.shiftKey)}
-                  placeholder="Search textâ€¦"
-                  className="w-full pl-9 pr-3 py-2 border-2 border-ink/20 rounded-lg text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white transition-colors"
-                />
-              </div>
-              <button
-                onClick={() => findInDoc(true)}
-                title="Previous match"
-                className="w-9 h-9 flex items-center justify-center rounded-lg border-2 border-ink/20 hover:border-ink bg-white hover:bg-gray-50 transition-all"
-              >
-                <span className="material-symbols-outlined text-[18px] text-gray-600">expand_less</span>
-              </button>
-              <button
-                onClick={() => findInDoc(false)}
-                title="Next match"
-                className="w-9 h-9 flex items-center justify-center rounded-lg border-2 border-ink/20 hover:border-ink bg-white hover:bg-gray-50 transition-all"
-              >
-                <span className="material-symbols-outlined text-[18px] text-gray-600">expand_more</span>
-              </button>
-            </div>
-            <p className="text-[10px] font-marker text-gray-400">Press Enter / Shift+Enter to cycle matches</p>
           </div>
 
           {/* â”€â”€ Chapter Navigation â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}

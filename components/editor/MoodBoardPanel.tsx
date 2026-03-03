@@ -23,7 +23,6 @@ const ADD_BUTTONS: { type: MoodBoardItemType; icon: string; label: string }[] = 
 
 export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
 
   // Link modal state
   const [showLinkModal, setShowLinkModal] = useState(false);
@@ -34,6 +33,10 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   const [showNoteModal, setShowNoteModal] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [noteLabel, setNoteLabel] = useState('');
+
+  // Color modal state
+  const [showColorModal, setShowColorModal] = useState(false);
+  const [colorValue, setColorValue] = useState('#13ec75');
 
   // Prevent body scroll when panel is open
   useEffect(() => {
@@ -62,7 +65,8 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
         fileInputRef.current?.click();
         break;
       case 'color':
-        colorInputRef.current?.click();
+        setColorValue('#13ec75');
+        setShowColorModal(true);
         break;
       case 'link':
         setLinkUrl('');
@@ -88,8 +92,9 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
     e.target.value = '';
   }
 
-  function handleColorSelect(e: React.ChangeEvent<HTMLInputElement>) {
-    addItem('color', e.target.value, e.target.value);
+  function handleColorSubmit() {
+    addItem('color', colorValue, colorValue);
+    setShowColorModal(false);
   }
 
   function handleLinkSubmit() {
@@ -151,13 +156,6 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
           className="hidden"
           onChange={handleImageSelect}
         />
-        <input
-          ref={colorInputRef}
-          type="color"
-          className="hidden"
-          defaultValue="#13ec75"
-          onChange={handleColorSelect}
-        />
 
         {/* Cards area — masonry columns */}
         <div data-lenis-prevent className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 relative z-10">
@@ -165,7 +163,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 opacity-60">
               <span className="material-symbols-outlined text-5xl text-gray-300">dashboard_customize</span>
               <p className="font-marker text-gray-400 text-sm max-w-[200px]">
-                Pin images, colors, links & notes to build your mood board.
+                Pin images, colors, links &amp; notes to build your mood board.
               </p>
             </div>
           ) : (
@@ -192,6 +190,50 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
           )}
         </div>
       </div>
+
+      {/* Color picker modal */}
+      {showColorModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
+          <div className="absolute inset-0" onClick={() => setShowColorModal(false)} />
+          <div className="relative w-full max-w-xs bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
+            <h3 className="font-display font-bold text-lg text-ink">Pick a Color</h3>
+
+            {/* Live preview swatch */}
+            <div
+              className="w-full h-24 rounded-xl border-2 border-ink/20 shadow-hard-sm transition-colors duration-100"
+              style={{ backgroundColor: colorValue }}
+            />
+
+            {/* Native color picker — fills full width */}
+            <input
+              type="color"
+              value={colorValue}
+              onChange={(e) => setColorValue(e.target.value)}
+              className="w-full h-10 rounded-lg border-2 border-ink/20 cursor-pointer bg-white p-0.5"
+            />
+
+            {/* Hex label */}
+            <p className="font-mono text-sm text-gray-500 text-center tracking-widest uppercase">
+              {colorValue}
+            </p>
+
+            <div className="flex gap-2 justify-end">
+              <button
+                onClick={() => setShowColorModal(false)}
+                className="px-4 py-2 text-sm font-marker text-gray-500 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleColorSubmit}
+                className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink"
+              >
+                Pin it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Link modal */}
       {showLinkModal && (
@@ -288,10 +330,10 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
     case 'color':
       return (
         <div className={baseClass}>
-          <div className="h-24 w-full" style={{ backgroundColor: item.content }} />
+          <div className="h-24 w-full rounded-t-xl" style={{ backgroundColor: item.content }} />
           <div className="px-3 py-2 border-t border-ink/10 flex items-center justify-between">
-            <span className="text-xs font-mono text-gray-500">{item.content}</span>
-            <div className="w-4 h-4 rounded-full border border-ink/20" style={{ backgroundColor: item.content }} />
+            <span className="text-xs font-mono text-gray-500 uppercase tracking-wider">{item.content}</span>
+            <div className="w-4 h-4 rounded-full border-2 border-ink/20" style={{ backgroundColor: item.content }} />
           </div>
           {deleteBtn}
         </div>
