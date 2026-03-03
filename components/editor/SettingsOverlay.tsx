@@ -170,6 +170,58 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
           </div>
         </div>
 
+        {/* Keystroke Sounds */}
+        <div className="space-y-3 pt-1">
+          <div className="font-marker text-lg flex items-center gap-2">
+            <span>Keystroke Sounds</span>
+            <span className="material-symbols-outlined text-sm text-primary">
+              music_note
+            </span>
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            {([
+              { value: 'off', icon: 'volume_off', label: 'Off' },
+              { value: 'typewriter', icon: 'keyboard', label: 'Typewriter' },
+              { value: 'mechanical', icon: 'keyboard_keys', label: 'Mechanical' },
+              { value: 'pen', icon: 'edit', label: 'Pen' },
+            ] as const).map(({ value, icon, label }) => (
+              <label key={value} className="cursor-pointer flex flex-col items-center gap-1">
+                <input
+                  type="radio"
+                  name="keystrokeSounds"
+                  value={value}
+                  checked={settings.keystrokeSounds === value}
+                  onChange={() => updateSettings({ keystrokeSounds: value })}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-11 bg-white border-2 border-ink/20 rounded-lg flex items-center justify-center peer-checked:border-ink peer-checked:bg-primary/20 peer-checked:shadow-hard-sm transition-all hover:border-ink/40">
+                  <span className="material-symbols-outlined text-ink text-[18px]">
+                    {icon}
+                  </span>
+                </div>
+                <span className="font-marker text-[10px] text-gray-500">{label}</span>
+              </label>
+            ))}
+          </div>
+          {settings.keystrokeSounds !== 'off' && (
+            <div className="flex items-center gap-2 pt-1">
+              <span className="material-symbols-outlined text-sm text-gray-400">volume_down</span>
+              <input
+                type="range"
+                min={0}
+                max={10}
+                value={Math.round(settings.keystrokeVolume * 10)}
+                onChange={(e) =>
+                  updateSettings({ keystrokeVolume: parseInt(e.target.value, 10) / 10 })
+                }
+                className="flex-1"
+                aria-label="Keystroke volume"
+              />
+              <span className="material-symbols-outlined text-sm text-gray-400">volume_up</span>
+            </div>
+          )}
+        </div>
+
         {/* Version */}
         <div className="text-center">
           <p className="font-marker text-xs text-gray-400 rotate-1">

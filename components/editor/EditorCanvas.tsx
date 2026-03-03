@@ -6,6 +6,7 @@ import { Editor } from '@tiptap/react';
 import { useDocuments } from '@/context/DocumentsContext';
 import { useSettings } from '@/context/SettingsContext';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useKeystrokeSounds } from '@/hooks/useKeystrokeSounds';
 import TiptapEditor, { TiptapEditorRef } from './TiptapEditor';
 import { LivePreview } from './LivePreview';
 import { EditorToolbar } from './EditorToolbar';
@@ -49,6 +50,9 @@ export function EditorCanvas({ docId }: Props) {
   const debouncedSave = useDebounce((json: string) => {
     updateDoc(docId, { content: json });
   }, 800);
+
+  // Keystroke sounds
+  useKeystrokeSounds(editor, settings.keystrokeSounds, settings.keystrokeVolume);
 
   if (!doc || doc.isDeleted) {
     return (
@@ -100,8 +104,8 @@ export function EditorCanvas({ docId }: Props) {
         {/* Editor pane */}
         <div
           className={`transition-all duration-300 overflow-y-auto ${showPreview
-              ? 'w-1/2 px-8 border-r-2 border-ink/10'
-              : 'w-full max-w-[720px] mx-auto px-6 sm:px-12'
+            ? 'w-1/2 px-8 border-r-2 border-ink/10'
+            : 'w-full max-w-[720px] mx-auto px-6 sm:px-12'
             }`}
         >
           <TiptapEditor
