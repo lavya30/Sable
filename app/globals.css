@@ -145,6 +145,25 @@
     pointer-events: none !important;
     transition: opacity 0.5s ease;
   }
+
+  /* Word-level focus: dim all text in the editor, highlight only the current word.
+     We use `color` (not opacity) because color IS overridable by child spans,
+     while opacity is multiplicative and cannot be "undone" by a child element. */
+  .focus-mode-active .tiptap-editor .ProseMirror {
+    color: rgba(45, 52, 54, 0.18);
+    caret-color: #2D3436; /* keep cursor visible */
+    transition: color 0.25s ease;
+  }
+  .focus-mode-active .tiptap-editor .ProseMirror h1,
+  .focus-mode-active .tiptap-editor .ProseMirror h2,
+  .focus-mode-active .tiptap-editor .ProseMirror h3 {
+    color: rgba(45, 52, 54, 0.18);
+  }
+  /* The span Tiptap injects for the current word — restore full color */
+  .focus-mode-active .tiptap-editor .ProseMirror .is-focus-word {
+    color: #2D3436;
+  }
+
   .custom-caret {
     display: inline-block;
     width: 3px;

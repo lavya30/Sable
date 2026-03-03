@@ -1,14 +1,61 @@
 'use client';
 
-import { useEditor, EditorContent } from '@tiptap/react';
+import { useEditor, EditorContent, Extension } from '@tiptap/react';
 import { BubbleMenu } from '@tiptap/react/menus';
 import StarterKit from '@tiptap/starter-kit';
 import Highlight from '@tiptap/extension-highlight';
 import CharacterCount from '@tiptap/extension-character-count';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
+import { Plugin, PluginKey } from '@tiptap/pm/state';
+import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { useEffect, forwardRef, useImperativeHandle } from 'react';
 import { Editor } from '@tiptap/react';
+
+// Tiptap-managed decoration — wraps the current word with .is-focus-word.
+// Uses Decoration.inline() so a <span> is inserted that CSS can target.
+const FocusWordDecoration = Extension.create({
+  name: 'focusWordDecoration',
+  addProseMirrorPlugins() {
+    return [
+      new Plugin({
+        key: new PluginKey('focusWordDecoration'),
+        props: {
+          decorations(state) {
+            const { $from, empty } = state.selection;
+            // Only apply in collapsed (cursor) selection
+            if (!empty || $from.depth < 1) return DecorationSet.empty;
+
+            const parentStart  = $from.start();   // start of the text block
+            const parentText   = $from.parent.textContent;
+            const offsetInParent = $from.pos - parentStart;
+
+            if (!parentText.trim()) return DecorationSet.empty;
+
+            // Walk left/right to find word boundaries (stop at whitespace / punctuation)
+            let ws = offsetInParent;
+            let we = offsetInParent;
+            while (ws > 0 && !/[\s]/.test(parentText[ws - 1])) ws--;
+            while (we < parentText.length && !/[\s]/.test(parentText[we])) we++;
+
+            if (ws === we) return DecorationSet.empty; // cursor is on whitespace
+
+            const from = parentStart + ws;
+            const to   = parentStart + we;
+
+            try {
+              return DecorationSet.create(state.doc, [
+                Decoration.inline(from, to, { class: 'is-focus-word' }),
+              ]);
+            } catch {
+              return DecorationSet.empty;
+            }
+          },
+        },
+      }),
+    ];
+  },
+});
 
 export interface TiptapEditorRef {
   getHTML: () => string;
@@ -46,6 +93,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         autolink: true,
         linkOnPaste: true,
       }),
+      FocusWordDecoration,
     ],
     content: (() => {
       try {
