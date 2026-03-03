@@ -18,6 +18,7 @@ import { MarginNoteGutter } from './MarginNoteGutter';
 import { PublishModal } from './PublishModal';
 import { SettingsOverlay } from './SettingsOverlay';
 import { WordCountBadge } from './WordCountBadge';
+import { AmbientPlayer } from './AmbientPlayer';
 import { MarginNote } from '@/lib/types';
 
 interface Props {
@@ -195,6 +196,10 @@ export function EditorCanvas({ docId }: Props) {
 
       {/* â”€â”€ Bottom-right controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer ref={footerRef} className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
+        <div className="focus-hidden">
+          <AmbientPlayer />
+        </div>
+
         <div className="focus-hidden">
           <WordCountBadge editor={editor} />
         </div>
