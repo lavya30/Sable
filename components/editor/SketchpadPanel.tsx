@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { Editor } from '@tiptap/react';
+import gsap from 'gsap';
 
 interface Heading {
   level: number;
@@ -44,6 +45,8 @@ function computeStats(editor: Editor | null) {
 export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, docId }: Props) {
   const headings = useMemo(() => extractHeadings(editor), [editor?.state]);
   const stats = useMemo(() => computeStats(editor), [editor?.state]);
+  const panelRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   // Find in document
   const [findQuery, setFindQuery] = useState('');
@@ -65,6 +68,17 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
     }
     setGoalInput('');
   }
+
+  // GSAP stagger animation for content sections when opening
+  useEffect(() => {
+    if (isOpen && contentRef.current) {
+      const sections = contentRef.current.querySelectorAll(':scope > div');
+      gsap.fromTo(sections,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.4, stagger: 0.06, ease: 'power3.out', delay: 0.15, overwrite: true }
+      );
+    }
+  }, [isOpen]);
 
   // Prevent body scroll when panel is open
   useEffect(() => {
@@ -119,7 +133,8 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
       )}
 
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 w-[380px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ${
+        ref={panelRef}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-[380px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -137,7 +152,7 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
         </div>
 
         {/* Scrollable content */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide px-5 py-5 flex flex-col gap-6 relative z-10">
+        <div ref={contentRef} data-lenis-prevent className="flex-1 overflow-y-auto scrollbar-hide px-5 py-5 flex flex-col gap-6 relative z-10">
 
           {/* â”€â”€ Stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
           <div className="bg-lavender/30 border-2 border-ink/10 rounded-lg p-4 flex flex-col gap-3">

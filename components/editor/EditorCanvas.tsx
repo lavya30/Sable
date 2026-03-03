@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Editor } from '@tiptap/react';
+import gsap from 'gsap';
 import { useDocuments } from '@/context/DocumentsContext';
 import { useSettings } from '@/context/SettingsContext';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -38,8 +39,26 @@ export function EditorCanvas({ docId }: Props) {
   const [showSettings, setShowSettings] = useState(false);
 
   const editorRef = useRef<TiptapEditorRef>(null);
+  const mainRef = useRef<HTMLElement>(null);
+  const footerRef = useRef<HTMLElement>(null);
 
   const doc = getDoc(docId);
+
+  // GSAP page entrance animation
+  useEffect(() => {
+    if (mainRef.current) {
+      gsap.fromTo(mainRef.current,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.1, overwrite: true }
+      );
+    }
+    if (footerRef.current) {
+      gsap.fromTo(footerRef.current.children,
+        { scale: 0.7, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5, overwrite: true }
+      );
+    }
+  }, []);
 
   // Redirect if document is missing or deleted
   useEffect(() => {
@@ -110,7 +129,7 @@ export function EditorCanvas({ docId }: Props) {
       />
 
       {/* â”€â”€ Main editing area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <main className="flex-grow flex pt-20 pb-28">
+      <main ref={mainRef} className="flex-grow flex pt-20 pb-28">
         {/* Editor + margin notes wrapper */}
         <div className={`transition-all duration-300 flex justify-center w-full ${showPreview ? '' : 'px-6 sm:px-12'}`}>
           {/* Left spacer for symmetry (matches gutter width) */}
@@ -175,7 +194,7 @@ export function EditorCanvas({ docId }: Props) {
       )}
 
       {/* â”€â”€ Bottom-right controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
+      <footer ref={footerRef} className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
         <div className="focus-hidden">
           <WordCountBadge editor={editor} />
         </div>
@@ -184,7 +203,7 @@ export function EditorCanvas({ docId }: Props) {
         <button
           onClick={() => setFocusMode((v) => !v)}
           aria-label={focusMode ? 'Exit Focus Mode' : 'Enter Focus Mode'}
-          className="group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all"
+          className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all"
         >
           <span
             className={`material-symbols-outlined transition-colors ${focusMode ? 'text-lavender' : 'group-hover:text-lavender'
@@ -201,7 +220,7 @@ export function EditorCanvas({ docId }: Props) {
         <button
           onClick={() => setShowSettings((v) => !v)}
           aria-label="Settings"
-          className="group relative flex items-center justify-center w-12 h-12 bg-ink text-white border-2 border-ink rounded-rough-sm shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all"
+          className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-ink text-white border-2 border-ink rounded-rough-sm shadow-hard hover:shadow-hard-hover transition-all"
         >
           <span className="material-symbols-outlined group-hover:rotate-45 transition-transform duration-300">
             settings

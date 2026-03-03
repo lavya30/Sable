@@ -34,7 +34,7 @@ export function NewDocumentCard() {
       {/* Card */}
       <div
         onClick={openDialog}
-        className="group h-[320px] bg-white wobbly-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+        className="group h-[320px] bg-white wobbly-dashed flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 card-lift wiggle-hover"
       >
         <div className="w-16 h-16 rounded-full bg-mint flex items-center justify-center border-2 border-ink shadow-hard group-hover:shadow-hard-hover group-hover:-translate-y-1 transition-all">
           <span className="material-symbols-outlined text-4xl text-ink">add</span>

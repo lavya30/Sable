@@ -93,7 +93,7 @@ export function DocumentCard({ doc }: Props) {
 
   return (
     <div
-      className="group h-[320px] bg-white border-2 border-ink rounded-notebook shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all relative flex flex-col cursor-pointer"
+      className="group h-[320px] bg-white border-2 border-ink rounded-notebook shadow-hard card-lift relative flex flex-col cursor-pointer"
       onClick={() => !renaming && router.push(`/editor?id=${doc.id}`)}
     >
       {/* Three-dot menu – outside overflow-hidden cover so dropdown isn't clipped */}

@@ -111,8 +111,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       )}
 
       <div
-        className={`fixed top-0 right-0 bottom-0 z-50 w-[400px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ${isOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-[400px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="absolute inset-0 bg-dot-grid-sketch opacity-[0.05] pointer-events-none" />
 
@@ -161,7 +160,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
         />
 
         {/* Cards area — masonry columns */}
-        <div className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 relative z-10">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 relative z-10">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 opacity-60">
               <span className="material-symbols-outlined text-5xl text-gray-300">dashboard_customize</span>

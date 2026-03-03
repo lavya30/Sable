@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { Editor } from '@tiptap/react';
 import { MarginNote } from '@/lib/types';
+import gsap from 'gsap';
 
 /* ── Note-color palette ──────────────────────────────────────────────────── */
 const NOTE_COLORS: MarginNote['color'][] = ['peach', 'lavender', 'mint', 'rose'];
@@ -68,6 +69,17 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
   const [editing, setEditing] = useState(!note.content);
   const [draft, setDraft] = useState(note.content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // GSAP entrance animation
+  useEffect(() => {
+    if (cardRef.current) {
+      gsap.fromTo(cardRef.current,
+        { x: 30, opacity: 0, scale: 0.9, rotation: note.rotation + 5 },
+        { x: 0, opacity: 1, scale: 1, rotation: note.rotation, duration: 0.5, ease: 'back.out(1.7)', overwrite: true }
+      );
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (editing && textareaRef.current) {
@@ -90,6 +102,7 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
 
   return (
     <div
+      ref={cardRef}
       className={`margin-note group absolute right-0 w-48 ${c.bg} ${c.border} border-2 rounded-lg p-2.5 shadow-hard-sm cursor-pointer transition-all duration-200 hover:shadow-hard hover:-translate-y-0.5 hover:z-30`}
       style={{
         top: `${top}px`,

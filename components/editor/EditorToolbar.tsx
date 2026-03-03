@@ -1,7 +1,9 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { Editor } from '@tiptap/react';
+import gsap from 'gsap';
 
 interface Props {
   editor: Editor | null;
@@ -25,6 +27,19 @@ export function EditorToolbar({
   docTitle,
 }: Props) {
   if (!editor) return null;
+
+  const toolbarInnerRef = useRef<HTMLDivElement>(null);
+
+  // GSAP: initial reveal animation for toolbar buttons
+  useEffect(() => {
+    const el = toolbarInnerRef.current;
+    if (!el) return;
+    const buttons = el.querySelectorAll('button, a');
+    gsap.fromTo(buttons,
+      { y: -8, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', delay: 0.3, overwrite: true }
+    );
+  }, []);
 
   const fmtBtn = (
     label: string,
@@ -55,6 +70,7 @@ export function EditorToolbar({
 
       {/* Toolbar — slides down on hover */}
       <div
+        ref={toolbarInnerRef}
         className={`
           mt-3 bg-white border-2 border-ink shadow-hard rounded-rough
           px-4 py-2.5 flex items-center gap-4

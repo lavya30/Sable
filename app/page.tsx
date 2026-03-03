@@ -1,17 +1,43 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useDocuments } from '@/context/DocumentsContext';
 import { LibraryTab, SortOrder } from '@/lib/types';
 import { DocumentCard } from '@/components/library/DocumentCard';
 import { NewDocumentCard } from '@/components/library/NewDocumentCard';
 import { WritingStatsPanel } from '@/components/library/WritingStatsPanel';
+import gsap from 'gsap';
 
 export default function LibraryPage() {
   const { documents } = useDocuments();
   const [tab, setTab] = useState<LibraryTab>('recent');
   const [search, setSearch] = useState('');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  // GSAP entrance animation
+  useEffect(() => {
+    if (headerRef.current) {
+      gsap.fromTo(headerRef.current,
+        { y: -30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out', overwrite: true }
+      );
+    }
+  }, []);
+
+  // Stagger cards whenever filtered list changes
+  useEffect(() => {
+    if (gridRef.current) {
+      const cards = gridRef.current.querySelectorAll(':scope > *');
+      if (cards.length) {
+        gsap.fromTo(cards,
+          { y: 25, opacity: 0, scale: 0.96 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'power3.out', overwrite: true }
+        );
+      }
+    }
+  }, [tab, sortOrder, search]);
 
   const filtered = useMemo(() => {
     let list = documents.filter((d) => !d.isDeleted);
@@ -45,7 +71,7 @@ export default function LibraryPage() {
   return (
     <div className="bg-canvas text-ink font-body min-h-screen flex flex-col dot-grid">
       {/* ── Header ─────────────────────────────────────────────────────── */}
-      <header className="w-full max-w-7xl mx-auto px-6 pt-12 pb-8">
+      <header ref={headerRef} className="w-full max-w-7xl mx-auto px-6 pt-12 pb-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           {/* Greeting */}
           <div className="flex items-center gap-3">
@@ -130,7 +156,7 @@ export default function LibraryPage() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {tab === 'recent' && !search && <NewDocumentCard />}
 
           {filtered.length === 0 && (
