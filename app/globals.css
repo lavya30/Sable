@@ -119,6 +119,32 @@
     pointer-events: none !important;
     transition: opacity 0.5s ease;
   }
+  /* ── Margin Notes ──────────────────────────────────────────────────── */
+  .margin-note-gutter {
+    transition: opacity 0.3s ease;
+  }
+  .margin-note {
+    font-family: var(--font-marker);
+    backdrop-filter: blur(2px);
+  }
+  .margin-note::before {
+    /* Faint tape / pin accent at top-center */
+    content: "";
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%) rotate(2deg);
+    width: 28px;
+    height: 8px;
+    background: rgba(255,255,255,0.45);
+    border-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .focus-mode-active .margin-note-gutter {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transition: opacity 0.5s ease;
+  }
   .custom-caret {
     display: inline-block;
     width: 3px;

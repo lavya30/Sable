@@ -13,9 +13,11 @@ import { LivePreview } from './LivePreview';
 import { EditorToolbar } from './EditorToolbar';
 import { SketchpadPanel } from './SketchpadPanel';
 import { MoodBoardPanel } from './MoodBoardPanel';
+import { MarginNoteGutter } from './MarginNoteGutter';
 import { PublishModal } from './PublishModal';
 import { SettingsOverlay } from './SettingsOverlay';
 import { WordCountBadge } from './WordCountBadge';
+import { MarginNote } from '@/lib/types';
 
 interface Props {
   docId: string;
@@ -79,6 +81,10 @@ export function EditorCanvas({ docId }: Props) {
     updateDoc(docId, { moodBoard });
   }
 
+  function handleMarginNotesChange(marginNotes: MarginNote[]) {
+    updateDoc(docId, { marginNotes });
+  }
+
   function getExportHTML(): string {
     return editorRef.current?.getHTML() ?? html;
   }
@@ -105,25 +111,44 @@ export function EditorCanvas({ docId }: Props) {
 
       {/* â”€â”€ Main editing area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <main className="flex-grow flex pt-20 pb-28">
-        {/* Editor pane */}
-        <div
-          className={`transition-all duration-300 overflow-y-auto ${showPreview
-            ? 'w-1/2 px-8 border-r-2 border-ink/10'
-            : 'w-full max-w-[720px] mx-auto px-6 sm:px-12'
-            }`}
-        >
-          <TiptapEditor
-            ref={editorRef}
-            content={doc.content}
-            onChange={handleEditorChange}
-            onEditorReady={(e) => {
-              setEditor(e);
-              setHtml(e.getHTML());
-            }}
-            fontSize={settings.fontSize}
-            lineSpacing={settings.lineSpacing}
-            focusMode={focusMode}
-          />
+        {/* Editor + margin notes wrapper */}
+        <div className={`transition-all duration-300 flex justify-center w-full ${showPreview ? '' : 'px-6 sm:px-12'}`}>
+          {/* Left spacer for symmetry (matches gutter width) */}
+          {!showPreview && <div className="w-56 flex-shrink-0 hidden xl:block" />}
+
+          {/* Editor pane */}
+          <div
+            className={`transition-all duration-300 overflow-y-auto ${showPreview
+              ? 'w-1/2 px-8 border-r-2 border-ink/10'
+              : 'w-full max-w-[720px]'
+              }`}
+          >
+            <div className="relative">
+              <TiptapEditor
+                ref={editorRef}
+                content={doc.content}
+                onChange={handleEditorChange}
+                onEditorReady={(e) => {
+                  setEditor(e);
+                  setHtml(e.getHTML());
+                }}
+                fontSize={settings.fontSize}
+                lineSpacing={settings.lineSpacing}
+                focusMode={focusMode}
+              />
+            </div>
+          </div>
+
+          {/* Margin notes gutter – sits beside the editor */}
+          {editor && !showPreview && (
+            <div className="w-56 flex-shrink-0 relative hidden xl:block">
+              <MarginNoteGutter
+                editor={editor}
+                marginNotes={doc.marginNotes ?? []}
+                onChange={handleMarginNotesChange}
+              />
+            </div>
+          )}
         </div>
 
         {/* Preview pane */}

@@ -48,6 +48,7 @@ export function createDocument(): SableDocument {
     isArchived: false,
     notes: '',
     moodBoard: [],
+    marginNotes: [],
   };
 }
 

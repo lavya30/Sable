@@ -8,6 +8,17 @@ export interface MoodBoardItem {
   createdAt: string;
 }
 
+export interface MarginNote {
+  id: string;
+  /** Paragraph index (0-based) in the document */
+  paragraphIndex: number;
+  content: string;
+  color: 'peach' | 'lavender' | 'mint' | 'rose';
+  /** Slight random rotation for hand-placed feel (-3 to 3 deg) */
+  rotation: number;
+  createdAt: string;
+}
+
 export type CoverColor = 'mint' | 'lavender' | 'peach' | 'rose';
 
 export interface SableDocument {
@@ -22,6 +33,7 @@ export interface SableDocument {
   isArchived: boolean;
   notes: string; // scratchpad side notes
   moodBoard: MoodBoardItem[];
+  marginNotes: MarginNote[];
 }
 
 export type LibraryTab = 'recent' | 'favorites' | 'archived';
