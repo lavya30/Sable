@@ -7,10 +7,14 @@ import React, {
   useState,
 } from 'react';
 
+import { KeystrokeSoundTheme } from '@/hooks/useKeystrokeSounds';
+
 export interface Settings {
   fontSize: number;    // px, range 16–32
   lineSpacing: number; // unitless, range 1.4–2.2
   theme: 'light' | 'dark';
+  keystrokeSounds: KeystrokeSoundTheme;
+  keystrokeVolume: number; // 0–1
 }
 
 interface SettingsContextType {
@@ -24,6 +28,8 @@ const defaultSettings: Settings = {
   fontSize: 20,
   lineSpacing: 1.8,
   theme: 'light',
+  keystrokeSounds: 'off',
+  keystrokeVolume: 0.5,
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
