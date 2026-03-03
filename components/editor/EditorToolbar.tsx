@@ -6,6 +6,7 @@ import { Editor } from '@tiptap/react';
 interface Props {
   editor: Editor | null;
   onSketchpadToggle: () => void;
+  onMoodBoardToggle: () => void;
   onPublishOpen: () => void;
   focusMode: boolean;
   showPreview: boolean;
@@ -16,6 +17,7 @@ interface Props {
 export function EditorToolbar({
   editor,
   onSketchpadToggle,
+  onMoodBoardToggle,
   onPublishOpen,
   focusMode,
   showPreview,
@@ -38,9 +40,8 @@ export function EditorToolbar({
         action();
       }}
       aria-label={label}
-      className={`p-2 rounded-md transition-colors ${hoverColor} ${
-        active ? 'bg-lavender text-ink' : 'text-ink/70 hover:text-ink'
-      }`}
+      className={`p-2 rounded-md transition-colors ${hoverColor} ${active ? 'bg-lavender text-ink' : 'text-ink/70 hover:text-ink'
+        }`}
     >
       <span className="material-symbols-outlined text-[20px]">{icon}</span>
     </button>
@@ -76,16 +77,16 @@ export function EditorToolbar({
 
         {/* Formatting */}
         <div className="flex items-center gap-1">
-          {fmtBtn('Bold',       'format_bold',   () => editor.chain().focus().toggleBold().run(),                       editor.isActive('bold'))}
-          {fmtBtn('Italic',     'format_italic', () => editor.chain().focus().toggleItalic().run(),                     editor.isActive('italic'))}
-          {fmtBtn('H1',         'format_h1',     () => editor.chain().focus().toggleHeading({ level: 1 }).run(),        editor.isActive('heading', { level: 1 }))}
-          {fmtBtn('H2',         'format_h2',     () => editor.chain().focus().toggleHeading({ level: 2 }).run(),        editor.isActive('heading', { level: 2 }))}
-          {fmtBtn('H3',         'format_h3',     () => editor.chain().focus().toggleHeading({ level: 3 }).run(),        editor.isActive('heading', { level: 3 }))}
+          {fmtBtn('Bold', 'format_bold', () => editor.chain().focus().toggleBold().run(), editor.isActive('bold'))}
+          {fmtBtn('Italic', 'format_italic', () => editor.chain().focus().toggleItalic().run(), editor.isActive('italic'))}
+          {fmtBtn('H1', 'format_h1', () => editor.chain().focus().toggleHeading({ level: 1 }).run(), editor.isActive('heading', { level: 1 }))}
+          {fmtBtn('H2', 'format_h2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), editor.isActive('heading', { level: 2 }))}
+          {fmtBtn('H3', 'format_h3', () => editor.chain().focus().toggleHeading({ level: 3 }).run(), editor.isActive('heading', { level: 3 }))}
           <div className="w-px h-5 bg-gray-200 mx-1" />
-          {fmtBtn('Quote',      'format_quote',  () => editor.chain().focus().toggleBlockquote().run(),                 editor.isActive('blockquote'), 'hover:bg-peach')}
-          {fmtBtn('Bullet list','format_list_bulleted', () => editor.chain().focus().toggleBulletList().run(),          editor.isActive('bulletList'))}
-          {fmtBtn('Numbered list','format_list_numbered', () => editor.chain().focus().toggleOrderedList().run(),       editor.isActive('orderedList'))}
-          {fmtBtn('Highlight',  'highlight',     () => editor.chain().focus().toggleHighlight().run(),                  editor.isActive('highlight'), 'hover:bg-peach')}
+          {fmtBtn('Quote', 'format_quote', () => editor.chain().focus().toggleBlockquote().run(), editor.isActive('blockquote'), 'hover:bg-peach')}
+          {fmtBtn('Bullet list', 'format_list_bulleted', () => editor.chain().focus().toggleBulletList().run(), editor.isActive('bulletList'))}
+          {fmtBtn('Numbered list', 'format_list_numbered', () => editor.chain().focus().toggleOrderedList().run(), editor.isActive('orderedList'))}
+          {fmtBtn('Highlight', 'highlight', () => editor.chain().focus().toggleHighlight().run(), editor.isActive('highlight'), 'hover:bg-peach')}
         </div>
 
         <div className="w-px h-5 bg-gray-200 mx-1" />
@@ -93,11 +94,10 @@ export function EditorToolbar({
         {/* Preview toggle */}
         <button
           onClick={onPreviewToggle}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm font-marker text-base transition-all ${
-            showPreview
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm font-marker text-base transition-all ${showPreview
               ? 'bg-lavender border-2 border-ink text-ink'
               : 'border-2 border-transparent hover:border-ink hover:bg-lavender/50'
-          }`}
+            }`}
           title="Toggle live preview"
         >
           <span className="material-symbols-outlined text-[18px]">
@@ -114,6 +114,16 @@ export function EditorToolbar({
         >
           <span className="material-symbols-outlined text-[18px]">draw</span>
           <span className="hidden sm:inline">Sketchpad</span>
+        </button>
+
+        {/* Mood Board */}
+        <button
+          onClick={onMoodBoardToggle}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-peach/50 hover:bg-peach border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
+          title="Open Mood Board"
+        >
+          <span className="material-symbols-outlined text-[18px]">dashboard</span>
+          <span className="hidden sm:inline">Mood Board</span>
         </button>
 
         {/* Publish */}
