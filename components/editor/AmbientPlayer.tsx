@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { useSettings } from '@/context/SettingsContext';
-import { useAmbientSound, AMBIENT_SOUNDS, AmbientSoundType } from '@/hooks/useAmbientSound';
+import { useAmbientSound, AMBIENT_SOUNDS } from '@/hooks/useAmbientSound';
 
 /**
  * Compact floating ambient-sound player that sits in the editor.
@@ -139,7 +139,7 @@ export function AmbientPlayer() {
 
           {/* Tip */}
           <p className="text-[10px] font-marker text-gray-400 text-center">
-            All sounds are procedurally generated ✨
+            Add MP3s to public/sounds/ folder
           </p>
         </div>
       )}
