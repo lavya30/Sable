@@ -5,6 +5,7 @@ import { useDocuments } from '@/context/DocumentsContext';
 import { LibraryTab, SortOrder } from '@/lib/types';
 import { DocumentCard } from '@/components/library/DocumentCard';
 import { NewDocumentCard } from '@/components/library/NewDocumentCard';
+import { WritingStatsPanel } from '@/components/library/WritingStatsPanel';
 
 export default function LibraryPage() {
   const { documents } = useDocuments();
@@ -36,9 +37,9 @@ export default function LibraryPage() {
   }, [documents, tab, search, sortOrder]);
 
   const tabs: { key: LibraryTab; label: string }[] = [
-    { key: 'recent',    label: 'Recent' },
+    { key: 'recent', label: 'Recent' },
     { key: 'favorites', label: 'Favorites' },
-    { key: 'archived',  label: 'Archived' },
+    { key: 'archived', label: 'Archived' },
   ];
 
   return (
@@ -94,17 +95,19 @@ export default function LibraryPage() {
 
       {/* ── Main ───────────────────────────────────────────────────────── */}
       <main className="flex-grow w-full max-w-7xl mx-auto px-6 pb-20">
+        {/* Writing Stats */}
+        <WritingStatsPanel />
+
         {/* Tab bar */}
         <div className="flex items-center gap-6 mb-8 border-b-2 border-ink/10 pb-4">
           {tabs.map(({ key, label }) => (
             <button
               key={key}
               onClick={() => setTab(key)}
-              className={`font-heading text-lg relative transition-colors ${
-                tab === key
-                  ? 'text-ink'
-                  : 'text-gray-400 hover:text-ink'
-              }`}
+              className={`font-heading text-lg relative transition-colors ${tab === key
+                ? 'text-ink'
+                : 'text-gray-400 hover:text-ink'
+                }`}
             >
               {label}
               {tab === key && (
@@ -136,17 +139,17 @@ export default function LibraryPage() {
                 {tab === 'favorites'
                   ? 'favorite'
                   : tab === 'archived'
-                  ? 'archive'
-                  : 'search_off'}
+                    ? 'archive'
+                    : 'search_off'}
               </span>
               <p className="font-heading text-2xl text-gray-400">
                 {search
                   ? 'No notebooks match your search.'
                   : tab === 'favorites'
-                  ? 'No favorites yet.'
-                  : tab === 'archived'
-                  ? 'Nothing archived.'
-                  : 'No notebooks yet — create one!'}
+                    ? 'No favorites yet.'
+                    : tab === 'archived'
+                      ? 'Nothing archived.'
+                      : 'No notebooks yet — create one!'}
               </p>
             </div>
           )}

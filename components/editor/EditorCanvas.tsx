@@ -7,6 +7,7 @@ import { useDocuments } from '@/context/DocumentsContext';
 import { useSettings } from '@/context/SettingsContext';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useKeystrokeSounds } from '@/hooks/useKeystrokeSounds';
+import { useWritingTracker } from '@/hooks/useWritingTracker';
 import TiptapEditor, { TiptapEditorRef } from './TiptapEditor';
 import { LivePreview } from './LivePreview';
 import { EditorToolbar } from './EditorToolbar';
@@ -53,6 +54,9 @@ export function EditorCanvas({ docId }: Props) {
 
   // Keystroke sounds
   useKeystrokeSounds(editor, settings.keystrokeSounds, settings.keystrokeVolume);
+
+  // Writing activity tracking
+  useWritingTracker(editor);
 
   if (!doc || doc.isDeleted) {
     return (
