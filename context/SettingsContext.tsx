@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 
 import { KeystrokeSoundTheme } from '@/hooks/useKeystrokeSounds';
+import { AmbientSoundType } from '@/hooks/useAmbientSound';
 
 export interface Settings {
   fontSize: number;    // px, range 16–32
@@ -15,6 +16,8 @@ export interface Settings {
   theme: 'light' | 'dark';
   keystrokeSounds: KeystrokeSoundTheme;
   keystrokeVolume: number; // 0–1
+  ambientSound: AmbientSoundType;
+  ambientVolume: number; // 0–1
 }
 
 interface SettingsContextType {
@@ -30,6 +33,8 @@ const defaultSettings: Settings = {
   theme: 'light',
   keystrokeSounds: 'off',
   keystrokeVolume: 0.5,
+  ambientSound: 'off',
+  ambientVolume: 0.5,
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);

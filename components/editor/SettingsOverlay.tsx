@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useSettings } from '@/context/SettingsContext';
+import { AMBIENT_SOUNDS } from '@/hooks/useAmbientSound';
 
 interface Props {
   isOpen: boolean;
@@ -216,6 +217,53 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
                 }
                 className="flex-1"
                 aria-label="Keystroke volume"
+              />
+              <span className="material-symbols-outlined text-sm text-gray-400">volume_up</span>
+            </div>
+          )}
+        </div>
+
+        {/* Ambient Sounds */}
+        <div className="space-y-3 pt-1">
+          <div className="font-marker text-lg flex items-center gap-2">
+            <span>Ambient Sounds</span>
+            <span className="material-symbols-outlined text-sm text-primary">
+              headphones
+            </span>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {AMBIENT_SOUNDS.map(({ value, icon, label }) => (
+              <label key={value} className="cursor-pointer flex flex-col items-center gap-1">
+                <input
+                  type="radio"
+                  name="ambientSound"
+                  value={value}
+                  checked={settings.ambientSound === value}
+                  onChange={() => updateSettings({ ambientSound: value })}
+                  className="sr-only peer"
+                />
+                <div className="w-11 h-11 bg-white border-2 border-ink/20 rounded-lg flex items-center justify-center peer-checked:border-ink peer-checked:bg-lavender/30 peer-checked:shadow-hard-sm transition-all hover:border-ink/40">
+                  <span className="material-symbols-outlined text-ink text-[18px]">
+                    {icon}
+                  </span>
+                </div>
+                <span className="font-marker text-[10px] text-gray-500">{label}</span>
+              </label>
+            ))}
+          </div>
+          {settings.ambientSound !== 'off' && (
+            <div className="flex items-center gap-2 pt-1">
+              <span className="material-symbols-outlined text-sm text-gray-400">volume_down</span>
+              <input
+                type="range"
+                min={0}
+                max={10}
+                value={Math.round(settings.ambientVolume * 10)}
+                onChange={(e) =>
+                  updateSettings({ ambientVolume: parseInt(e.target.value, 10) / 10 })
+                }
+                className="flex-1"
+                aria-label="Ambient volume"
               />
               <span className="material-symbols-outlined text-sm text-gray-400">volume_up</span>
             </div>
