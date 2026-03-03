@@ -47,6 +47,7 @@ export function createDocument(): SableDocument {
     isFavorited: false,
     isArchived: false,
     notes: '',
+    moodBoard: [],
   };
 }
 

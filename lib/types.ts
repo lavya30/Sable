@@ -1,3 +1,13 @@
+export type MoodBoardItemType = 'image' | 'color' | 'link' | 'note';
+
+export interface MoodBoardItem {
+  id: string;
+  type: MoodBoardItemType;
+  content: string;   // data-URL (image), hex (color), URL (link), or text (note)
+  label: string;     // user caption
+  createdAt: string;
+}
+
 export type CoverColor = 'mint' | 'lavender' | 'peach' | 'rose';
 
 export interface SableDocument {
@@ -11,6 +21,7 @@ export interface SableDocument {
   isFavorited: boolean;
   isArchived: boolean;
   notes: string; // scratchpad side notes
+  moodBoard: MoodBoardItem[];
 }
 
 export type LibraryTab = 'recent' | 'favorites' | 'archived';

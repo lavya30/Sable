@@ -10,6 +10,7 @@ import TiptapEditor, { TiptapEditorRef } from './TiptapEditor';
 import { LivePreview } from './LivePreview';
 import { EditorToolbar } from './EditorToolbar';
 import { SketchpadPanel } from './SketchpadPanel';
+import { MoodBoardPanel } from './MoodBoardPanel';
 import { PublishModal } from './PublishModal';
 import { SettingsOverlay } from './SettingsOverlay';
 import { WordCountBadge } from './WordCountBadge';
@@ -28,6 +29,7 @@ export function EditorCanvas({ docId }: Props) {
   const [focusMode, setFocusMode] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showSketchpad, setShowSketchpad] = useState(false);
+  const [showMoodBoard, setShowMoodBoard] = useState(false);
   const [showPublish, setShowPublish] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
@@ -65,24 +67,27 @@ export function EditorCanvas({ docId }: Props) {
     updateDoc(docId, { notes });
   }
 
+  function handleMoodBoardChange(moodBoard: import('@/lib/types').MoodBoardItem[]) {
+    updateDoc(docId, { moodBoard });
+  }
+
   function getExportHTML(): string {
     return editorRef.current?.getHTML() ?? html;
   }
 
   return (
     <div
-      className={`text-ink font-body min-h-screen flex flex-col relative overflow-x-hidden selection:bg-mint selection:text-ink transition-all duration-300 ${
-        focusMode ? 'focus-mode-active' : ''
-      } ${
-        settings.theme === 'dark'
+      className={`text-ink font-body min-h-screen flex flex-col relative overflow-x-hidden selection:bg-mint selection:text-ink transition-all duration-300 ${focusMode ? 'focus-mode-active' : ''
+        } ${settings.theme === 'dark'
           ? 'bg-background-dark'
           : 'bg-canvas'
-      }`}
+        }`}
     >
       {/* â”€â”€ Auto-hiding toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <EditorToolbar
         editor={editor}
         onSketchpadToggle={() => setShowSketchpad(true)}
+        onMoodBoardToggle={() => setShowMoodBoard(true)}
         onPublishOpen={() => setShowPublish(true)}
         focusMode={focusMode}
         showPreview={showPreview}
@@ -94,11 +99,10 @@ export function EditorCanvas({ docId }: Props) {
       <main className="flex-grow flex pt-20 pb-28">
         {/* Editor pane */}
         <div
-          className={`transition-all duration-300 overflow-y-auto ${
-            showPreview
+          className={`transition-all duration-300 overflow-y-auto ${showPreview
               ? 'w-1/2 px-8 border-r-2 border-ink/10'
               : 'w-full max-w-[720px] mx-auto px-6 sm:px-12'
-          }`}
+            }`}
         >
           <TiptapEditor
             ref={editorRef}
@@ -150,9 +154,8 @@ export function EditorCanvas({ docId }: Props) {
           className="group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover hover:-translate-y-1 transition-all"
         >
           <span
-            className={`material-symbols-outlined transition-colors ${
-              focusMode ? 'text-lavender' : 'group-hover:text-lavender'
-            }`}
+            className={`material-symbols-outlined transition-colors ${focusMode ? 'text-lavender' : 'group-hover:text-lavender'
+              }`}
           >
             {focusMode ? 'visibility_off' : 'visibility'}
           </span>
@@ -181,6 +184,13 @@ export function EditorCanvas({ docId }: Props) {
         onNotesChange={handleNotesChange}
         editor={editor}
         docId={docId}
+      />
+
+      <MoodBoardPanel
+        isOpen={showMoodBoard}
+        onClose={() => setShowMoodBoard(false)}
+        items={doc.moodBoard ?? []}
+        onChange={handleMoodBoardChange}
       />
 
       <PublishModal

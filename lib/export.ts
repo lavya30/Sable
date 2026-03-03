@@ -98,21 +98,36 @@ export async function exportMarkdown(doc: SableDocument, html: string): Promise<
   downloadBlob(markdown, `${sanitizeFilename(doc.title)}.md`, 'text/markdown;charset=utf-8');
 }
 
-export function exportPDF(doc: SableDocument, html: string): void {
-  const printWindow = window.open('', '_blank', 'width=900,height=700');
-  if (!printWindow) {
-    alert('Please allow pop-ups to export PDF.');
-    return;
-  }
-  const content = buildStyledHTML(
+export async function exportPDF(doc: SableDocument, html: string): Promise<void> {
+  const html2pdf = (await import('html2pdf.js')).default;
+
+  // Build styled content in a temporary off-screen container
+  const container = document.createElement('div');
+  container.innerHTML = buildStyledHTML(
     doc,
     `<h1>${escapeHtml(doc.title)}</h1>\n${html}`
   );
-  printWindow.document.open();
-  printWindow.document.write(content);
-  printWindow.document.close();
-  // Give the browser time to render before printing
-  printWindow.addEventListener('load', () => {
-    printWindow.print();
-  });
+  // Style the container so it renders properly but stays invisible
+  container.style.position = 'fixed';
+  container.style.left = '-9999px';
+  container.style.top = '0';
+  container.style.width = '900px';
+  document.body.appendChild(container);
+
+  const filename = `${sanitizeFilename(doc.title)}.pdf`;
+
+  try {
+    await html2pdf()
+      .set({
+        margin: [10, 10, 10, 10],
+        filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      })
+      .from(container)
+      .save();
+  } finally {
+    document.body.removeChild(container);
+  }
 }

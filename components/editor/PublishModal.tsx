@@ -12,9 +12,9 @@ interface Props {
 }
 
 const FORMATS: { key: ExportFormat; label: string; icon: string; bg: string; tilt: string }[] = [
-  { key: 'pdf',      label: 'PDF',      icon: 'picture_as_pdf', bg: 'peer-checked:bg-primary',   tilt: 'group-hover:-rotate-2 group-hover:scale-105' },
-  { key: 'markdown', label: 'Markdown', icon: 'markdown',       bg: 'peer-checked:bg-lavender',   tilt: 'group-hover:rotate-2 group-hover:scale-105'  },
-  { key: 'html',     label: 'HTML',     icon: 'html',           bg: 'peer-checked:bg-peach',      tilt: 'group-hover:-rotate-1 group-hover:scale-105' },
+  { key: 'pdf', label: 'PDF', icon: 'picture_as_pdf', bg: 'peer-checked:bg-primary', tilt: 'group-hover:-rotate-2 group-hover:scale-105' },
+  { key: 'markdown', label: 'Markdown', icon: 'markdown', bg: 'peer-checked:bg-lavender', tilt: 'group-hover:rotate-2 group-hover:scale-105' },
+  { key: 'html', label: 'HTML', icon: 'html', bg: 'peer-checked:bg-peach', tilt: 'group-hover:-rotate-1 group-hover:scale-105' },
 ];
 
 export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
@@ -27,8 +27,8 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
     setExporting(true);
     try {
       const html = getHTML();
-      if (selected === 'pdf')      exportPDF(doc, html);
-      if (selected === 'html')     exportHTML(doc, html);
+      if (selected === 'pdf') await exportPDF(doc, html);
+      if (selected === 'html') exportHTML(doc, html);
       if (selected === 'markdown') await exportMarkdown(doc, html);
       onClose();
     } finally {
