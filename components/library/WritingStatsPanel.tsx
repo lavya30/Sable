@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { ActivityCalendar } from 'react-activity-calendar';
 import {
   BarChart,
@@ -20,6 +20,10 @@ import {
   getBestHours,
 } from '@/lib/writingStats';
 
+function pluralize(n: number, word: string): string {
+  return n === 1 ? word : `${word}s`;
+}
+
 export function WritingStatsPanel() {
   const [isOpen, setIsOpen] = useState(false);
   const [calendarData, setCalendarData] = useState<
@@ -33,28 +37,29 @@ export function WritingStatsPanel() {
     []
   );
 
-  // Refresh stats whenever panel opens
-  useEffect(() => {
-    if (!isOpen) return;
+  // Load all stats on mount (for collapsed summary) and whenever panel opens
+  const refreshStats = () => {
     setCalendarData(getCalendarData());
     setStreak(getCurrentStreak());
     setLongestStreak(getLongestStreak());
     setTotalWords(getTotalWords());
     setTotalDays(getTotalDays());
     setBestHours(getBestHours());
-  }, [isOpen]);
+  };
 
-  // Also load on first render to show the toggle summary
   useEffect(() => {
-    setStreak(getCurrentStreak());
-    setTotalWords(getTotalWords());
+    refreshStats();
   }, []);
+
+  useEffect(() => {
+    if (isOpen) refreshStats();
+  }, [isOpen]);
 
   const statCards = [
     {
       label: 'Current Streak',
       value: `${streak}`,
-      suffix: streak === 1 ? 'day' : 'days',
+      suffix: pluralize(streak, 'day'),
       icon: 'local_fire_department',
       color: 'text-orange-500',
       bg: 'bg-orange-50',
@@ -62,7 +67,7 @@ export function WritingStatsPanel() {
     {
       label: 'Longest Streak',
       value: `${longestStreak}`,
-      suffix: longestStreak === 1 ? 'day' : 'days',
+      suffix: pluralize(longestStreak, 'day'),
       icon: 'emoji_events',
       color: 'text-amber-500',
       bg: 'bg-amber-50',
@@ -78,14 +83,17 @@ export function WritingStatsPanel() {
     {
       label: 'Active Days',
       value: `${totalDays}`,
-      suffix: totalDays === 1 ? 'day' : 'days',
+      suffix: pluralize(totalDays, 'day'),
       icon: 'calendar_month',
       color: 'text-lavender',
       bg: 'bg-lavender/30',
     },
   ];
 
-  const maxHourWords = Math.max(...bestHours.map((h) => h.words), 1);
+  const maxHourWords = useMemo(
+    () => Math.max(...bestHours.map((h) => h.words), 1),
+    [bestHours]
+  );
 
   function formatHour(h: number): string {
     if (h === 0) return '12a';
@@ -110,17 +118,17 @@ export function WritingStatsPanel() {
           </span>
           {!isOpen && streak > 0 && (
             <span className="flex items-center gap-1 bg-orange-50 text-orange-600 text-xs font-display font-bold px-2 py-0.5 rounded-full border border-orange-200">
-              🔥 {streak} day streak
+              🔥 {streak} {pluralize(streak, 'day')} streak
             </span>
           )}
           {!isOpen && totalWords > 0 && (
             <span className="text-xs font-marker text-gray-400 hidden sm:inline">
-              {totalWords.toLocaleString()} words total
+              {totalWords.toLocaleString()} {pluralize(totalWords, 'word')} total
             </span>
           )}
         </div>
         <span
-          className={`material-symbols-outlined text-gray-400 group-hover:text-ink transition-all ${isOpen ? 'rotate-180' : ''
+          className={`material-symbols-outlined text-gray-400 group-hover:text-ink transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
             }`}
         >
           expand_more
@@ -129,7 +137,7 @@ export function WritingStatsPanel() {
 
       {/* Expanded panel */}
       {isOpen && (
-        <div className="mt-3 bg-white border-2 border-ink/15 rounded-xl p-6 flex flex-col gap-6 animate-in slide-in-from-top-2 duration-200">
+        <div className="mt-3 bg-white border-2 border-ink/15 rounded-xl p-6 flex flex-col gap-6">
           {/* Stat cards row */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {statCards.map((s) => (
@@ -195,12 +203,12 @@ export function WritingStatsPanel() {
             <h3 className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">
               Peak Writing Hours
             </h3>
-            {maxHourWords <= 0 ? (
+            {bestHours.every((h) => h.words === 0) ? (
               <p className="font-marker text-sm text-gray-400">
                 Start writing to see your peak hours!
               </p>
             ) : (
-              <div className="h-36">
+              <div className="h-36 min-w-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={bestHours} barCategoryGap="15%">
                     <XAxis
@@ -214,7 +222,7 @@ export function WritingStatsPanel() {
                     <YAxis hide />
                     <RechartsTooltip
                       formatter={(value) => [
-                        `${value} words`,
+                        `${value} ${pluralize(Number(value), 'word')}`,
                         'Written',
                       ]}
                       labelFormatter={(h) => {
