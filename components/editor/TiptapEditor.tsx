@@ -9,8 +9,10 @@ import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { Editor } from '@tiptap/react';
+import { checkGrammar, buildTextAndMap, LTMatch } from '@/lib/grammar';
+import { lookupWord, DictResult } from '@/lib/dictionary';
 
 // Tiptap-managed decoration — wraps the current word with .is-focus-word.
 // Uses Decoration.inline() so a <span> is inserted that CSS can target.
@@ -57,6 +59,63 @@ const FocusWordDecoration = Extension.create({
   },
 });
 
+const GRAMMAR_META_KEY = 'grammarMatches';
+
+interface GrammarPluginState {
+  matches: LTMatch[];
+  map: number[];
+}
+
+const GrammarPluginKey = new PluginKey<GrammarPluginState>('grammar');
+
+function createGrammarPlugin(): Plugin {
+  return new Plugin({
+    key: GrammarPluginKey,
+    state: {
+      init(): GrammarPluginState {
+        return { matches: [], map: [] };
+      },
+      apply(tr, old): GrammarPluginState {
+        const meta = tr.getMeta(GRAMMAR_META_KEY);
+        if (meta) return meta as GrammarPluginState;
+        return old;
+      },
+    },
+    props: {
+      decorations(state) {
+        const ps = GrammarPluginKey.getState(state);
+        if (!ps || !ps.matches.length) return DecorationSet.empty;
+        const { matches, map } = ps;
+        const list: Decoration[] = [];
+        matches.forEach((match, idx) => {
+          const from = map[match.offset];
+          if (from === undefined || from < 0) return;
+          const toCharIdx = match.offset + match.length - 1;
+          if (toCharIdx >= map.length) return;
+          const to = map[toCharIdx] + 1;
+          if (to <= from) return;
+          try {
+            list.push(
+              Decoration.inline(from, to, {
+                class: match.issueType === 'misspelling' ? 'lt-spelling' : 'lt-grammar',
+                'data-lt-idx': String(idx),
+              })
+            );
+          } catch { }
+        });
+        return DecorationSet.create(state.doc, list);
+      },
+    },
+  });
+}
+
+const GrammarExtension = Extension.create({
+  name: 'grammar',
+  addProseMirrorPlugins() {
+    return [createGrammarPlugin()];
+  },
+});
+
 export interface TiptapEditorRef {
   getHTML: () => string;
   getJSON: () => object;
@@ -78,6 +137,13 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false },
   ref
 ) {
+  const grammarMatchesRef = useRef<LTMatch[]>([]);
+  const grammarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tooltipHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [grammarTooltip, setGrammarTooltip] = useState<{ match: LTMatch; x: number; y: number } | null>(null);
+  const [dictPopover, setDictPopover] = useState<{ word: string; result: DictResult | null; loading: boolean } | null>(null);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -94,7 +160,15 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         linkOnPaste: true,
       }),
       FocusWordDecoration,
+      GrammarExtension,
     ],
+    editorProps: {
+      attributes: {
+        spellcheck: 'false',
+        autocorrect: 'off',
+        autocapitalize: 'off',
+      },
+    },
     content: (() => {
       try {
         return JSON.parse(content);
@@ -137,6 +211,97 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content]);
 
+  useEffect(() => {
+    if (!editor) return;
+    const run = async () => {
+      const { text, map } = buildTextAndMap(editor.state.doc);
+      if (!text.trim()) return;
+      const matches = await checkGrammar(text);
+      grammarMatchesRef.current = matches;
+      editor.view.dispatch(
+        editor.state.tr.setMeta(GRAMMAR_META_KEY, { matches, map })
+      );
+    };
+    const schedule = () => {
+      if (grammarTimerRef.current) clearTimeout(grammarTimerRef.current);
+      grammarTimerRef.current = setTimeout(run, 1500);
+    };
+    editor.on('update', schedule);
+    schedule();
+    return () => {
+      editor.off('update', schedule);
+      if (grammarTimerRef.current) clearTimeout(grammarTimerRef.current);
+    };
+  }, [editor]);
+
+  const cancelTooltipHide = () => {
+    if (tooltipHideTimerRef.current) {
+      clearTimeout(tooltipHideTimerRef.current);
+      tooltipHideTimerRef.current = null;
+    }
+  };
+
+  const scheduleTooltipHide = () => {
+    cancelTooltipHide();
+    tooltipHideTimerRef.current = setTimeout(() => setGrammarTooltip(null), 180);
+  };
+
+  useEffect(() => {
+    const el = editorContainerRef.current;
+    if (!el) return;
+    const onOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const ltEl = target.closest('[data-lt-idx]') as HTMLElement | null;
+      if (!ltEl) return;
+      cancelTooltipHide();
+      const idx = parseInt(ltEl.getAttribute('data-lt-idx') ?? '');
+      const match = grammarMatchesRef.current[idx];
+      if (!match) return;
+      const rect = ltEl.getBoundingClientRect();
+      setGrammarTooltip({ match, x: rect.left, y: rect.bottom + 6 });
+    };
+    const onOut = (e: MouseEvent) => {
+      const related = e.relatedTarget as HTMLElement | null;
+      if (related?.closest('[data-lt-idx]')) return;
+      if (related?.closest('[data-grammar-tooltip]')) return;
+      scheduleTooltipHide();
+    };
+    el.addEventListener('mouseover', onOver);
+    el.addEventListener('mouseout', onOut);
+    return () => {
+      el.removeEventListener('mouseover', onOver);
+      el.removeEventListener('mouseout', onOut);
+    };
+  }, []);
+
+  function applyGrammarSuggestion(replacement: string) {
+    if (!editor || !grammarTooltip) return;
+    const ps = GrammarPluginKey.getState(editor.state);
+    if (!ps) return;
+    const { map } = ps;
+    const { match } = grammarTooltip;
+    const from = map[match.offset];
+    if (from === undefined || from < 0) return;
+    const toCharIdx = match.offset + match.length - 1;
+    if (toCharIdx >= map.length) return;
+    const to = map[toCharIdx] + 1;
+    if (to <= from) return;
+    editor.view.dispatch(
+      editor.state.tr.replaceWith(from, to, editor.state.schema.text(replacement))
+    );
+    setGrammarTooltip(null);
+  }
+
+  async function handleDefine() {
+    if (!editor) return;
+    const { from, to } = editor.state.selection;
+    const word = editor.state.doc.textBetween(from, to).trim();
+    if (!word) return;
+    setDictPopover({ word, result: null, loading: true });
+    const result = await lookupWord(word);
+    setDictPopover({ word, result, loading: false });
+  }
+
   const bubbleMenuItems = [
     {
       label: 'Bold',
@@ -175,6 +340,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
 
   return (
     <div
+      ref={editorContainerRef}
       className={`relative transition-all duration-300 ${
         focusMode ? 'focus-mode-active' : ''
       }`}
@@ -220,7 +386,6 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
               </span>
             </button>
 
-            {/* Link */}
             <button
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -239,6 +404,28 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
               </span>
             </button>
 
+            {(() => {
+              const { from, to } = editor.state.selection;
+              if (from === to) return null;
+              const sel = editor.state.doc.textBetween(from, to).trim();
+              if (!sel || /\s/.test(sel)) return null;
+              return (
+                <>
+                  <div className="w-px h-4 bg-gray-600 mx-0.5" />
+                  <button
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleDefine();
+                    }}
+                    className="p-1.5 rounded transition-colors hover:text-mint text-white"
+                    aria-label="Define word"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">dictionary</span>
+                  </button>
+                </>
+              );
+            })()}
+
             {/* Arrow indicator */}
             <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
           </div>
@@ -248,11 +435,70 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       <EditorContent
         editor={editor}
         className="tiptap-editor w-full outline-none"
+        spellCheck={false}
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: lineSpacing,
         }}
       />
+
+      {grammarTooltip && (
+        <div
+          data-grammar-tooltip
+          className="fixed z-[200] bg-ink text-white rounded-rough shadow-xl p-3 max-w-xs text-sm pointer-events-auto"
+          style={{ left: grammarTooltip.x, top: grammarTooltip.y }}
+          onMouseEnter={cancelTooltipHide}
+          onMouseLeave={scheduleTooltipHide}
+        >
+          <p className="text-white/80 mb-2 text-xs leading-snug">{grammarTooltip.match.message}</p>
+          {grammarTooltip.match.replacements.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {grammarTooltip.match.replacements.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => applyGrammarSuggestion(r)}
+                  className="bg-mint text-ink text-xs px-2 py-0.5 rounded font-medium hover:bg-mint/80 transition-colors"
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {dictPopover && (
+        <div className="fixed z-[200] inset-x-4 bottom-4 sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2 sm:w-[480px] bg-white border-2 border-ink rounded-rough shadow-hard p-5 max-h-72 overflow-y-auto scrollbar-hide">
+          <div className="flex items-start justify-between mb-3">
+            <h3 className="font-marker text-xl text-ink">{dictPopover.word}</h3>
+            <button
+              onClick={() => setDictPopover(null)}
+              className="text-ink/40 hover:text-ink transition-colors ml-4 flex-shrink-0"
+            >
+              <span className="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+          {dictPopover.loading && (
+            <p className="text-ink/50 text-sm">Looking up&hellip;</p>
+          )}
+          {!dictPopover.loading && !dictPopover.result && (
+            <p className="text-ink/50 text-sm">No definition found.</p>
+          )}
+          {!dictPopover.loading && dictPopover.result?.meanings.map((m, i) => (
+            <div key={i} className={i > 0 ? 'mt-3 pt-3 border-t border-ink/10' : ''}>
+              <span className="text-xs font-medium text-lavender uppercase tracking-wide">{m.partOfSpeech}</span>
+              {m.definitions.map((d, j) => (
+                <div key={j} className="mt-1.5">
+                  <p className="text-ink text-sm">{d.definition}</p>
+                  {d.example && (
+                    <p className="text-ink/50 text-xs mt-0.5 italic">&ldquo;{d.example}&rdquo;</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 });

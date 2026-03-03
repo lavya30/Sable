@@ -352,3 +352,23 @@ input:focus, textarea:focus {
 .ambient-bar {
   animation: ambientBar 0.8s ease-in-out infinite;
 }
+
+.lt-spelling {
+  text-decoration: underline wavy #e74c3c;
+  text-underline-offset: 3px;
+}
+
+.lt-grammar {
+  text-decoration: underline wavy #3498db;
+  text-underline-offset: 3px;
+}
+
+.tiptap-editor .ProseMirror::spelling-error,
+.tiptap-editor .ProseMirror::-webkit-spelling-error {
+  text-decoration: none;
+}
+
+.tiptap-editor .ProseMirror::grammar-error,
+.tiptap-editor .ProseMirror::-webkit-grammar-error {
+  text-decoration: none;
+}
