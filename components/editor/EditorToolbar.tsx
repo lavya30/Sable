@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Editor } from '@tiptap/react';
 import gsap from 'gsap';
-import { useSettings } from '@/context/SettingsContext'; 
+
 
 interface Props {
   editor: Editor | null;
@@ -40,10 +40,10 @@ export function EditorToolbar({
   docTitle,
 }: Props) {
   const toolbarInnerRef = useRef<HTMLDivElement>(null);
-  const { settings, updateSettings } = useSettings();
   const [fontOpen, setFontOpen] = useState(false);
   const fontDropdownRef = useRef<HTMLDivElement>(null);
-  const currentFont = FONTS.find((f) => f.css === (settings.fontFamily ?? '')) ?? FONTS[0];
+  const activeFamily = editor?.getAttributes('textStyle')?.fontFamily ?? '';
+  const currentFont = FONTS.find((f) => f.css === activeFamily) ?? FONTS[0];
 
   // GSAP: initial reveal animation for toolbar buttons
   useEffect(() => {
@@ -158,16 +158,20 @@ export function EditorToolbar({
                   key={font.css}
                   onMouseDown={(e) => {
                     e.preventDefault();
-                    updateSettings({ fontFamily: font.css });
+                    if (font.css === '') {
+                      editor.chain().focus().unsetFontFamily().run();
+                    } else {
+                      editor.chain().focus().setFontFamily(font.css).run();
+                    }
                     setFontOpen(false);
                   }}
                   className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 transition-colors flex items-center justify-between gap-3 ${
-                    font.css === (settings.fontFamily ?? '') ? 'bg-primary/10' : ''
+                    font.css === activeFamily ? 'bg-primary/10' : ''
                   }`}
                   style={{ fontFamily: font.css || undefined }}
                 >
                   <span className="text-sm text-ink">{font.label}</span>
-                  {font.css === (settings.fontFamily ?? '') && (
+                  {font.css === activeFamily && (
                     <span className="material-symbols-outlined text-primary text-[16px] flex-shrink-0">check</span>
                   )}
                 </button>

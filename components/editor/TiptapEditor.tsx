@@ -7,6 +7,8 @@ import Highlight from '@tiptap/extension-highlight';
 import CharacterCount from '@tiptap/extension-character-count';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
+import { TextStyle } from '@tiptap/extension-text-style';
+import { FontFamily } from '@tiptap/extension-font-family';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
@@ -129,13 +131,12 @@ interface Props {
   onEditorReady?: (editor: Editor) => void;
   fontSize: number;
   lineSpacing: number;
-  fontFamily?: string;
   focusMode: boolean;
   readOnly?: boolean;
 }
 
 const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
-  { content, onChange, onEditorReady, fontSize, lineSpacing, fontFamily = '', focusMode, readOnly = false },
+  { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false },
   ref
 ) {
   const grammarMatchesRef = useRef<LTMatch[]>([]);
@@ -163,6 +164,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       }),
       FocusWordDecoration,
       GrammarExtension,
+      TextStyle,
+      FontFamily,
     ],
     editorProps: {
       attributes: {
@@ -448,7 +451,6 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: lineSpacing,
-          fontFamily: fontFamily || undefined,
         }}
       />
 
