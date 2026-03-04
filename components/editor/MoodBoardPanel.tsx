@@ -177,7 +177,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
 
         {/* Footer */}
         <div className="px-5 py-3 border-t-2 border-ink/10 bg-white relative z-10 flex items-center justify-between">
-          <span className="text-xs font-marker text-gray-400">
+          <span className="text-xs font-marker text-gray-600">
             {items.length} {items.length === 1 ? 'pin' : 'pins'}
           </span>
           {items.length > 0 && (
