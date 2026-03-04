@@ -90,7 +90,9 @@ export default function LibraryPage() {
 
           {/* Search */}
           <div className="relative w-full md:w-80">
+            <label htmlFor="library-search" className="sr-only">Search your notebooks</label>
             <input
+              id="library-search"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}

@@ -5,11 +5,6 @@ import {
   Patrick_Hand,
   Fira_Code,
   Manrope,
-  Lora,
-  Merriweather,
-  Caveat,
-  Kalam,
-  Special_Elite,
 } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
@@ -44,36 +39,6 @@ const manrope = Manrope({
   weight: ['400', '500', '700', '800'],
   display: 'swap',
 });
-const lora = Lora({
-  subsets: ['latin'],
-  variable: '--font-lora',
-  weight: ['400', '500', '700'],
-  display: 'swap',
-});
-const merriweather = Merriweather({
-  subsets: ['latin'],
-  variable: '--font-merriweather',
-  weight: ['300', '400', '700'],
-  display: 'swap',
-});
-const caveat = Caveat({
-  subsets: ['latin'],
-  variable: '--font-caveat',
-  weight: ['400', '600', '700'],
-  display: 'swap',
-});
-const kalam = Kalam({
-  subsets: ['latin'],
-  variable: '--font-kalam',
-  weight: ['300', '400', '700'],
-  display: 'swap',
-});
-const specialElite = Special_Elite({
-  subsets: ['latin'],
-  variable: '--font-special-elite',
-  weight: '400',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: 'Sable',
@@ -93,7 +58,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${varelaRound.variable} ${nunito.variable} ${patrickHand.variable} ${firaCode.variable} ${manrope.variable} ${lora.variable} ${merriweather.variable} ${caveat.variable} ${kalam.variable} ${specialElite.variable} font-body bg-canvas text-ink antialiased`}
+        className={`${varelaRound.variable} ${nunito.variable} ${patrickHand.variable} ${firaCode.variable} ${manrope.variable} font-body bg-canvas text-ink antialiased`}
       >
         <Providers>{children}</Providers>
       </body>

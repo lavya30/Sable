@@ -182,7 +182,7 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
                   <span className="material-symbols-outlined text-primary text-[18px]">{s.icon}</span>
                   <div>
                     <div className="font-display font-bold text-ink text-sm leading-tight">{s.value}</div>
-                    <div className="text-[10px] font-marker text-gray-400">{s.label}</div>
+                    <div className="text-[10px] font-marker text-gray-600">{s.label}</div>
                   </div>
                 </div>
               ))}
@@ -308,8 +308,8 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
               <div className="bg-peach rounded-lg p-4 sketch-border shadow-hard group-hover:-rotate-1 group-focus-within:-rotate-1 transition-transform relative overflow-hidden">
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-white/40 backdrop-blur-sm rotate-2 z-10 shadow-sm" />
                 <div className="flex items-center justify-between mb-2 border-b border-ink/10 pb-2">
-                  <span className="text-xs font-marker text-ink/70">Quick Ideas</span>
-                  <span className="text-[10px] font-marker text-ink/40">{notes.length} chars</span>
+                  <span className="text-xs font-marker text-ink">Quick Ideas</span>
+                  <span className="text-[10px] font-marker text-ink/80">{notes.length} chars</span>
                 </div>
                 <textarea
                   value={notes}

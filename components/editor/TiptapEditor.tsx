@@ -11,7 +11,7 @@ import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Editor } from '@tiptap/react';
 import { checkGrammar, buildTextAndMap, LTMatch } from '@/lib/grammar';
 import { lookupWord, DictResult } from '@/lib/dictionary';
@@ -147,6 +147,18 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   const [dictPopover, setDictPopover] = useState<{ word: string; result: DictResult | null; loading: boolean } | null>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
+  // Link popover state
+  const [linkMode, setLinkMode] = useState<'idle' | 'input' | 'active'>('idle');
+  const [linkInput, setLinkInput] = useState('');
+  const linkInputRef = useRef<HTMLInputElement>(null);
+
+  function normalizeUrl(url: string): string {
+    const trimmed = url.trim();
+    if (!trimmed) return '';
+    if (/^https?:\/\//i.test(trimmed) || /^mailto:/i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  }
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -161,6 +173,10 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         openOnClick: false,
         autolink: true,
         linkOnPaste: true,
+        HTMLAttributes: {
+          target: '_blank',
+          rel: 'noopener noreferrer',
+        },
       }),
       FocusWordDecoration,
       GrammarExtension,
@@ -197,6 +213,35 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     getWordCount: () => editor?.storage?.characterCount?.words() ?? 0,
     editor: editor ?? null,
   }));
+
+  const handleSetLink = useCallback(() => {
+    const href = normalizeUrl(linkInput);
+    if (href && editor) {
+      editor.chain().focus().setLink({ href }).run();
+    }
+    setLinkMode('idle');
+    setLinkInput('');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, linkInput]);
+
+  const handleRemoveLink = useCallback(() => {
+    editor?.chain().focus().unsetLink().run();
+    setLinkMode('idle');
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor]);
+
+  // Reset link mode when selection collapses
+  useEffect(() => {
+    if (!editor) return;
+    const handler = () => {
+      if (editor.state.selection.empty) {
+        setLinkMode('idle');
+        setLinkInput('');
+      }
+    };
+    editor.on('selectionUpdate', handler);
+    return () => { editor.off('selectionUpdate', handler); };
+  }, [editor]);
 
   // When the document changes externally (e.g. new doc loaded), reset content
   useEffect(() => {
@@ -361,85 +406,166 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       {editor && (
         <BubbleMenu
           editor={editor}
+          shouldShow={({ editor: ed }) => {
+            // Always show when text is selected; hide when link mode is idle and no selection
+            const { empty } = ed.state.selection;
+            return !empty;
+          }}
         >
-          <div className="flex items-center bg-ink text-white rounded-rough shadow-xl px-3 py-1.5 gap-1">
-            {bubbleMenuItems.map((item) => (
-              <button
-                key={item.label}
-                onMouseDown={(e) => {
-                  e.preventDefault();
-                  item.action();
-                }}
-                className={`p-1.5 rounded transition-colors hover:text-mint ${
-                  item.isActive() ? 'text-mint' : 'text-white'
-                }`}
-                aria-label={item.label}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {item.icon}
-                </span>
-              </button>
-            ))}
+          <div className="relative">
+            {/* ── Link input mode ────────────────────────────────────────── */}
+            {linkMode === 'input' && (
+              <div className="flex items-center bg-white border-2 border-ink rounded-rough shadow-hard px-3 py-2 gap-2 min-w-[280px]">
+                <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">link</span>
+                <input
+                  ref={linkInputRef}
+                  type="text"
+                  value={linkInput}
+                  onChange={(e) => setLinkInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); handleSetLink(); }
+                    if (e.key === 'Escape') { setLinkMode('idle'); setLinkInput(''); }
+                  }}
+                  placeholder="Paste or type a URL…"
+                  className="flex-1 text-sm font-body text-ink bg-transparent outline-none placeholder:text-ink/30"
+                  autoFocus
+                />
+                <button
+                  onMouseDown={(e) => { e.preventDefault(); handleSetLink(); }}
+                  disabled={!linkInput.trim()}
+                  className="flex items-center gap-1 px-2.5 py-1 bg-primary text-ink text-xs font-display font-bold rounded-md hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[14px]">check</span>
+                  Apply
+                </button>
+                <button
+                  onMouseDown={(e) => { e.preventDefault(); setLinkMode('idle'); setLinkInput(''); }}
+                  className="p-1 rounded hover:bg-gray-100 transition-colors text-ink/40 hover:text-ink flex-shrink-0"
+                  aria-label="Cancel"
+                >
+                  <span className="material-symbols-outlined text-[16px]">close</span>
+                </button>
+                <div className="absolute -bottom-2 left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
+              </div>
+            )}
 
-            <div className="w-px h-4 bg-gray-600 mx-1" />
-
-            {/* Annotation / comment highlight */}
-            <button
-              onMouseDown={(e) => {
-                e.preventDefault();
-                editor.chain().focus().toggleHighlight().run();
-              }}
-              className={`p-1.5 rounded transition-colors hover:text-peach ${
-                editor.isActive('highlight') ? 'text-peach' : 'text-white'
-              }`}
-              aria-label="Annotate — highlight text"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                comment
-              </span>
-            </button>
-
-            <button
-              onMouseDown={(e) => {
-                e.preventDefault();
-                const url = window.prompt('Enter URL:');
-                if (url) {
-                  editor.chain().focus().setLink({ href: url }).run();
-                }
-              }}
-              className={`p-1.5 rounded transition-colors hover:text-mint ${
-                editor.isActive('link') ? 'text-mint' : 'text-white'
-              }`}
-              aria-label="Add link"
-            >
-              <span className="material-symbols-outlined text-[18px]">
-                link
-              </span>
-            </button>
-
-            {(() => {
-              const { from, to } = editor.state.selection;
-              if (from === to) return null;
+            {/* ── Link active mode (on a link) ───────────────────────────── */}
+            {linkMode === 'active' && (() => {
+              const href = editor.getAttributes('link').href ?? '';
               return (
-                <>
-                  <div className="w-px h-4 bg-gray-600 mx-0.5" />
+                <div className="flex items-center bg-white border-2 border-ink rounded-rough shadow-hard px-3 py-2 gap-2 max-w-[320px]">
+                  <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">link</span>
+                  <span className="flex-1 text-xs font-mono text-ink/70 truncate" title={href}>{href}</span>
+                  <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+                  <a
+                    href={normalizeUrl(href)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onMouseDown={(e) => e.stopPropagation()}
+                    className="p-1 rounded hover:bg-primary/10 transition-colors text-ink/50 hover:text-primary flex-shrink-0"
+                    title="Open link"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">open_in_new</span>
+                  </a>
                   <button
                     onMouseDown={(e) => {
                       e.preventDefault();
-                      handleDefine();
+                      setLinkInput(href);
+                      setLinkMode('input');
+                      setTimeout(() => linkInputRef.current?.focus(), 50);
                     }}
-                    className="p-1.5 rounded transition-colors hover:text-mint text-white"
-                    aria-label="Define word"
-                    title="Define"
+                    className="p-1 rounded hover:bg-lavender/40 transition-colors text-ink/50 hover:text-ink flex-shrink-0"
+                    title="Edit link"
                   >
-                    <span className="material-symbols-outlined text-[18px]">book_2</span>
+                    <span className="material-symbols-outlined text-[16px]">edit</span>
                   </button>
-                </>
+                  <button
+                    onMouseDown={(e) => { e.preventDefault(); handleRemoveLink(); }}
+                    className="p-1 rounded hover:bg-red-50 transition-colors text-ink/50 hover:text-red-500 flex-shrink-0"
+                    title="Remove link"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">link_off</span>
+                  </button>
+                  <div className="absolute -bottom-2 left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
+                </div>
               );
             })()}
 
-            {/* Arrow indicator */}
-            <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
+            {/* ── Normal formatting menu ─────────────────────────────────── */}
+            {linkMode === 'idle' && (
+              <div className="flex items-center bg-ink text-white rounded-rough shadow-xl px-3 py-1.5 gap-1">
+                {bubbleMenuItems.map((item) => (
+                  <button
+                    key={item.label}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      item.action();
+                    }}
+                    className={`p-1.5 rounded transition-colors hover:text-mint ${
+                      item.isActive() ? 'text-mint' : 'text-white'
+                    }`}
+                    aria-label={item.label}
+                  >
+                    <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                  </button>
+                ))}
+
+                <div className="w-px h-4 bg-gray-600 mx-1" />
+
+                {/* Highlight */}
+                <button
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    editor.chain().focus().toggleHighlight().run();
+                  }}
+                  className={`p-1.5 rounded transition-colors hover:text-peach ${
+                    editor.isActive('highlight') ? 'text-peach' : 'text-white'
+                  }`}
+                  aria-label="Highlight"
+                >
+                  <span className="material-symbols-outlined text-[18px]">comment</span>
+                </button>
+
+                {/* Link button */}
+                <button
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    if (editor.isActive('link')) {
+                      setLinkMode('active');
+                    } else {
+                      setLinkInput('');
+                      setLinkMode('input');
+                      setTimeout(() => linkInputRef.current?.focus(), 50);
+                    }
+                  }}
+                  className={`p-1.5 rounded transition-colors hover:text-mint ${
+                    editor.isActive('link') ? 'text-mint' : 'text-white'
+                  }`}
+                  aria-label="Add link"
+                >
+                  <span className="material-symbols-outlined text-[18px]">link</span>
+                </button>
+
+                {/* Define */}
+                {editor.state.selection.from !== editor.state.selection.to && (
+                  <>
+                    <div className="w-px h-4 bg-gray-600 mx-0.5" />
+                    <button
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleDefine();
+                      }}
+                      className="p-1.5 rounded transition-colors hover:text-mint text-white"
+                      aria-label="Define word"
+                    >
+                      <span className="material-symbols-outlined text-[18px]">book_2</span>
+                    </button>
+                  </>
+                )}
+
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
+              </div>
+            )}
           </div>
         </BubbleMenu>
       )}
