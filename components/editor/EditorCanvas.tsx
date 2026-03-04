@@ -154,6 +154,7 @@ export function EditorCanvas({ docId }: Props) {
                 }}
                 fontSize={settings.fontSize}
                 lineSpacing={settings.lineSpacing}
+                fontFamily={settings.fontFamily}
                 focusMode={focusMode}
               />
             </div>

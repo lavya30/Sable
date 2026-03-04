@@ -14,6 +14,7 @@ export interface Settings {
   fontSize: number;    // px, range 16–32
   lineSpacing: number; // unitless, range 1.4–2.2
   theme: 'light' | 'dark';
+  fontFamily: string;
   keystrokeSounds: KeystrokeSoundTheme;
   keystrokeVolume: number; // 0–1
   ambientSound: AmbientSoundType;
@@ -31,6 +32,7 @@ const defaultSettings: Settings = {
   fontSize: 20,
   lineSpacing: 1.8,
   theme: 'light',
+  fontFamily: '',
   keystrokeSounds: 'off',
   keystrokeVolume: 0.5,
   ambientSound: 'off',

@@ -129,12 +129,13 @@ interface Props {
   onEditorReady?: (editor: Editor) => void;
   fontSize: number;
   lineSpacing: number;
+  fontFamily?: string;
   focusMode: boolean;
   readOnly?: boolean;
 }
 
 const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
-  { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false },
+  { content, onChange, onEditorReady, fontSize, lineSpacing, fontFamily = '', focusMode, readOnly = false },
   ref
 ) {
   const grammarMatchesRef = useRef<LTMatch[]>([]);
@@ -447,6 +448,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         style={{
           fontSize: `${fontSize}px`,
           lineHeight: lineSpacing,
+          fontFamily: fontFamily || undefined,
         }}
       />
 

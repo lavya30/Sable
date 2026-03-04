@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Editor } from '@tiptap/react';
 import gsap from 'gsap';
+import { useSettings } from '@/context/SettingsContext'; 
 
 interface Props {
   editor: Editor | null;
@@ -16,6 +17,18 @@ interface Props {
   docTitle: string;
 }
 
+const FONTS: { css: string; label: string }[] = [
+  { css: '',                                  label: 'Default' },
+  { css: 'Georgia, serif',                    label: 'Georgia' },
+  { css: 'var(--font-lora), serif',           label: 'Lora' },
+  { css: 'var(--font-merriweather), serif',   label: 'Merriweather' },
+  { css: 'var(--font-patrick-hand), cursive', label: 'Patrick Hand' },
+  { css: 'var(--font-caveat), cursive',       label: 'Caveat' },
+  { css: 'var(--font-kalam), cursive',        label: 'Kalam' },
+  { css: 'var(--font-special-elite), cursive',label: 'Special Elite' },
+  { css: 'var(--font-fira-code), monospace',  label: 'Fira Code' },
+];
+
 export function EditorToolbar({
   editor,
   onSketchpadToggle,
@@ -27,6 +40,10 @@ export function EditorToolbar({
   docTitle,
 }: Props) {
   const toolbarInnerRef = useRef<HTMLDivElement>(null);
+  const { settings, updateSettings } = useSettings();
+  const [fontOpen, setFontOpen] = useState(false);
+  const fontDropdownRef = useRef<HTMLDivElement>(null);
+  const currentFont = FONTS.find((f) => f.css === (settings.fontFamily ?? '')) ?? FONTS[0];
 
   // GSAP: initial reveal animation for toolbar buttons
   useEffect(() => {
@@ -39,6 +56,15 @@ export function EditorToolbar({
       { y: 0, opacity: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', delay: 0.3, overwrite: true }
     );
   }, [editor]);
+
+  useEffect(() => {
+    if (!fontOpen) return;
+    const handler = (e: MouseEvent) => {
+      if (!fontDropdownRef.current?.contains(e.target as Node)) setFontOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [fontOpen]);
 
   if (!editor) return null;
 
@@ -104,6 +130,50 @@ export function EditorToolbar({
           {fmtBtn('Bullet list', 'format_list_bulleted', () => editor.chain().focus().toggleBulletList().run(), editor.isActive('bulletList'))}
           {fmtBtn('Numbered list', 'format_list_numbered', () => editor.chain().focus().toggleOrderedList().run(), editor.isActive('orderedList'))}
           {fmtBtn('Highlight', 'highlight', () => editor.chain().focus().toggleHighlight().run(), editor.isActive('highlight'), 'hover:bg-peach')}
+        </div>
+
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+
+        {/* Font picker */}
+        <div ref={fontDropdownRef} className="relative">
+          <button
+            onClick={() => setFontOpen((v) => !v)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${
+              fontOpen ? 'bg-lavender border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
+            }`}
+            title="Change font"
+          >
+            <span className="material-symbols-outlined text-[18px]">font_download</span>
+            <span
+              className="hidden sm:inline text-sm leading-none"
+              style={{ fontFamily: currentFont.css || undefined }}
+            >
+              {currentFont.label}
+            </span>
+          </button>
+          {fontOpen && (
+            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard min-w-[180px] max-h-72 overflow-y-auto scrollbar-hide">
+              {FONTS.map((font) => (
+                <button
+                  key={font.css}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    updateSettings({ fontFamily: font.css });
+                    setFontOpen(false);
+                  }}
+                  className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 transition-colors flex items-center justify-between gap-3 ${
+                    font.css === (settings.fontFamily ?? '') ? 'bg-primary/10' : ''
+                  }`}
+                  style={{ fontFamily: font.css || undefined }}
+                >
+                  <span className="text-sm text-ink">{font.label}</span>
+                  {font.css === (settings.fontFamily ?? '') && (
+                    <span className="material-symbols-outlined text-primary text-[16px] flex-shrink-0">check</span>
+                  )}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="w-px h-5 bg-gray-200 mx-1" />
