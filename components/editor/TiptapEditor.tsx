@@ -141,6 +141,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   const grammarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const tooltipHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [grammarTooltip, setGrammarTooltip] = useState<{ match: LTMatch; x: number; y: number } | null>(null);
+  const [grammarChecking, setGrammarChecking] = useState(false);
   const [dictPopover, setDictPopover] = useState<{ word: string; result: DictResult | null; loading: boolean } | null>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
@@ -216,7 +217,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     const run = async () => {
       const { text, map } = buildTextAndMap(editor.state.doc);
       if (!text.trim()) return;
+      setGrammarChecking(true);
       const matches = await checkGrammar(text);
+      setGrammarChecking(false);
       grammarMatchesRef.current = matches;
       editor.view.dispatch(
         editor.state.tr.setMeta(GRAMMAR_META_KEY, { matches, map })
@@ -258,7 +261,11 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       const match = grammarMatchesRef.current[idx];
       if (!match) return;
       const rect = ltEl.getBoundingClientRect();
-      setGrammarTooltip({ match, x: rect.left, y: rect.bottom + 6 });
+      const vw = window.innerWidth;
+      const TOOLTIP_W = 320;
+      const rawX = rect.left;
+      const clampedX = Math.max(8, Math.min(rawX, vw - TOOLTIP_W - 8));
+      setGrammarTooltip({ match, x: clampedX, y: rect.bottom + 6 });
     };
     const onOut = (e: MouseEvent) => {
       const related = e.relatedTarget as HTMLElement | null;
@@ -295,7 +302,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   async function handleDefine() {
     if (!editor) return;
     const { from, to } = editor.state.selection;
-    const word = editor.state.doc.textBetween(from, to).trim();
+    const raw = editor.state.doc.textBetween(from, to, ' ').trim();
+    if (!raw) return;
+    const word = raw.split(/\s+/)[0].replace(/[^a-zA-Z'-]/g, '');
     if (!word) return;
     setDictPopover({ word, result: null, loading: true });
     const result = await lookupWord(word);
@@ -407,8 +416,6 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
             {(() => {
               const { from, to } = editor.state.selection;
               if (from === to) return null;
-              const sel = editor.state.doc.textBetween(from, to).trim();
-              if (!sel || /\s/.test(sel)) return null;
               return (
                 <>
                   <div className="w-px h-4 bg-gray-600 mx-0.5" />
@@ -419,8 +426,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                     }}
                     className="p-1.5 rounded transition-colors hover:text-mint text-white"
                     aria-label="Define word"
+                    title="Define"
                   >
-                    <span className="material-symbols-outlined text-[18px]">dictionary</span>
+                    <span className="material-symbols-outlined text-[18px]">book_2</span>
                   </button>
                 </>
               );
@@ -442,6 +450,13 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         }}
       />
 
+      {grammarChecking && (
+        <div className="absolute top-0 right-0 flex items-center gap-1.5 px-2 py-1 rounded-bl-lg bg-white/80 dark:bg-surface/80 border-b border-l border-ink/10 text-[10px] font-marker text-gray-400 pointer-events-none select-none">
+          <span className="material-symbols-outlined text-[13px] animate-spin">progress_activity</span>
+          Checking...
+        </div>
+      )}
+
       {grammarTooltip && (
         <div
           data-grammar-tooltip
@@ -452,7 +467,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         >
           <p className="text-white/80 mb-2 text-xs leading-snug">{grammarTooltip.match.message}</p>
           {grammarTooltip.match.replacements.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
+            <div className="flex flex-wrap gap-1.5 mt-1">
+              <p className="w-full text-[10px] text-white/50 mb-0.5">Suggestions:</p>
               {grammarTooltip.match.replacements.map((r) => (
                 <button
                   key={r}
@@ -463,6 +479,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                 </button>
               ))}
             </div>
+          )}
+          {grammarTooltip.match.replacements.length === 0 && (
+            <p className="text-white/40 text-[10px] mt-1">No suggestions available</p>
           )}
         </div>
       )}
@@ -486,7 +505,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           )}
           {!dictPopover.loading && dictPopover.result?.meanings.map((m, i) => (
             <div key={i} className={i > 0 ? 'mt-3 pt-3 border-t border-ink/10' : ''}>
-              <span className="text-xs font-medium text-lavender uppercase tracking-wide">{m.partOfSpeech}</span>
+              <span className="text-xs font-bold text-primary/80 uppercase tracking-wide">{m.partOfSpeech}</span>
               {m.definitions.map((d, j) => (
                 <div key={j} className="mt-1.5">
                   <p className="text-ink text-sm">{d.definition}</p>

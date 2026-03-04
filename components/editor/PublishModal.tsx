@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { ExportFormat, SableDocument } from '@/lib/types';
-import { exportHTML, exportMarkdown, exportPDF } from '@/lib/export';
+import { exportHTML, exportMarkdown, exportPDF, exportZine } from '@/lib/export';
 
 interface Props {
   isOpen: boolean;
@@ -15,6 +15,7 @@ const FORMATS: { key: ExportFormat; label: string; icon: string; bg: string; til
   { key: 'pdf', label: 'PDF', icon: 'picture_as_pdf', bg: 'peer-checked:bg-primary', tilt: 'group-hover:-rotate-2 group-hover:scale-105' },
   { key: 'markdown', label: 'Markdown', icon: 'markdown', bg: 'peer-checked:bg-lavender', tilt: 'group-hover:rotate-2 group-hover:scale-105' },
   { key: 'html', label: 'HTML', icon: 'html', bg: 'peer-checked:bg-peach', tilt: 'group-hover:-rotate-1 group-hover:scale-105' },
+  { key: 'zine', label: 'Zine', icon: 'auto_stories', bg: 'peer-checked:bg-rose', tilt: 'group-hover:rotate-3 group-hover:scale-105' },
 ];
 
 export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
@@ -30,6 +31,7 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
       if (selected === 'pdf') await exportPDF(doc, html);
       if (selected === 'html') exportHTML(doc, html);
       if (selected === 'markdown') await exportMarkdown(doc, html);
+      if (selected === 'zine') await exportZine(doc, html);
       onClose();
     } finally {
       setExporting(false);
@@ -75,7 +77,7 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
         </div>
 
         {/* Format cards */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
           {FORMATS.map(({ key, label, icon, bg, tilt }) => (
             <label
               key={key}
@@ -114,13 +116,13 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
                 <span className="material-symbols-outlined animate-spin">
                   progress_activity
                 </span>
-                Exporting…
+                Exporting...
               </>
             ) : (
               <>
-                {selected === 'pdf' ? 'Print / Save as PDF' : 'Make it Real'}
+                {selected === 'pdf' ? 'Print / Save as PDF' : selected === 'zine' ? 'Print Zine / Booklet' : 'Make it Real'}
                 <span className="material-symbols-outlined text-2xl">
-                  {selected === 'pdf' ? 'print' : 'arrow_forward'}
+                  {selected === 'pdf' ? 'print' : selected === 'zine' ? 'auto_stories' : 'arrow_forward'}
                 </span>
               </>
             )}
