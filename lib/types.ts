@@ -38,4 +38,4 @@ export interface SableDocument {
 
 export type LibraryTab = 'recent' | 'favorites' | 'archived';
 export type SortOrder = 'asc' | 'desc';
-export type ExportFormat = 'pdf' | 'markdown' | 'html';
+export type ExportFormat = 'pdf' | 'markdown' | 'html' | 'zine';
