@@ -25,9 +25,14 @@ function getOutDir() {
 function createWindow() {
   const isDev = !app.isPackaged
 
+  const iconPath = app.isPackaged
+    ? path.join(__dirname, '..', 'out', 'icon.png')
+    : path.join(__dirname, '..', 'public', 'icon.png')
+
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    icon: iconPath,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
