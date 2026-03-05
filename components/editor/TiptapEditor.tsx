@@ -10,6 +10,7 @@ import Link from '@tiptap/extension-link';
 import { ResizableImage } from './ResizableImage';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
+import { TableKit } from '@tiptap/extension-table';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
@@ -184,6 +185,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       GrammarExtension,
       TextStyle,
       FontFamily,
+      TableKit,
     ],
     editorProps: {
       attributes: {
@@ -602,6 +604,45 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
               </div>
             )}
+          </div>
+        </BubbleMenu>
+      )}
+
+      {editor && (
+        <BubbleMenu
+          editor={editor}
+          shouldShow={({ editor: ed }) =>
+            ed.isActive('tableCell') || ed.isActive('tableHeader')
+          }
+        >
+          <div className="flex items-center bg-ink text-white rounded-rough shadow-xl px-2 py-1.5 gap-0.5">
+            <span className="text-[10px] font-display font-bold uppercase tracking-wider px-1 text-white/50 border-r border-white/20 mr-0.5 pr-2">Table</span>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addRowBefore().run(); }} title="Add row above" className="p-1.5 rounded hover:text-mint transition-colors">
+              <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+            </button>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addRowAfter().run(); }} title="Add row below" className="p-1.5 rounded hover:text-mint transition-colors">
+              <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+            </button>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addColumnBefore().run(); }} title="Add column left" className="p-1.5 rounded hover:text-mint transition-colors">
+              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            </button>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addColumnAfter().run(); }} title="Add column right" className="p-1.5 rounded hover:text-mint transition-colors">
+              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            </button>
+            <div className="w-px h-4 bg-gray-600 mx-0.5" />
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteRow().run(); }} title="Delete row" className="p-1.5 rounded hover:text-red-400 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">table_rows</span>
+            </button>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteColumn().run(); }} title="Delete column" className="p-1.5 rounded hover:text-red-400 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">view_column</span>
+            </button>
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().mergeOrSplit().run(); }} title="Merge / split cells" className="p-1.5 rounded hover:text-mint transition-colors">
+              <span className="material-symbols-outlined text-[16px]">merge</span>
+            </button>
+            <div className="w-px h-4 bg-gray-600 mx-0.5" />
+            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteTable().run(); }} title="Delete table" className="p-1.5 rounded hover:text-red-400 transition-colors">
+              <span className="material-symbols-outlined text-[16px]">table_chart</span>
+            </button>
           </div>
         </BubbleMenu>
       )}

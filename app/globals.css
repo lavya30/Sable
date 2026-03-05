@@ -352,6 +352,67 @@ html.lenis body {
   text-decoration: underline;
 }
 
+/* ── Tables ──────────────────────────────────────────────────────────────── */
+.tiptap-editor .tableWrapper {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.tiptap-editor table {
+  border-collapse: collapse;
+  table-layout: fixed;
+  width: 100%;
+  margin: 0;
+  overflow: hidden;
+  border: 2px solid #2D3436;
+  border-radius: 4px;
+}
+
+.tiptap-editor th,
+.tiptap-editor td {
+  border: 1px solid #2D3436;
+  padding: 0.5rem 0.75rem;
+  position: relative;
+  vertical-align: top;
+  min-width: 80px;
+  box-sizing: border-box;
+}
+
+.tiptap-editor th {
+  background-color: #f0fdf4;
+  font-weight: 700;
+  font-size: 0.82em;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+}
+
+.tiptap-editor .selectedCell::after {
+  background: rgba(19, 236, 117, 0.2);
+  content: '';
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+
+.tiptap-editor .column-resize-handle {
+  background-color: #13ec75;
+  bottom: -2px;
+  pointer-events: none;
+  position: absolute;
+  right: -2px;
+  top: 0;
+  width: 3px;
+}
+
+.tiptap-editor.resize-cursor {
+  cursor: col-resize;
+}
+
 .tiptap-editor p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
   float: left;
@@ -432,6 +493,19 @@ html.lenis body {
 
 .dark .tiptap-editor hr {
   border-top-color: #2d5443;
+}
+
+.dark .tiptap-editor table {
+  border-color: #2d5443;
+}
+
+.dark .tiptap-editor th,
+.dark .tiptap-editor td {
+  border-color: #2d5443;
+}
+
+.dark .tiptap-editor th {
+  background-color: #172e22;
 }
 
 .dark .tiptap-editor p.is-editor-empty:first-child::before {
