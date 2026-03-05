@@ -1,6 +1,8 @@
 {
   "name": "sable",
   "version": "0.1.0",
+  "description": "A focused writing app",
+  "author": "Sable",
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -27,9 +29,7 @@
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
     "@types/turndown": "^5.0.6",
-    "electron-serve": "^3.0.1",
     "gsap": "^3.14.2",
-    "html2pdf.js": "^0.14.0",
     "lenis": "^1.3.18-dev.0",
     "next": "16.1.6",
     "react": "19.2.4",

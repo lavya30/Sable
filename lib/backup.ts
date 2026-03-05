@@ -20,10 +20,10 @@ function collectAllSableKeys(): Record<string, string> {
     if (val) data[key] = val;
   }
 
-  // Dynamic keys (goals)
+  // Dynamic keys (goals, history)
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && key.startsWith('sable-goal-')) {
+    if (key && (key.startsWith('sable-goal-') || key.startsWith('sable_history_'))) {
       const val = localStorage.getItem(key);
       if (val) data[key] = val;
     }
@@ -73,16 +73,21 @@ export function importAllData(file: File): Promise<void> {
         const hasSableKey = Object.keys(data).some(
           (k) =>
             KNOWN_KEYS.includes(k) ||
-            k.startsWith('sable-goal-')
+            k.startsWith('sable-goal-') ||
+            k.startsWith('sable_history_')
         );
 
         if (!hasSableKey) {
           throw new Error('This file does not appear to be a Sable backup');
         }
 
-        // Write all entries to localStorage
+        // Write only Sable-related entries to localStorage
         for (const [key, value] of Object.entries(data)) {
-          if (typeof value === 'string') {
+          if (typeof value === 'string' && (
+            KNOWN_KEYS.includes(key) ||
+            key.startsWith('sable-goal-') ||
+            key.startsWith('sable_history_')
+          )) {
             localStorage.setItem(key, value);
           }
         }

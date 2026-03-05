@@ -1,6 +1,5 @@
 const nextConfig = {
   output: 'export',
-  assetPrefix: './',
   images: {
     unoptimized: true,
   },

@@ -15,11 +15,11 @@ export const AMBIENT_SOUNDS: { value: AmbientSoundType; icon: string; label: str
 
 /** Map each sound type to its MP3 file in public/sounds/ */
 const SOUND_FILES: Record<Exclude<AmbientSoundType, 'off'>, string> = {
-  rain:       '/sounds/rain.mp3',
-  lofi:       '/sounds/lofi.mp3',
-  cafe:       '/sounds/cafe.mp3',
-  fireplace:  '/sounds/fireplace.mp3',
-  whitenoise: '/sounds/whitenoise.mp3',
+  rain:       './sounds/rain.mp3',
+  lofi:       './sounds/lofi.mp3',
+  cafe:       './sounds/cafe.mp3',
+  fireplace:  './sounds/fireplace.mp3',
+  whitenoise: './sounds/whitenoise.mp3',
 };
 
 /**

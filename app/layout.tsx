@@ -51,9 +51,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Material Symbols icon font */}
+        {/* Material Symbols icon font (self-hosted for offline/Electron) */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+          href="/fonts/material-symbols.css"
           rel="stylesheet"
         />
       </head>
