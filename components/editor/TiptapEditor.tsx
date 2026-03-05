@@ -10,7 +10,7 @@ import Link from '@tiptap/extension-link';
 import { ResizableImage } from './ResizableImage';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { TableKit } from '@tiptap/extension-table';
+import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
@@ -185,7 +185,10 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       GrammarExtension,
       TextStyle,
       FontFamily,
-      TableKit,
+      Table.configure({ resizable: false }),
+      TableRow,
+      TableHeader,
+      TableCell,
     ],
     editorProps: {
       attributes: {
