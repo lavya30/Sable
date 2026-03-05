@@ -13,9 +13,8 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
   const [message, setMessage] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [screenshotName, setScreenshotName] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
   const fileRef = useRef<HTMLInputElement>(null);
-  const formRef = useRef<HTMLFormElement>(null);
 
   const minChars = 10;
   const remaining = minChars - message.length;
@@ -33,25 +32,42 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
     reader.readAsDataURL(file);
   }
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (message.length < minChars) return;
+  async function handleSubmit() {
+    if (message.length < minChars || status === 'sending') return;
+    setStatus('sending');
 
-    // Submit via FormSubmit using a hidden form
-    const form = formRef.current;
-    if (!form) return;
-    form.submit();
-    setSubmitted(true);
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/lavya.goel@somaiya.edu', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          _subject: 'Sable App Feedback',
+          _template: 'table',
+          Rating: `${rating} / 5 ⭐`,
+          Message: message,
+          Screenshot: screenshot ? 'Screenshot attached (base64)' : 'None',
+        }),
+      });
 
-    // Reset after a delay
-    setTimeout(() => {
-      setRating(0);
-      setMessage('');
-      setScreenshot(null);
-      setScreenshotName('');
-      setSubmitted(false);
-      onClose();
-    }, 2500);
+      if (res.ok) {
+        setStatus('sent');
+        setTimeout(() => {
+          setRating(0);
+          setMessage('');
+          setScreenshot(null);
+          setScreenshotName('');
+          setStatus('idle');
+          onClose();
+        }, 2500);
+      } else {
+        setStatus('error');
+      }
+    } catch {
+      setStatus('error');
+    }
   }
 
   function handlePaste(e: React.ClipboardEvent) {
@@ -86,7 +102,7 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
           <span className="material-symbols-outlined text-[18px]">close</span>
         </button>
 
-        {submitted ? (
+        {status === 'sent' ? (
           /* ── Success State ────────────────────────── */
           <div className="py-8 flex flex-col items-center gap-4">
             <span className="material-symbols-outlined text-primary text-[56px]">check_circle</span>
@@ -189,35 +205,28 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
               />
             </div>
 
+            {/* Error message */}
+            {status === 'error' && (
+              <p className="text-xs text-red-500 font-body mb-3 self-start">
+                Failed to send. Please check your internet connection and try again.
+              </p>
+            )}
+
             {/* Submit */}
             <button
               onClick={handleSubmit}
-              disabled={message.length < minChars}
-              className="w-full py-3.5 bg-ink text-white font-display font-bold text-base rounded-xl hover:bg-primary hover:text-ink border-2 border-ink transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ink disabled:hover:text-white"
+              disabled={message.length < minChars || status === 'sending'}
+              className="w-full py-3.5 bg-ink text-white font-display font-bold text-base rounded-xl hover:bg-primary hover:text-ink border-2 border-ink transition-all disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-ink disabled:hover:text-white flex items-center justify-center gap-2"
             >
-              Submit My Feedback
-            </button>
-
-            {/* Hidden FormSubmit form */}
-            <form
-              ref={formRef}
-              action="https://formsubmit.co/lavya.goel@somaiya.edu"
-              method="POST"
-              target="hidden_iframe"
-              className="hidden"
-            >
-              <input type="hidden" name="_captcha" value="false" />
-              <input type="hidden" name="_subject" value="Sable App Feedback" />
-              <input type="hidden" name="_template" value="table" />
-              <input type="text" name="_honey" style={{ display: 'none' }} />
-              <input type="hidden" name="Rating" value={`${rating} / 5 ⭐`} />
-              <input type="hidden" name="Message" value={message} />
-              <input type="hidden" name="Screenshot" value={screenshot ? 'Attached (see below)' : 'None'} />
-              {screenshot && (
-                <input type="hidden" name="Screenshot Preview" value={screenshot} />
+              {status === 'sending' ? (
+                <>
+                  <span className="inline-block w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                'Submit My Feedback'
               )}
-            </form>
-            <iframe name="hidden_iframe" className="hidden" />
+            </button>
           </>
         )}
       </div>

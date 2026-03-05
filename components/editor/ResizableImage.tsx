@@ -164,12 +164,12 @@ export const ResizableImage = Node.create({
   },
 
   addNodeView() {
+    // @ts-expect-error — ReactNodeViewRenderer type mismatch with function components
     return ReactNodeViewRenderer(ResizableImageView);
   },
 
   addCommands() {
     return {
-      // @ts-expect-error — TipTap internal command type inference
       setImage: (options: { src: string; alt?: string; title?: string }) => ({ commands }: { commands: { insertContent: (content: Record<string, unknown>) => boolean } }) => {
         return commands.insertContent({
           type: this.name,
