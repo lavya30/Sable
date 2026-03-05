@@ -4,6 +4,14 @@ import { Node, mergeAttributes } from '@tiptap/core';
 import { ReactNodeViewRenderer, NodeViewWrapper } from '@tiptap/react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+declare module '@tiptap/core' {
+  interface Commands<ReturnType> {
+    image: {
+      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType;
+    };
+  }
+}
+
 /* ─── React Component for the Image Node View ──────────────────────────── */
 
 function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
