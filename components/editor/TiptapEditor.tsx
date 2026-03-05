@@ -82,6 +82,10 @@ function createGrammarPlugin(): Plugin {
       apply(tr, old): GrammarPluginState {
         const meta = tr.getMeta(GRAMMAR_META_KEY);
         if (meta) return meta as GrammarPluginState;
+        if (tr.docChanged && old.map.length > 0) {
+          const newMap = old.map.map((pos) => (pos < 0 ? -1 : tr.mapping.map(pos)));
+          return { matches: old.matches, map: newMap };
+        }
         return old;
       },
     },
