@@ -11,13 +11,14 @@ import { KeystrokeSoundTheme } from '@/hooks/useKeystrokeSounds';
 import { AmbientSoundType } from '@/hooks/useAmbientSound';
 
 export interface Settings {
-  fontSize: number;    // px, range 16–32
-  lineSpacing: number; // unitless, range 1.4–2.2
+  fontSize: number;
+  lineSpacing: number;
   theme: 'light' | 'dark';
+  snapshotInterval: number;
   keystrokeSounds: KeystrokeSoundTheme;
-  keystrokeVolume: number; // 0–1
+  keystrokeVolume: number;
   ambientSound: AmbientSoundType;
-  ambientVolume: number; // 0–1
+  ambientVolume: number;
 }
 
 interface SettingsContextType {
@@ -31,6 +32,7 @@ const defaultSettings: Settings = {
   fontSize: 20,
   lineSpacing: 1.8,
   theme: 'light',
+  snapshotInterval: 5,
   keystrokeSounds: 'off',
   keystrokeVolume: 0.5,
   ambientSound: 'off',

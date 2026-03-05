@@ -20,6 +20,8 @@ import { SettingsOverlay } from './SettingsOverlay';
 import { WordCountBadge } from './WordCountBadge';
 import { AmbientPlayer } from './AmbientPlayer';
 import { AutoSaveIndicator, SaveStatus } from './AutoSaveIndicator';
+import { HistoryPanel } from './HistoryPanel';
+import { saveSnapshot } from '@/lib/history';
 import { MarginNote } from '@/lib/types';
 
 interface Props {
@@ -40,6 +42,10 @@ export function EditorCanvas({ docId }: Props) {
   const [showPublish, setShowPublish] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [showHistory, setShowHistory] = useState(false);
+  const hasChangedRef = useRef(false);
+  const lastSavedContentRef = useRef<string>('');
+  const SNAPSHOT_INTERVAL = (settings.snapshotInterval ?? 5) * 60 * 1000;
 
   const editorRef = useRef<TiptapEditorRef>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -79,6 +85,20 @@ export function EditorCanvas({ docId }: Props) {
     requestAnimationFrame(() => setSaveStatus('saved'));
   }, 800);
 
+  // Snapshot interval — saves every SNAPSHOT_INTERVAL ms if content changed
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!hasChangedRef.current || !editorRef.current) return;
+      const json = JSON.stringify(editorRef.current.getJSON());
+      if (json && json !== lastSavedContentRef.current) {
+        saveSnapshot(docId, json);
+        lastSavedContentRef.current = json;
+        hasChangedRef.current = false;
+      }
+    }, SNAPSHOT_INTERVAL);
+    return () => clearInterval(timer);
+  }, [docId, SNAPSHOT_INTERVAL]);
+
   // Keystroke sounds
   useKeystrokeSounds(editor, settings.keystrokeSounds, settings.keystrokeVolume);
 
@@ -96,6 +116,11 @@ export function EditorCanvas({ docId }: Props) {
   function handleEditorChange(json: string, htmlContent: string) {
     setHtml(htmlContent);
     debouncedSave(json);
+    hasChangedRef.current = true;
+  }
+
+  function handleRestore(content: string) {
+    updateDoc(docId, { content });
   }
 
   function handleNotesChange(notes: string) {
@@ -128,6 +153,7 @@ export function EditorCanvas({ docId }: Props) {
         onSketchpadToggle={() => setShowSketchpad(true)}
         onMoodBoardToggle={() => setShowMoodBoard(true)}
         onPublishOpen={() => setShowPublish(true)}
+        onHistoryOpen={() => setShowHistory(true)}
         focusMode={focusMode}
         showPreview={showPreview}
         onPreviewToggle={() => setShowPreview((v) => !v)}
@@ -270,6 +296,13 @@ export function EditorCanvas({ docId }: Props) {
         onClose={() => setShowSettings(false)}
       />
 
+      <HistoryPanel
+        isOpen={showHistory}
+        onClose={() => setShowHistory(false)}
+        docId={docId}
+        editor={editor}
+        onRestore={handleRestore}
+      />
 
       <AutoSaveIndicator status={saveStatus} />
     </div>
