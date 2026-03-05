@@ -6,6 +6,7 @@ import { LibraryTab, SortOrder } from '@/lib/types';
 import { DocumentCard } from '@/components/library/DocumentCard';
 import { NewDocumentCard } from '@/components/library/NewDocumentCard';
 import { WritingStatsPanel } from '@/components/library/WritingStatsPanel';
+import { exportAllData, importAllData } from '@/lib/backup';
 import gsap from 'gsap';
 
 export default function LibraryPage() {
@@ -15,6 +16,21 @@ export default function LibraryPage() {
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
   const headerRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const [importError, setImportError] = useState('');
+
+  async function handleImport(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setImportError('');
+      await importAllData(file);
+    } catch (err) {
+      setImportError(err instanceof Error ? err.message : 'Import failed');
+    }
+    // Reset input so the same file can be re-selected
+    e.target.value = '';
+  }
 
   // GSAP entrance animation
   useEffect(() => {
@@ -112,11 +128,34 @@ export default function LibraryPage() {
             )}
           </div>
 
-          {/* Decorative avatar — non-functional */}
-          <div className="hidden md:flex items-center gap-4 pointer-events-none select-none opacity-40">
-            <div className="w-10 h-10 rounded-full border-2 border-ink bg-peach flex items-center justify-center">
-              <span className="material-symbols-outlined text-ink">person</span>
-            </div>
+          {/* Export / Import */}
+          <div className="hidden md:flex items-center gap-2">
+            <button
+              onClick={exportAllData}
+              title="Export all data"
+              className="flex items-center gap-1.5 px-3 py-2 border-2 border-ink/20 rounded-rough text-sm font-marker text-ink hover:bg-mint/30 hover:border-ink/40 transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">download</span>
+              Export
+            </button>
+            <button
+              onClick={() => importInputRef.current?.click()}
+              title="Import data from backup"
+              className="flex items-center gap-1.5 px-3 py-2 border-2 border-ink/20 rounded-rough text-sm font-marker text-ink hover:bg-lavender/30 hover:border-ink/40 transition-all"
+            >
+              <span className="material-symbols-outlined text-[18px]">upload</span>
+              Import
+            </button>
+            <input
+              ref={importInputRef}
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleImport}
+            />
+            {importError && (
+              <span className="text-xs font-marker text-red-500 ml-1">{importError}</span>
+            )}
           </div>
         </div>
       </header>

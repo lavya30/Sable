@@ -19,6 +19,7 @@ import { PublishModal } from './PublishModal';
 import { SettingsOverlay } from './SettingsOverlay';
 import { WordCountBadge } from './WordCountBadge';
 import { AmbientPlayer } from './AmbientPlayer';
+import { AutoSaveIndicator, SaveStatus } from './AutoSaveIndicator';
 import { MarginNote } from '@/lib/types';
 
 interface Props {
@@ -38,6 +39,7 @@ export function EditorCanvas({ docId }: Props) {
   const [showMoodBoard, setShowMoodBoard] = useState(false);
   const [showPublish, setShowPublish] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
   const editorRef = useRef<TiptapEditorRef>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -69,9 +71,12 @@ export function EditorCanvas({ docId }: Props) {
     }
   }, [doc, router]);
 
-  // Debounced save â€” uses latest updateDoc via the fnRef pattern in useDebounce
+  // Debounced save — uses latest updateDoc via the fnRef pattern in useDebounce
   const debouncedSave = useDebounce((json: string) => {
+    setSaveStatus('saving');
     updateDoc(docId, { content: json });
+    // updateDoc is synchronous (setState), mark saved after a tick
+    requestAnimationFrame(() => setSaveStatus('saved'));
   }, 800);
 
   // Keystroke sounds
@@ -204,6 +209,8 @@ export function EditorCanvas({ docId }: Props) {
           <WordCountBadge editor={editor} />
         </div>
 
+
+
         {/* Focus mode toggle */}
         <button
           onClick={() => setFocusMode((v) => !v)}
@@ -262,6 +269,9 @@ export function EditorCanvas({ docId }: Props) {
         isOpen={showSettings}
         onClose={() => setShowSettings(false)}
       />
+
+
+      <AutoSaveIndicator status={saveStatus} />
     </div>
   );
 }
