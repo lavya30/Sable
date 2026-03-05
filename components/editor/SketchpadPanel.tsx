@@ -130,7 +130,7 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40" onClick={onClose} />
+        <div className="fixed inset-0 bg-ink/20 z-40" onClick={onClose} />
       )}
 
       {showGoalToast && (
@@ -148,9 +148,8 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
 
       <div
         ref={panelRef}
-        className={`fixed top-0 right-0 bottom-0 z-50 w-[380px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-[380px] bg-white sketch-border border-l-0 shadow-[4px_0_0_#2D3436] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'
+          }`}
       >
         <div className="absolute inset-0 bg-dot-grid-sketch opacity-[0.05] pointer-events-none" />
 
@@ -173,10 +172,10 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
             <h3 className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Document Stats</h3>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'Words',      value: stats.words,      icon: 'article' },
-                { label: 'Characters', value: stats.chars,      icon: 'text_fields' },
+                { label: 'Words', value: stats.words, icon: 'article' },
+                { label: 'Characters', value: stats.chars, icon: 'text_fields' },
                 { label: 'Paragraphs', value: stats.paragraphs, icon: 'segment' },
-                { label: 'Read time',  value: `~${stats.readTime} min`, icon: 'schedule' },
+                { label: 'Read time', value: `~${stats.readTime} min`, icon: 'schedule' },
               ].map((s) => (
                 <div key={s.label} className="bg-white border border-ink/10 rounded-lg px-3 py-2 flex items-center gap-2">
                   <span className="material-symbols-outlined text-primary text-[18px]">{s.icon}</span>
@@ -274,9 +273,8 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
                 {headings.map((h, i) => (
                   <div
                     key={i}
-                    className={`group flex items-center gap-1 rounded-lg border-2 border-transparent hover:border-ink/20 hover:bg-primary/5 transition-all ${
-                      h.level === 1 ? 'pl-3' : h.level === 2 ? 'pl-6' : 'pl-9'
-                    }`}
+                    className={`group flex items-center gap-1 rounded-lg border-2 border-transparent hover:border-ink/20 hover:bg-primary/5 transition-all ${h.level === 1 ? 'pl-3' : h.level === 2 ? 'pl-6' : 'pl-9'
+                      }`}
                   >
                     <button
                       onClick={() => scrollToHeading(h.pos)}
