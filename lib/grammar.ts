@@ -28,10 +28,18 @@ export function buildTextAndMap(doc: PMNode): { text: string; map: number[] } {
 export async function checkGrammar(text: string): Promise<LTMatch[]> {
   if (!text.trim() || text.length > 50000) return [];
   try {
-    const res = await fetch('/api/grammar', {
+    const params = new URLSearchParams({
+      text,
+      language: 'en-US',
+      disabledRules: 'WHITESPACE_RULE,EN_QUOTES',
+    });
+    const res = await fetch('https://api.languagetool.org/v2/check', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Accept': 'application/json',
+      },
+      body: params.toString(),
       signal: AbortSignal.timeout(10000),
     });
     if (!res.ok) return [];

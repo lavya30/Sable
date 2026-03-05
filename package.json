@@ -10,7 +10,7 @@
     "lint": "next lint",
     "electron": "electron .",
     "electron:dev": "concurrently \"bun run dev\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "next build && electron-builder"
+    "electron:build": "bun run build && electron-builder --win"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.5",
@@ -27,6 +27,7 @@
     "@tiptap/react": "^3.20.0",
     "@tiptap/starter-kit": "^3.20.0",
     "@types/turndown": "^5.0.6",
+    "electron-serve": "^3.0.1",
     "gsap": "^3.14.2",
     "html2pdf.js": "^0.14.0",
     "lenis": "^1.3.18-dev.0",
@@ -61,5 +62,25 @@
     "electron-winstaller",
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "build": {
+    "appId": "com.sable.app",
+    "productName": "Sable",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**/*",
+      "out/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }
