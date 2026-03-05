@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useSettings } from '@/context/SettingsContext';
 import { exportAllData, importAllData } from '@/lib/backup';
+import { FeedbackModal } from '@/components/FeedbackModal';
 
 type SettingsTab = 'general' | 'editor' | 'about';
 
@@ -354,6 +355,8 @@ function SettingsSlider({ label, value, min, max, step, sliderValue, onChange, l
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 function AboutTab() {
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       <div>
@@ -395,7 +398,10 @@ function AboutTab() {
       </div>
 
       {/* Send Feedback */}
-      <div className="bg-white border-2 border-ink/10 rounded-xl p-4 flex items-center justify-between hover:shadow-hard-sm transition-all cursor-pointer">
+      <button
+        onClick={() => setFeedbackOpen(true)}
+        className="w-full bg-white border-2 border-ink/10 rounded-xl p-4 flex items-center justify-between hover:shadow-hard-sm transition-all cursor-pointer text-left"
+      >
         <div className="flex items-center gap-3">
           <span className="material-symbols-outlined text-[20px] text-ink/40">chat_bubble</span>
           <div>
@@ -404,7 +410,7 @@ function AboutTab() {
           </div>
         </div>
         <span className="material-symbols-outlined text-[18px] text-ink/30">chevron_right</span>
-      </div>
+      </button>
 
       {/* Footer */}
       <div className="text-center pt-2">
@@ -412,6 +418,9 @@ function AboutTab() {
           Made with ♥ for writers who think best in quiet
         </p>
       </div>
+
+      {/* Feedback Modal */}
+      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </div>
   );
 }

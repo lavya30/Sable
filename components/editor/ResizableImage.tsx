@@ -79,8 +79,8 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
           alt={alt || ''}
           draggable={false}
           className={`w-full h-auto rounded-lg border-2 transition-colors duration-200 ${selected
-              ? 'border-primary shadow-[4px_4px_0_rgba(19,236,117,0.2)]'
-              : 'border-ink/10 hover:border-mint'
+            ? 'border-primary shadow-[4px_4px_0_rgba(19,236,117,0.2)]'
+            : 'border-ink/10 hover:border-mint'
             }`}
         />
 
@@ -169,7 +169,8 @@ export const ResizableImage = Node.create({
 
   addCommands() {
     return {
-      setImage: (options: { src: string; alt?: string; title?: string }) => ({ commands }) => {
+      // @ts-expect-error — TipTap internal command type inference
+      setImage: (options: { src: string; alt?: string; title?: string }) => ({ commands }: { commands: { insertContent: (content: Record<string, unknown>) => boolean } }) => {
         return commands.insertContent({
           type: this.name,
           attrs: options,
