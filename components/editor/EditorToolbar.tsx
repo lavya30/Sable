@@ -45,8 +45,11 @@ export function EditorToolbar({
   const [fontOpen, setFontOpen] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
+  const [tableOpen, setTableOpen] = useState(false);
+  const [tableHover, setTableHover] = useState({ rows: 0, cols: 0 });
   const fontDropdownRef = useRef<HTMLDivElement>(null);
   const imageDropdownRef = useRef<HTMLDivElement>(null);
+  const tableDropdownRef = useRef<HTMLDivElement>(null);
   const imageFileRef = useRef<HTMLInputElement>(null);
   const activeFamily = editor?.getAttributes('textStyle')?.fontFamily ?? '';
   const currentFont = FONTS.find((f) => f.css === activeFamily) ?? FONTS[0];
@@ -64,14 +67,15 @@ export function EditorToolbar({
   }, [editor]);
 
   useEffect(() => {
-    if (!fontOpen && !imageOpen) return;
+    if (!fontOpen && !imageOpen && !tableOpen) return;
     const handler = (e: MouseEvent) => {
       if (fontOpen && !fontDropdownRef.current?.contains(e.target as Node)) setFontOpen(false);
       if (imageOpen && !imageDropdownRef.current?.contains(e.target as Node)) setImageOpen(false);
+      if (tableOpen && !tableDropdownRef.current?.contains(e.target as Node)) setTableOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [fontOpen, imageOpen]);
+  }, [fontOpen, imageOpen, tableOpen]);
 
   function insertImageUrl() {
     if (!editor || !imageUrl.trim()) return;
@@ -222,6 +226,58 @@ export function EditorToolbar({
                 className="hidden"
                 onChange={handleImageUpload}
               />
+            </div>
+          )}
+        </div>
+
+        {/* Table insert */}
+        <div ref={tableDropdownRef} className="relative">
+          <button
+            onClick={() => setTableOpen((v) => !v)}
+            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${
+              tableOpen ? 'bg-mint border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
+            }`}
+            title="Insert table"
+          >
+            <span className="material-symbols-outlined text-[20px]">table</span>
+          </button>
+          {tableOpen && (
+            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard p-4 flex flex-col gap-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Insert Table</span>
+                <span className="text-xs font-marker text-primary">
+                  {tableHover.rows > 0 ? `${tableHover.rows} × ${tableHover.cols}` : ''}
+                </span>
+              </div>
+              <div
+                className="grid gap-1"
+                style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
+                onMouseLeave={() => setTableHover({ rows: 0, cols: 0 })}
+              >
+                {Array.from({ length: 36 }, (_, i) => {
+                  const row = Math.floor(i / 6) + 1;
+                  const col = (i % 6) + 1;
+                  return (
+                    <div
+                      key={i}
+                      onMouseEnter={() => setTableHover({ rows: row, cols: col })}
+                      onClick={() => {
+                        editor.chain().focus().insertTable({ rows: row, cols: col, withHeaderRow: true }).run();
+                        setTableOpen(false);
+                        setTableHover({ rows: 0, cols: 0 });
+                      }}
+                      className={`w-6 h-6 border-2 rounded-sm cursor-pointer transition-colors ${
+                        row <= tableHover.rows && col <= tableHover.cols
+                          ? 'bg-primary border-ink'
+                          : 'bg-gray-100 border-gray-300 hover:border-ink/50'
+                      }`}
+                    />
+                  );
+                })}
+              </div>
+              <p className="text-[11px] font-marker text-gray-400 text-center">
+                {tableHover.rows > 0 ? `${tableHover.rows} rows × ${tableHover.cols} columns` : 'Hover to select size'}
+              </p>
             </div>
           )}
         </div>
