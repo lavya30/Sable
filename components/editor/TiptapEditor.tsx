@@ -7,6 +7,7 @@ import Highlight from '@tiptap/extension-highlight';
 import CharacterCount from '@tiptap/extension-character-count';
 import Placeholder from '@tiptap/extension-placeholder';
 import Link from '@tiptap/extension-link';
+import { ResizableImage } from './ResizableImage';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
@@ -30,8 +31,8 @@ const FocusWordDecoration = Extension.create({
             // Only apply in collapsed (cursor) selection
             if (!empty || $from.depth < 1) return DecorationSet.empty;
 
-            const parentStart  = $from.start();   // start of the text block
-            const parentText   = $from.parent.textContent;
+            const parentStart = $from.start();   // start of the text block
+            const parentText = $from.parent.textContent;
             const offsetInParent = $from.pos - parentStart;
 
             if (!parentText.trim()) return DecorationSet.empty;
@@ -45,7 +46,7 @@ const FocusWordDecoration = Extension.create({
             if (ws === we) return DecorationSet.empty; // cursor is on whitespace
 
             const from = parentStart + ws;
-            const to   = parentStart + we;
+            const to = parentStart + we;
 
             try {
               return DecorationSet.create(state.doc, [
@@ -178,6 +179,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           rel: 'noopener noreferrer',
         },
       }),
+      ResizableImage,
       FocusWordDecoration,
       GrammarExtension,
       TextStyle,
@@ -188,6 +190,44 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         spellcheck: 'false',
         autocorrect: 'off',
         autocapitalize: 'off',
+      },
+      handleDrop(view, event) {
+        const files = event.dataTransfer?.files;
+        if (!files?.length) return false;
+        const file = files[0];
+        if (!file.type.startsWith('image/')) return false;
+        event.preventDefault();
+        const reader = new FileReader();
+        reader.onload = () => {
+          const src = reader.result as string;
+          const { pos } = view.posAtCoords({ left: event.clientX, top: event.clientY }) ?? { pos: view.state.selection.from };
+          const node = view.state.schema.nodes.image.create({ src });
+          const tr = view.state.tr.insert(pos, node);
+          view.dispatch(tr);
+        };
+        reader.readAsDataURL(file);
+        return true;
+      },
+      handlePaste(view, event) {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith('image/')) {
+            event.preventDefault();
+            const file = item.getAsFile();
+            if (!file) return false;
+            const reader = new FileReader();
+            reader.onload = () => {
+              const src = reader.result as string;
+              const node = view.state.schema.nodes.image.create({ src });
+              const tr = view.state.tr.replaceSelectionWith(node);
+              view.dispatch(tr);
+            };
+            reader.readAsDataURL(file);
+            return true;
+          }
+        }
+        return false;
       },
     },
     content: (() => {
@@ -221,13 +261,13 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     }
     setLinkMode('idle');
     setLinkInput('');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor, linkInput]);
 
   const handleRemoveLink = useCallback(() => {
     editor?.chain().focus().unsetLink().run();
     setLinkMode('idle');
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editor]);
 
   // Reset link mode when selection collapses
@@ -258,7 +298,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     if (current !== content) {
       editor.commands.setContent(newJson, { emitUpdate: false });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [content]);
 
   useEffect(() => {
@@ -399,9 +439,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   return (
     <div
       ref={editorContainerRef}
-      className={`relative transition-all duration-300 ${
-        focusMode ? 'focus-mode-active' : ''
-      }`}
+      className={`relative transition-all duration-300 ${focusMode ? 'focus-mode-active' : ''
+        }`}
     >
       {editor && (
         <BubbleMenu
@@ -501,9 +540,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                       e.preventDefault();
                       item.action();
                     }}
-                    className={`p-1.5 rounded transition-colors hover:text-mint ${
-                      item.isActive() ? 'text-mint' : 'text-white'
-                    }`}
+                    className={`p-1.5 rounded transition-colors hover:text-mint ${item.isActive() ? 'text-mint' : 'text-white'
+                      }`}
                     aria-label={item.label}
                   >
                     <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
@@ -518,9 +556,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                     e.preventDefault();
                     editor.chain().focus().toggleHighlight().run();
                   }}
-                  className={`p-1.5 rounded transition-colors hover:text-peach ${
-                    editor.isActive('highlight') ? 'text-peach' : 'text-white'
-                  }`}
+                  className={`p-1.5 rounded transition-colors hover:text-peach ${editor.isActive('highlight') ? 'text-peach' : 'text-white'
+                    }`}
                   aria-label="Highlight"
                 >
                   <span className="material-symbols-outlined text-[18px]">comment</span>
@@ -538,9 +575,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                       setTimeout(() => linkInputRef.current?.focus(), 50);
                     }
                   }}
-                  className={`p-1.5 rounded transition-colors hover:text-mint ${
-                    editor.isActive('link') ? 'text-mint' : 'text-white'
-                  }`}
+                  className={`p-1.5 rounded transition-colors hover:text-mint ${editor.isActive('link') ? 'text-mint' : 'text-white'
+                    }`}
                   aria-label="Add link"
                 >
                   <span className="material-symbols-outlined text-[18px]">link</span>

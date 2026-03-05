@@ -18,15 +18,15 @@ interface Props {
 }
 
 const FONTS: { css: string; label: string }[] = [
-  { css: '',                                  label: 'Default' },
-  { css: 'Georgia, serif',                    label: 'Georgia' },
-  { css: 'var(--font-lora), serif',           label: 'Lora' },
-  { css: 'var(--font-merriweather), serif',   label: 'Merriweather' },
+  { css: '', label: 'Default' },
+  { css: 'Georgia, serif', label: 'Georgia' },
+  { css: 'var(--font-lora), serif', label: 'Lora' },
+  { css: 'var(--font-merriweather), serif', label: 'Merriweather' },
   { css: 'var(--font-patrick-hand), cursive', label: 'Patrick Hand' },
-  { css: 'var(--font-caveat), cursive',       label: 'Caveat' },
-  { css: 'var(--font-kalam), cursive',        label: 'Kalam' },
-  { css: 'var(--font-special-elite), cursive',label: 'Special Elite' },
-  { css: 'var(--font-fira-code), monospace',  label: 'Fira Code' },
+  { css: 'var(--font-caveat), cursive', label: 'Caveat' },
+  { css: 'var(--font-kalam), cursive', label: 'Kalam' },
+  { css: 'var(--font-special-elite), cursive', label: 'Special Elite' },
+  { css: 'var(--font-fira-code), monospace', label: 'Fira Code' },
 ];
 
 export function EditorToolbar({
@@ -41,7 +41,11 @@ export function EditorToolbar({
 }: Props) {
   const toolbarInnerRef = useRef<HTMLDivElement>(null);
   const [fontOpen, setFontOpen] = useState(false);
+  const [imageOpen, setImageOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
   const fontDropdownRef = useRef<HTMLDivElement>(null);
+  const imageDropdownRef = useRef<HTMLDivElement>(null);
+  const imageFileRef = useRef<HTMLInputElement>(null);
   const activeFamily = editor?.getAttributes('textStyle')?.fontFamily ?? '';
   const currentFont = FONTS.find((f) => f.css === activeFamily) ?? FONTS[0];
 
@@ -58,13 +62,34 @@ export function EditorToolbar({
   }, [editor]);
 
   useEffect(() => {
-    if (!fontOpen) return;
+    if (!fontOpen && !imageOpen) return;
     const handler = (e: MouseEvent) => {
-      if (!fontDropdownRef.current?.contains(e.target as Node)) setFontOpen(false);
+      if (fontOpen && !fontDropdownRef.current?.contains(e.target as Node)) setFontOpen(false);
+      if (imageOpen && !imageDropdownRef.current?.contains(e.target as Node)) setImageOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [fontOpen]);
+  }, [fontOpen, imageOpen]);
+
+  function insertImageUrl() {
+    if (!editor || !imageUrl.trim()) return;
+    editor.chain().focus().setImage({ src: imageUrl.trim() }).run();
+    setImageUrl('');
+    setImageOpen(false);
+  }
+
+  function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editor) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const src = reader.result as string;
+      editor.chain().focus().setImage({ src }).run();
+      setImageOpen(false);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
 
   if (!editor) return null;
 
@@ -134,13 +159,73 @@ export function EditorToolbar({
 
         <div className="w-px h-5 bg-gray-200 mx-1" />
 
+        {/* Image insert */}
+        <div ref={imageDropdownRef} className="relative">
+          <button
+            onClick={() => setImageOpen((v) => !v)}
+            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${imageOpen ? 'bg-mint border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
+              }`}
+            title="Insert image"
+          >
+            <span className="material-symbols-outlined text-[20px]">image</span>
+          </button>
+          {imageOpen && (
+            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard w-[280px] p-4 flex flex-col gap-3">
+              <span className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Insert Image</span>
+
+              {/* URL input */}
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && insertImageUrl()}
+                  placeholder="Paste image URL…"
+                  className="flex-1 border border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white"
+                  autoFocus
+                />
+                <button
+                  onClick={insertImageUrl}
+                  disabled={!imageUrl.trim()}
+                  className="px-3 py-2 bg-primary border border-ink/20 rounded-lg text-sm font-body font-semibold text-ink hover:bg-primary/80 transition-colors disabled:opacity-40"
+                >
+                  Add
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 text-xs text-gray-400">
+                <div className="flex-1 h-px bg-gray-200" />
+                <span className="font-marker">or</span>
+                <div className="flex-1 h-px bg-gray-200" />
+              </div>
+
+              {/* File upload */}
+              <button
+                onClick={() => imageFileRef.current?.click()}
+                className="flex items-center justify-center gap-2 px-3 py-2.5 border-2 border-dashed border-ink/20 rounded-lg text-sm font-marker text-ink/60 hover:border-ink/40 hover:text-ink hover:bg-gray-50 transition-all"
+              >
+                <span className="material-symbols-outlined text-[18px]">upload_file</span>
+                Upload from device
+              </button>
+              <input
+                ref={imageFileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageUpload}
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+
         {/* Font picker */}
         <div ref={fontDropdownRef} className="relative">
           <button
             onClick={() => setFontOpen((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${
-              fontOpen ? 'bg-lavender border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
-            }`}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${fontOpen ? 'bg-lavender border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
+              }`}
             title="Change font"
           >
             <span className="material-symbols-outlined text-[18px]">font_download</span>
@@ -165,9 +250,8 @@ export function EditorToolbar({
                     }
                     setFontOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 transition-colors flex items-center justify-between gap-3 ${
-                    font.css === activeFamily ? 'bg-primary/10' : ''
-                  }`}
+                  className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 transition-colors flex items-center justify-between gap-3 ${font.css === activeFamily ? 'bg-primary/10' : ''
+                    }`}
                   style={{ fontFamily: font.css || undefined }}
                 >
                   <span className="text-sm text-ink">{font.label}</span>
@@ -186,8 +270,8 @@ export function EditorToolbar({
         <button
           onClick={onPreviewToggle}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm font-marker text-base transition-all ${showPreview
-              ? 'bg-lavender border-2 border-ink text-ink'
-              : 'border-2 border-transparent hover:border-ink hover:bg-lavender/50'
+            ? 'bg-lavender border-2 border-ink text-ink'
+            : 'border-2 border-transparent hover:border-ink hover:bg-lavender/50'
             }`}
           title="Toggle live preview"
         >
