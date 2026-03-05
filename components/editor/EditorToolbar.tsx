@@ -73,7 +73,10 @@ export function EditorToolbar({
 
   function insertImageUrl() {
     if (!editor || !imageUrl.trim()) return;
-    editor.chain().focus().setImage({ src: imageUrl.trim() }).run();
+    editor.chain().focus().insertContent({
+      type: 'image',
+      attrs: { src: imageUrl.trim() },
+    }).run();
     setImageUrl('');
     setImageOpen(false);
   }
@@ -84,7 +87,10 @@ export function EditorToolbar({
     const reader = new FileReader();
     reader.onload = () => {
       const src = reader.result as string;
-      editor.chain().focus().setImage({ src }).run();
+      editor.chain().focus().insertContent({
+        type: 'image',
+        attrs: { src },
+      }).run();
       setImageOpen(false);
     };
     reader.readAsDataURL(file);
