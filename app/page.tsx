@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo, useRef, useEffect } from 'react';
+import Link from 'next/link';
 import { useDocuments } from '@/context/DocumentsContext';
 import { LibraryTab, SortOrder } from '@/lib/types';
 import { DocumentCard } from '@/components/library/DocumentCard';
@@ -234,6 +235,15 @@ export default function LibraryPage() {
           </div>
         )}
       </main>
+
+      {/* Settings link — bottom-left */}
+      <Link
+        href="/settings"
+        className="fixed bottom-6 left-6 z-40 flex items-center gap-2 px-4 py-2.5 bg-white border-2 border-ink/15 rounded-full shadow-hard-sm hover:shadow-hard hover:border-ink/30 transition-all font-display text-sm font-semibold text-ink/60 hover:text-ink"
+      >
+        <span className="material-symbols-outlined text-[18px]">settings</span>
+        Settings
+      </Link>
     </div>
   );
 }
