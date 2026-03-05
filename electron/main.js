@@ -1,5 +1,6 @@
 
-const { app, BrowserWindow, protocol } = require('electron')
+const { app, BrowserWindow, protocol, net } = require('electron')
+const { pathToFileURL } = require('url')
 const path = require('path')
 const fs = require('fs')
 
@@ -17,8 +18,10 @@ protocol.registerSchemesAsPrivileged([
 ])
 
 function getOutDir() {
-  // When packaged, __dirname is inside app.asar
-  // The out/ folder is packed alongside electron/
+  if (app.isPackaged) {
+    // out/ is unpacked via asarUnpack, so it lives at app.asar.unpacked/out/
+    return path.join(process.resourcesPath, 'app.asar.unpacked', 'out')
+  }
   return path.join(__dirname, '..', 'out')
 }
 
@@ -84,9 +87,8 @@ app.whenReady().then(() => {
         filePath = path.join(outDir, 'index.html')
       }
 
-      return new Response(fs.readFileSync(filePath), {
-        headers: { 'Content-Type': getMimeType(filePath) },
-      })
+      // Use net.fetch with file:// URL — handles byte-range requests for audio/video
+      return net.fetch(pathToFileURL(filePath).href)
     })
   }
 
@@ -96,28 +98,3 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 })
-
-function getMimeType(filePath) {
-  const ext = path.extname(filePath).toLowerCase()
-  const types = {
-    '.html': 'text/html; charset=utf-8',
-    '.js': 'application/javascript',
-    '.css': 'text/css',
-    '.json': 'application/json',
-    '.png': 'image/png',
-    '.jpg': 'image/jpeg',
-    '.jpeg': 'image/jpeg',
-    '.gif': 'image/gif',
-    '.svg': 'image/svg+xml',
-    '.ico': 'image/x-icon',
-    '.woff': 'font/woff',
-    '.woff2': 'font/woff2',
-    '.ttf': 'font/ttf',
-    '.mp3': 'audio/mpeg',
-    '.wav': 'audio/wav',
-    '.webp': 'image/webp',
-    '.map': 'application/json',
-    '.txt': 'text/plain',
-  }
-  return types[ext] || 'application/octet-stream'
-}

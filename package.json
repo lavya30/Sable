@@ -74,6 +74,9 @@
       "out/**/*",
       "package.json"
     ],
+    "asarUnpack": [
+      "out/**/*"
+    ],
     "win": {
       "target": "nsis",
       "icon": "public/icon.png"
