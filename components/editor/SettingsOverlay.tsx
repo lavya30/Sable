@@ -30,9 +30,9 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
   return (
     <div
       ref={overlayRef}
-      className="fixed bottom-24 right-8 z-50 w-72 origin-bottom-right max-h-[calc(100vh-7rem)] flex flex-col"
+      className="fixed bottom-24 right-8 z-50 w-80 origin-bottom-right max-h-[calc(100vh-8rem)] flex flex-col"
     >
-      <div className="relative bg-white text-ink border-2 border-ink shadow-hard rounded-tl-lg rounded-tr-lg rounded-bl-wobble rounded-br-wobble torn-paper-top p-6 flex flex-col gap-6 overflow-y-auto scrollbar-hide">
+      <div className="relative bg-white text-ink border-2 border-ink shadow-hard rounded-tl-lg rounded-tr-lg rounded-bl-wobble rounded-br-wobble torn-paper-top p-6 flex flex-col gap-5 overflow-y-auto scrollbar-hide flex-1 min-h-0">
         {/* Tape decoration */}
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-8 bg-mint/30 rotate-1 skew-x-12 z-20 pointer-events-none border border-white/40" />
 
@@ -122,6 +122,27 @@ export function SettingsOverlay({ isOpen, onClose }: Props) {
           <div className="flex justify-between text-xs font-marker text-gray-400 px-1">
             <span>Tight</span>
             <span>Airy</span>
+          </div>
+        </div>
+
+        {/* Snapshot Interval */}
+        <div className="space-y-3">
+          <div className="font-marker text-lg">Snapshot Interval</div>
+          <p className="text-xs font-marker text-gray-400">Auto-saves a version every N minutes. Max 25 snapshots stored per document.</p>
+          <div className="flex gap-2 flex-wrap">
+            {[1, 5, 10, 30].map((mins) => (
+              <button
+                key={mins}
+                onClick={() => updateSettings({ snapshotInterval: mins })}
+                className={`px-4 py-1.5 rounded-full border-2 font-marker text-sm transition-all ${
+                  (settings.snapshotInterval ?? 5) === mins
+                    ? 'bg-primary border-ink text-ink'
+                    : 'border-ink/30 text-ink/60 hover:border-ink hover:text-ink'
+                }`}
+              >
+                {mins}m
+              </button>
+            ))}
           </div>
         </div>
 

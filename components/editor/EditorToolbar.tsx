@@ -11,6 +11,7 @@ interface Props {
   onSketchpadToggle: () => void;
   onMoodBoardToggle: () => void;
   onPublishOpen: () => void;
+  onHistoryOpen: () => void;
   focusMode: boolean;
   showPreview: boolean;
   onPreviewToggle: () => void;
@@ -34,6 +35,7 @@ export function EditorToolbar({
   onSketchpadToggle,
   onMoodBoardToggle,
   onPublishOpen,
+  onHistoryOpen,
   focusMode,
   showPreview,
   onPreviewToggle,
@@ -305,6 +307,16 @@ export function EditorToolbar({
         >
           <span className="material-symbols-outlined text-[18px]">dashboard</span>
           <span className="hidden sm:inline">Mood Board</span>
+        </button>
+
+        {/* History */}
+        <button
+          onClick={onHistoryOpen}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-lavender/40 hover:bg-lavender border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
+          title="Version History"
+        >
+          <span className="material-symbols-outlined text-[18px]">history</span>
+          <span className="hidden sm:inline">History</span>
         </button>
 
         {/* Publish */}
