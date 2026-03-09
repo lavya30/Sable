@@ -1,6 +1,5 @@
 
-const { app, BrowserWindow, protocol, net } = require('electron')
-const { pathToFileURL } = require('url')
+const { app, BrowserWindow, protocol } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -17,9 +16,34 @@ protocol.registerSchemesAsPrivileged([
   },
 ])
 
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript',
+  '.css': 'text/css',
+  '.json': 'application/json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
+  '.ogg': 'audio/ogg',
+  '.webp': 'image/webp',
+  '.map': 'application/json',
+  '.txt': 'text/plain',
+}
+
+function getMimeType(filePath) {
+  return MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream'
+}
+
 function getOutDir() {
   if (app.isPackaged) {
-    // out/ is unpacked via asarUnpack, so it lives at app.asar.unpacked/out/
     return path.join(process.resourcesPath, 'app.asar.unpacked', 'out')
   }
   return path.join(__dirname, '..', 'out')
@@ -67,7 +91,6 @@ app.whenReady().then(() => {
 
       // If path has no extension, try serving the .html file (for routes like /editor)
       if (!path.extname(filePath)) {
-        // Remove trailing slash
         filePath = filePath.replace(/[\/\\]+$/, '')
         const htmlPath = filePath + '.html'
         if (fs.existsSync(htmlPath)) {
@@ -77,7 +100,6 @@ app.whenReady().then(() => {
           if (fs.existsSync(indexPath)) {
             filePath = indexPath
           } else {
-            // Fallback to index.html for client-side routing
             filePath = path.join(outDir, 'index.html')
           }
         }
@@ -87,8 +109,41 @@ app.whenReady().then(() => {
         filePath = path.join(outDir, 'index.html')
       }
 
-      // Use net.fetch with file:// URL — handles byte-range requests for audio/video
-      return net.fetch(pathToFileURL(filePath).href)
+      const contentType = getMimeType(filePath)
+      const stat = fs.statSync(filePath)
+      const totalSize = stat.size
+
+      // Handle Range requests (required for audio/video streaming)
+      const rangeHeader = request.headers.get('Range')
+      if (rangeHeader) {
+        const match = rangeHeader.match(/bytes=(\d+)-(\d*)/)
+        if (match) {
+          const start = parseInt(match[1], 10)
+          const end = match[2] ? parseInt(match[2], 10) : totalSize - 1
+          const chunkSize = end - start + 1
+          const buffer = Buffer.alloc(chunkSize)
+          const fd = fs.openSync(filePath, 'r')
+          fs.readSync(fd, buffer, 0, chunkSize, start)
+          fs.closeSync(fd)
+          return new Response(buffer, {
+            status: 206,
+            headers: {
+              'Content-Type': contentType,
+              'Content-Range': `bytes ${start}-${end}/${totalSize}`,
+              'Content-Length': String(chunkSize),
+              'Accept-Ranges': 'bytes',
+            },
+          })
+        }
+      }
+
+      return new Response(fs.readFileSync(filePath), {
+        headers: {
+          'Content-Type': contentType,
+          'Content-Length': String(totalSize),
+          'Accept-Ranges': 'bytes',
+        },
+      })
     })
   }
 
