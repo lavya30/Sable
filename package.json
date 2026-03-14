@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "electron": "electron .",
-    "electron:dev": "concurrently \"bun run dev\" \"wait-on http://localhost:3000 && electron .\"",
+    "electron:dev": "concurrently \"npx next dev --port 3000\" \"wait-on http://localhost:3000 && electron .\"",
     "electron:build": "bun run build && electron-builder --win"
   },
   "dependencies": {
