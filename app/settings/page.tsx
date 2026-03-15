@@ -396,9 +396,14 @@ function AboutTab() {
       </Section>
 
       {/* Footer */}
-      <p className="text-center font-marker text-sm text-ink/20 pt-4">
-        Made with ♥ for writers who think best in quiet
-      </p>
+      <div className="text-center pt-8 border-t border-ink/5 mt-8">
+        <p className="font-marker text-sm text-ink/40 mb-2">
+          Made with ♥ for writers who think best in quiet
+        </p>
+        <p className="font-display text-xs text-ink/30">
+          Created by <span className="font-bold text-ink/50">Lavya</span> and <span className="font-bold text-ink/50">Shlok</span>
+        </p>
+      </div>
 
       <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
     </div>

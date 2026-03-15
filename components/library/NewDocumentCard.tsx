@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useDocuments } from '@/context/DocumentsContext';
 
@@ -9,7 +10,12 @@ export function NewDocumentCard() {
   const { createDoc, renameDoc } = useDocuments();
   const [showDialog, setShowDialog] = useState(false);
   const [name, setName] = useState('');
+  const [mounted, setMounted] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   function openDialog() {
     setName('');
@@ -44,9 +50,9 @@ export function NewDocumentCard() {
       </div>
 
       {/* Name dialog */}
-      {showDialog && (
+      {showDialog && mounted && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-ink/30 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-ink/30 backdrop-blur-sm"
           onClick={(e) => e.target === e.currentTarget && setShowDialog(false)}
         >
           <div className="bg-white border-2 border-ink rounded-notebook shadow-hard-lg w-full max-w-md mx-4 overflow-hidden animate-[slide-down_0.2s_ease]">
@@ -96,7 +102,8 @@ export function NewDocumentCard() {
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
