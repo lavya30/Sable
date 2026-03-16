@@ -213,14 +213,14 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
             />
 
             {/* Hex label */}
-            <p className="font-mono text-sm text-gray-500 text-center tracking-widest uppercase">
+            <p className="font-mono text-sm text-gray-700 text-center tracking-widest uppercase">
               {colorValue}
             </p>
 
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowColorModal(false)}
-                className="px-4 py-2 text-sm font-marker text-gray-500 hover:text-ink transition-colors"
+                className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors"
               >
                 Cancel
               </button>
@@ -259,7 +259,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
               className="w-full border-2 border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white"
             />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowLinkModal(false)} className="px-4 py-2 text-sm font-marker text-gray-500 hover:text-ink transition-colors">Cancel</button>
+              <button onClick={() => setShowLinkModal(false)} className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors">Cancel</button>
               <button onClick={handleLinkSubmit} className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink">Pin it</button>
             </div>
           </div>
@@ -288,7 +288,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
               className="w-full border-2 border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white resize-none"
             />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowNoteModal(false)} className="px-4 py-2 text-sm font-marker text-gray-500 hover:text-ink transition-colors">Cancel</button>
+              <button onClick={() => setShowNoteModal(false)} className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors">Cancel</button>
               <button onClick={handleNoteSubmit} className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink">Pin it</button>
             </div>
           </div>

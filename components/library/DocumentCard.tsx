@@ -93,7 +93,7 @@ export function DocumentCard({ doc }: Props) {
 
   return (
     <div
-      className="group h-[320px] bg-white border-2 border-ink rounded-notebook shadow-hard card-lift relative flex flex-col cursor-pointer"
+      className="group h-[320px] bg-white dark:bg-slate-800 border-2 border-ink dark:border-slate-600 rounded-notebook shadow-hard card-lift relative flex flex-col cursor-pointer"
       onClick={() => !renaming && router.push(`/editor?id=${doc.id}`)}
     >
       {/* Three-dot menu – outside overflow-hidden cover so dropdown isn't clipped */}
@@ -106,7 +106,7 @@ export function DocumentCard({ doc }: Props) {
 
       {/* Cover */}
       <div
-        className={`h-40 ${COVER_BG[doc.coverColor]} border-b-2 border-ink relative notebook-spine p-4 flex-shrink-0 overflow-hidden rounded-t-[calc(0.75rem-2px)]`}
+        className={`h-40 ${COVER_BG[doc.coverColor]} dark:opacity-70 border-b-2 border-ink dark:border-slate-600 relative notebook-spine p-4 flex-shrink-0 overflow-hidden rounded-t-[calc(0.75rem-2px)]`}
       >
         {/* Favourite star */}
         {doc.isFavorited && (
@@ -119,7 +119,7 @@ export function DocumentCard({ doc }: Props) {
       </div>
 
       {/* Body */}
-      <div className="p-5 flex flex-col flex-grow justify-between bg-white">
+      <div className="p-5 flex flex-col flex-grow justify-between bg-white dark:bg-slate-800">
         <div>
           {renaming ? (
             <input
@@ -129,27 +129,27 @@ export function DocumentCard({ doc }: Props) {
               onBlur={commitRename}
               onKeyDown={handleKeyDown}
               onClick={(e) => e.stopPropagation()}
-              className="font-heading text-xl text-ink leading-tight mb-2 w-full border-b-2 border-ink outline-none bg-transparent"
+              className="font-heading text-xl text-ink dark:text-slate-100 leading-tight mb-2 w-full border-b-2 border-ink dark:border-slate-600 outline-none bg-transparent dark:bg-slate-700"
             />
           ) : (
-            <h3 className="font-heading text-xl text-ink leading-tight mb-2 line-clamp-2">
+            <h3 className="font-heading text-xl text-ink dark:text-slate-100 leading-tight mb-2 line-clamp-2">
               {doc.title}
             </h3>
           )}
 
           {preview ? (
-            <p className="font-body text-sm text-gray-500 line-clamp-3">
+            <p className="font-body text-sm text-gray-500 dark:text-gray-400 line-clamp-3">
               {preview}
             </p>
           ) : (
-            <p className="font-marker text-sm text-gray-400 italic">
+            <p className="font-marker text-sm text-gray-400 dark:text-gray-500 italic">
               Empty notebook…
             </p>
           )}
         </div>
 
         <div className="flex items-center justify-between mt-4">
-          <span className="text-xs font-mono text-gray-400 bg-gray-100 px-2 py-1 rounded border border-gray-200">
+          <span className="text-xs font-mono text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-slate-700 px-2 py-1 rounded border border-gray-200 dark:border-slate-600">
             {relativeTime(doc.updatedAt)}
           </span>
           <div

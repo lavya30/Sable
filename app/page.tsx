@@ -83,9 +83,9 @@ export default function LibraryPage() {
   if (!isClient) return null;
 
   return (
-    <div className="flex h-screen bg-canvas text-ink font-body selection:bg-mint selection:text-ink overflow-hidden">
+    <div className="flex h-screen bg-canvas dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 flex flex-col border-r-2 border-ink/5 bg-gray-50/50">
+      <aside className="w-64 flex-shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800">
         <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar">
           {/* User Profile */}
           <div className="flex items-center gap-3 mb-8 px-2">
@@ -101,14 +101,14 @@ export default function LibraryPage() {
           <div className="space-y-8">
             {/* MAIN Section */}
             <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-3">Main</h3>
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Main</h3>
               <nav className="space-y-1">
                 <button
                   onClick={() => setTab('recent')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'recent' 
                       ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-500 hover:bg-black/5 hover:text-ink'
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px] filled-icon">description</span>
@@ -119,7 +119,7 @@ export default function LibraryPage() {
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'favorites' 
                       ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-500 hover:bg-black/5 hover:text-ink'
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px] filled-icon">bookmark</span>
@@ -130,14 +130,14 @@ export default function LibraryPage() {
 
             {/* ORDER Section */}
             <div>
-              <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-3">Order</h3>
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Order</h3>
               <nav className="space-y-1">
                 <button
                   onClick={() => setTab('archived')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'archived' 
                       ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-500 hover:bg-black/5 hover:text-ink'
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px]">archive</span>
@@ -151,10 +151,10 @@ export default function LibraryPage() {
         {/* SETTINGS Section (pinned to bottom) */}
         <div className="p-6 pt-0 mt-auto">
           <div className="space-y-1">
-            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-3">Settings</h3>
+            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3 px-3">Settings</h3>
             <Link
               href="/settings"
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-500 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
             >
               <span className="material-symbols-outlined text-[20px]">settings</span>
               Settings
@@ -162,14 +162,14 @@ export default function LibraryPage() {
              {/* Import / Export moved here */}
              <button
               onClick={exportAllData}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-500 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
             >
               <span className="material-symbols-outlined text-[20px]">download</span>
               Export Data
             </button>
             <button
               onClick={() => importInputRef.current?.click()}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-500 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
             >
               <span className="material-symbols-outlined text-[20px]">upload</span>
               Import Data
@@ -189,21 +189,21 @@ export default function LibraryPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 bg-white relative">
+      <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 relative">
         {/* Header */}
-        <header className="flex-shrink-0 px-8 py-6 border-b border-ink/5 flex flex-col gap-6">
+        <header className="flex-shrink-0 px-8 py-6 border-b border-ink/5 dark:border-slate-700 flex flex-col gap-6">
           {/* Breadcrumb + Search Row */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="flex items-center gap-2 text-sm font-bold text-gray-400">
-                <span className="hover:text-ink cursor-pointer transition-colors">Home</span>
+            <div className="flex items-center gap-2 text-sm font-bold text-gray-400 dark:text-gray-500">
+                <span className="hover:text-ink dark:hover:text-slate-200 cursor-pointer transition-colors">Home</span>
                 <span>/</span>
-                <span className="text-ink">{getTabLabel(tab)}</span>
+                <span className="text-ink dark:text-slate-100">{getTabLabel(tab)}</span>
             </div>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
                  {/* Search */}
                 <div className="relative w-full max-w-md">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[20px] pointer-events-none">
+                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-[20px] pointer-events-none">
                     search
                     </span>
                     <input
@@ -211,12 +211,12 @@ export default function LibraryPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search a note"
-                    className="w-full bg-gray-50 hover:bg-gray-100 focus:bg-white text-ink text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 rounded-lg transition-all outline-none placeholder:text-gray-400"
+                    className="w-full bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-600 text-ink dark:text-slate-100 text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 dark:focus:border-slate-500 rounded-lg transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                      {search && (
                     <button
                         onClick={() => setSearch('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-ink"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-ink dark:hover:text-slate-100"
                     >
                         <span className="material-symbols-outlined text-[18px]">close</span>
                     </button>
@@ -227,7 +227,7 @@ export default function LibraryPage() {
                 <div className="flex items-center gap-2">
                     <button
                     onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 rounded-lg transition-colors border border-gray-200"
+                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg transition-colors border border-gray-200 dark:border-slate-700"
                     >
                     <span className="material-symbols-outlined text-[18px]">filter_list</span>
                     {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
