@@ -127,6 +127,50 @@
     scrollbar-width: none;
   }
 
+  /* Custom scrollbar styling for visible scrollbars */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #c0c0c0;
+    border-radius: 5px;
+    border: 2px solid white;
+    background-clip: padding-box;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #a0a0a0;
+  }
+
+  /* Dark mode scrollbar */
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #4b5563;
+    border-color: #1f2937;
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #6b7583;
+  }
+
+  /* Firefox scrollbar */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+  }
+
+  .custom-scrollbar {
+    scrollbar-color: #c0c0c0 transparent;
+  }
+
+  .dark .custom-scrollbar {
+    scrollbar-color: #4b5563 transparent;
+  }
+
   .torn-paper-top {
     position: relative;
   }

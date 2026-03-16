@@ -86,7 +86,7 @@ export default function LibraryPage() {
     <div className="flex h-screen bg-canvas dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800">
-        <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar">
+        <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar" data-lenis-prevent>
           {/* User Profile */}
           <div className="flex items-center gap-3 mb-8 px-2">
             <div className="w-10 h-10 rounded-full bg-white border-2 border-ink flex items-center justify-center text-xl overflow-hidden shadow-sm">
@@ -238,7 +238,7 @@ export default function LibraryPage() {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar" data-lenis-prevent>
           <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 w-full max-w-7xl mx-auto">
             {/* Show New Document Card only in 'All notes' (recent) tab when not searching */}
             {tab === 'recent' && !search && (
