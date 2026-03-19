@@ -85,15 +85,15 @@ export default function LibraryPage() {
   return (
     <div className="flex h-screen bg-canvas dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 flex-shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800">
+      <aside className="w-64 shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800">
         <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar" data-lenis-prevent>
           {/* User Profile */}
           <div className="flex items-center gap-3 mb-8 px-2">
-            <div className="w-10 h-10 rounded-full bg-white border-2 border-ink flex items-center justify-center text-xl overflow-hidden shadow-sm">
-              <span className="material-symbols-outlined text-ink">face_5</span>
+            <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-700 border-2 border-ink dark:border-slate-500 flex items-center justify-center text-xl overflow-hidden shadow-sm">
+              <span className="material-symbols-outlined text-ink dark:text-slate-100">face_5</span>
             </div>
             <div className="flex flex-col">
-              <span className="font-heading text-sm font-bold text-ink leading-tight">Writer</span>
+              <span className="font-heading text-sm font-bold text-ink dark:text-slate-100 leading-tight">Writer</span>
               <span className="text-xs text-gray-500 font-mono">writer@sable.app</span>
             </div>
           </div>
@@ -107,8 +107,8 @@ export default function LibraryPage() {
                   onClick={() => setTab('recent')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'recent' 
-                      ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px] filled-icon">description</span>
@@ -118,8 +118,8 @@ export default function LibraryPage() {
                   onClick={() => setTab('favorites')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'favorites' 
-                      ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px] filled-icon">bookmark</span>
@@ -136,8 +136,8 @@ export default function LibraryPage() {
                   onClick={() => setTab('archived')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                     tab === 'archived' 
-                      ? 'bg-white shadow-sm ring-1 ring-ink/5 text-ink' 
-                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                      : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
                   <span className="material-symbols-outlined text-[20px]">archive</span>
@@ -151,10 +151,10 @@ export default function LibraryPage() {
         {/* SETTINGS Section (pinned to bottom) */}
         <div className="p-6 pt-0 mt-auto">
           <div className="space-y-1">
-            <h3 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3 px-3">Settings</h3>
+            <h3 className="text-xs font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Settings</h3>
             <Link
               href="/settings"
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
               <span className="material-symbols-outlined text-[20px]">settings</span>
               Settings
@@ -162,14 +162,14 @@ export default function LibraryPage() {
              {/* Import / Export moved here */}
              <button
               onClick={exportAllData}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
               <span className="material-symbols-outlined text-[20px]">download</span>
               Export Data
             </button>
             <button
               onClick={() => importInputRef.current?.click()}
-              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 hover:bg-black/5 hover:text-ink"
+              className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
               <span className="material-symbols-outlined text-[20px]">upload</span>
               Import Data
@@ -191,7 +191,7 @@ export default function LibraryPage() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-w-0 bg-white dark:bg-slate-900 relative">
         {/* Header */}
-        <header className="flex-shrink-0 px-8 py-6 border-b border-ink/5 dark:border-slate-700 flex flex-col gap-6">
+        <header className="shrink-0 px-8 py-6 border-b border-ink/5 dark:border-slate-700 flex flex-col gap-6">
           {/* Breadcrumb + Search Row */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-400 dark:text-gray-500">
