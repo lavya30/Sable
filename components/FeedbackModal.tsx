@@ -90,7 +90,7 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-ink/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-ink/40 cursor-pointer" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative z-10 w-[480px] max-w-[92vw] bg-white border-2 border-ink rounded-2xl shadow-hard-lg p-8 flex flex-col items-center">

@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Use class-based dark mode so app settings control theme (not OS preference). */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* ── Design Tokens ───────────────────────────────────────────────────────── */
 @theme {
   /* Colors */
@@ -11,7 +14,7 @@
   --color-rose: #FDA4AF;
   --color-primary: #13ec75;
   --color-background-light: #f6f8f7;
-  --color-background-dark: #102218;
+  --color-background-dark: #0b1324;
   --color-surface: #F9FAFB;
   --color-paper: #FFFFFF;
 
@@ -275,6 +278,29 @@ body {
   height: 100%;
 }
 
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+a[href],
+summary,
+label[for],
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+select {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 /* Lenis smooth scroll override */
 html.lenis,
 html.lenis body {
@@ -479,56 +505,56 @@ html.lenis body {
 
 /* Flip the ink token so every text-ink / border-ink class automatically inverts */
 .dark {
-  --color-ink: #e2f4ee;
-  --color-canvas: #102218;
-  --color-surface: #172e22;
-  --color-paper: #1e3a2e;
+  --color-ink: #e8eef9;
+  --color-canvas: #0b1324;
+  --color-surface: #121e34;
+  --color-paper: #1a2841;
 }
 
 /* bg-ink is intentionally used as a dark backdrop (BubbleMenu, tooltips, buttons)
    — keep those dark even though the token is now light */
 .dark .bg-ink {
-  background-color: #172e22 !important;
+  background-color: #121e34 !important;
 }
 
 /* White surfaces become dark in dark mode */
 .dark .bg-white {
-  background-color: #172e22 !important;
+  background-color: #121e34 !important;
 }
 
 .dark .bg-gray-100 {
-  background-color: #1e3a2e !important;
+  background-color: #1a2841 !important;
 }
 
 /* Body base */
 .dark body {
-  background-color: #102218;
-  color: #e2f4ee;
+  background-color: #0b1324;
+  color: #e8eef9;
 }
 
 /* Tiptap editor content */
 .dark .tiptap-editor .ProseMirror {
-  color: #e2f4ee;
+  color: #e8eef9;
 }
 
 .dark .tiptap-editor h1,
 .dark .tiptap-editor h2,
 .dark .tiptap-editor h3 {
-  color: #e2f4ee;
+  color: #e8eef9;
 }
 
 .dark .tiptap-editor blockquote {
-  color: #93b5a8;
+  color: #aebad1;
   border-left-color: #13ec75;
 }
 
 .dark .tiptap-editor code {
-  background: #1e3a2e;
-  color: #a7f3d0;
+  background: #1a2841;
+  color: #c9ddff;
 }
 
 .dark .tiptap-editor pre {
-  background: #1e3a2e;
+  background: #1a2841;
 }
 
 .dark .tiptap-editor mark {
@@ -536,45 +562,46 @@ html.lenis body {
 }
 
 .dark .tiptap-editor hr {
-  border-top-color: #2d5443;
+  border-top-color: #2f3f5e;
 }
 
 .dark .tiptap-editor table {
-  border-color: #2d5443;
+  border-color: #2f3f5e;
 }
 
 .dark .tiptap-editor th,
 .dark .tiptap-editor td {
-  border-color: #2d5443;
+  border-color: #2f3f5e;
 }
 
 .dark .tiptap-editor th {
-  background-color: #172e22;
+  background-color: #121e34;
 }
 
 .dark .tiptap-editor p.is-editor-empty:first-child::before {
-  color: #4a7060;
+  color: #7083a8;
 }
 
 /* Focus-mode word highlight in dark mode */
 .dark .focus-mode-active .tiptap-editor .ProseMirror {
-  color: rgba(226, 244, 238, 0.18);
-  caret-color: #e2f4ee;
+  color: rgba(232, 238, 249, 0.18);
+  caret-color: #e8eef9;
 }
 
 .dark .focus-mode-active .tiptap-editor .ProseMirror h1,
 .dark .focus-mode-active .tiptap-editor .ProseMirror h2,
 .dark .focus-mode-active .tiptap-editor .ProseMirror h3 {
-  color: rgba(226, 244, 238, 0.18);
+  color: rgba(232, 238, 249, 0.18);
 }
 
 .dark .focus-mode-active .tiptap-editor .ProseMirror .is-focus-word {
-  color: #e2f4ee;
+  color: #e8eef9;
 }
 
 /* Range input */
 input[type='range'] {
   -webkit-appearance: none;
+  appearance: none;
   width: 100%;
   background: transparent;
   cursor: pointer;

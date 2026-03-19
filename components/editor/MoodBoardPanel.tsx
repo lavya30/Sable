@@ -112,7 +112,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40" onClick={onClose} />
+        <div className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 cursor-pointer" onClick={onClose} />
       )}
 
       <div
@@ -194,7 +194,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Color picker modal */}
       {showColorModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0" onClick={() => setShowColorModal(false)} />
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowColorModal(false)} />
           <div className="relative w-full max-w-xs bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
             <h3 className="font-display font-bold text-lg text-ink">Pick a Color</h3>
 
@@ -238,7 +238,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Link modal */}
       {showLinkModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0" onClick={() => setShowLinkModal(false)} />
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowLinkModal(false)} />
           <div className="relative w-full max-w-sm bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
             <h3 className="font-display font-bold text-lg text-ink">Add Link</h3>
             <input
@@ -269,7 +269,7 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Note modal */}
       {showNoteModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0" onClick={() => setShowNoteModal(false)} />
+          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowNoteModal(false)} />
           <div className="relative w-full max-w-sm bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
             <h3 className="font-display font-bold text-lg text-ink">Add Note</h3>
             <input

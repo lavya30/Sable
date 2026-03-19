@@ -83,9 +83,9 @@ export default function LibraryPage() {
   if (!isClient) return null;
 
   return (
-    <div className="flex h-screen bg-canvas dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
+    <div className="flex h-screen bg-white dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-gray-50/50 dark:bg-slate-800">
+      <aside className="w-64 shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar" data-lenis-prevent>
           {/* User Profile */}
           <div className="flex items-center gap-3 mb-8 px-2">
@@ -211,7 +211,7 @@ export default function LibraryPage() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="Search a note"
-                    className="w-full bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-600 text-ink dark:text-slate-100 text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 dark:focus:border-slate-500 rounded-lg transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                    className="w-full bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-600 text-ink dark:text-slate-100 text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 dark:focus:border-slate-500 rounded-lg transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
                     />
                      {search && (
                     <button

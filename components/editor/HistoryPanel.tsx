@@ -60,7 +60,7 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 z-40" onClick={onClose} />
+        <div className="fixed inset-0 bg-ink/20 z-40 cursor-pointer" onClick={onClose} />
       )}
 
       <div

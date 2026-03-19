@@ -42,7 +42,7 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
     /* Overlay */
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
       {/* Backdrop click to close */}
-      <div className="absolute inset-0" onClick={onClose} />
+      <div className="absolute inset-0 cursor-pointer" onClick={onClose} />
 
       {/* Modal */}
       <div className="relative w-full max-w-[560px] bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg flex flex-col p-8 md:p-12 z-10">

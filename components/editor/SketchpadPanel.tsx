@@ -130,7 +130,7 @@ export function SketchpadPanel({ isOpen, onClose, notes, onNotesChange, editor, 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 z-40" onClick={onClose} />
+        <div className="fixed inset-0 bg-ink/20 z-40 cursor-pointer" onClick={onClose} />
       )}
 
       {showGoalToast && (
