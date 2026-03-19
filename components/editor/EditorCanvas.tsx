@@ -21,6 +21,7 @@ import { WordCountBadge } from './WordCountBadge';
 import { AmbientPlayer } from './AmbientPlayer';
 import { AutoSaveIndicator, SaveStatus } from './AutoSaveIndicator';
 import { HistoryPanel } from './HistoryPanel';
+import { AIAgentPanel } from './AIAgentPanel';
 import { saveSnapshot } from '@/lib/history';
 import { MarginNote } from '@/lib/types';
 
@@ -43,6 +44,7 @@ export function EditorCanvas({ docId }: Props) {
   const [showSettings, setShowSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [showHistory, setShowHistory] = useState(false);
+  const [showAIAssistant, setShowAIAssistant] = useState(false);
   const hasChangedRef = useRef(false);
   const lastSavedContentRef = useRef<string>('');
   const SNAPSHOT_INTERVAL = (settings.snapshotInterval ?? 5) * 60 * 1000;
@@ -265,6 +267,17 @@ export function EditorCanvas({ docId }: Props) {
             settings
           </span>
         </button>
+
+        <button
+          onClick={() => setShowAIAssistant(true)}
+          aria-label="Open AI Assistant"
+          className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-primary text-ink border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all"
+        >
+          <span className="material-symbols-outlined">auto_awesome</span>
+          <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            AI Assistant
+          </span>
+        </button>
       </footer>
 
       {/* â”€â”€ Overlays / Modals â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
@@ -302,6 +315,12 @@ export function EditorCanvas({ docId }: Props) {
         docId={docId}
         editor={editor}
         onRestore={handleRestore}
+      />
+
+      <AIAgentPanel
+        isOpen={showAIAssistant}
+        onClose={() => setShowAIAssistant(false)}
+        editor={editor}
       />
 
       <AutoSaveIndicator status={saveStatus} />
