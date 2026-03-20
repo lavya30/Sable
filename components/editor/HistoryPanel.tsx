@@ -62,142 +62,107 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 z-40 cursor-pointer" onClick={onClose} />
+        <div className="fixed inset-0 bg-black/20 z-40 cursor-pointer" onClick={onClose} />
       )}
 
       <div
         ref={panelRef}
-        className={`fixed top-0 right-0 bottom-0 z-50 w-[420px] bg-white dark:bg-slate-800 border-l-2 border-ink dark:border-slate-700 shadow-[-4px_0_0_#2D3436] dark:shadow-[-4px_0_0_rgb(30,41,59)] flex flex-col transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 bottom-0 z-50 w-96 bg-white dark:bg-slate-900 border-l border-gray-200 dark:border-slate-700 flex flex-col transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        <div className="absolute inset-0 bg-dot-grid-sketch opacity-[0.04] pointer-events-none" />
-
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b-2 border-ink/10 dark:border-slate-700 relative z-10 bg-white dark:bg-slate-800">
-          <div>
-            <h2 className="text-2xl font-display font-extrabold tracking-tight text-ink dark:text-slate-100">Version History</h2>
-            <span className="text-sm font-marker text-gray-500 dark:text-gray-400 inline-block">Max 25 snapshots saved per document</span>
-          </div>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-slate-700">
+          <h2 className="text-lg font-display font-bold text-ink dark:text-slate-100">History</h2>
           <button
             onClick={onClose}
-            className="w-9 h-9 flex items-center justify-center rounded-full border-2 border-ink/20 hover:border-ink hover:bg-gray-100 transition-all"
+            className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md transition-colors text-ink/70 dark:text-slate-400 hover:text-ink dark:hover:text-slate-200"
             aria-label="Close"
           >
-            <span className="material-symbols-outlined text-lg">close</span>
+            <span className="material-symbols-outlined text-xl">close</span>
           </button>
         </div>
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto relative z-10">
-          {snapshots.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full px-8 text-center gap-4">
-              <span className="material-symbols-outlined text-5xl text-gray-300">history</span>
-              <p className="font-display font-bold text-ink text-lg">No snapshots yet</p>
-              <p className="font-marker text-gray-400 text-sm">Snapshots are saved every 5 minutes while you write</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-ink/10 dark:divide-slate-700">
-              {snapshots.map((snap) => (
-                <div
-                  key={snap.id}
-                  onClick={() => setSelected(snap)}
-                  className={`w-full text-left px-5 py-4 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors cursor-pointer flex items-start gap-3 ${
-                    selected?.id === snap.id ? 'bg-lavender/30 dark:bg-slate-700 border-l-4 border-lavender' : 'border-l-4 border-transparent'
-                  }`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <span className="font-display font-bold text-sm text-ink dark:text-slate-100">{relativeSnapshotTime(snap.savedAt)}</span>
-                      <span className="text-[11px] font-marker text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-slate-700 px-2 py-0.5 rounded-full flex-shrink-0">{snap.wordCount} words</span>
-                    </div>
-                    <p className="text-xs text-gray-400 dark:text-gray-400 font-body line-clamp-2 leading-relaxed">
-                      {snap.preview || 'Empty document'}
-                    </p>
-                  </div>
+        {/* Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Snapshots list */}
+          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-700">
+            {snapshots.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
+                <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-slate-700">history</span>
+                <p className="text-sm text-gray-500 dark:text-gray-400">No snapshots yet. Snapshots save every 5 minutes.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-gray-100 dark:divide-slate-800">
+                {snapshots.map((snap) => (
                   <button
-                    onClick={(e) => { e.stopPropagation(); handleRestore(snap); }}
-                    className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 bg-ink text-white text-xs font-marker rounded-lg border-2 border-ink hover:bg-primary hover:text-ink transition-all mt-0.5"
-                    title="Restore this version"
+                    key={snap.id}
+                    onClick={() => setSelected(snap)}
+                    className={`w-full text-left px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 ${
+                      selected?.id === snap.id ? 'bg-lavender/20 dark:bg-slate-800 border-l-3 border-lavender' : 'border-l-3 border-transparent'
+                    }`}
                   >
-                    <span className="material-symbols-outlined text-[14px]">undo</span>
-                    Undo to here
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <span className="text-sm font-medium text-ink dark:text-slate-200">{relativeSnapshotTime(snap.savedAt)}</span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">{snap.wordCount} words</span>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
+                      {snap.preview || '(empty)'}
+                    </p>
                   </button>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                ))}
+              </div>
+            )}
+          </div>
 
-        {/* Selected snapshot preview + restore */}
-        {selected && (
-          <div className="border-t-2 border-ink/10 dark:border-slate-700 px-5 py-4 relative z-10 bg-white dark:bg-slate-800 flex flex-col gap-3">
-            <div className="flex items-center justify-between">
-              <p className="text-xs text-gray-400 dark:text-gray-500 font-marker">
-                {new Date(selected.savedAt).toLocaleString([], {
-                  month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-                })}
-              </p>
+          {/* Preview & restore */}
+          {selected && (
+            <div className="border-t border-gray-200 dark:border-slate-700 p-4 space-y-3 bg-white dark:bg-slate-900">
+              {/* Preview text */}
+              <div className="bg-gray-50 dark:bg-slate-800 rounded-lg p-3 max-h-24 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-700">
+                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  {selected.preview || '(empty)'}
+                </p>
+              </div>
+
+              {/* Diff toggle */}
               {editor && (
-                <label className="flex items-center gap-2 cursor-pointer text-xs font-display font-bold text-ink dark:text-slate-100 hover:opacity-80 transition-opacity">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-ink dark:hover:text-slate-200">
                   <input
                     type="checkbox"
                     checked={showDiff}
                     onChange={(e) => setShowDiff(e.target.checked)}
-                    className="w-3.5 h-3.5 accent-ink rounded-sm"
+                    className="w-3.5 h-3.5 accent-ink rounded"
                   />
-                  Show Diff
+                  Show changes
                 </label>
               )}
+
+              {/* Restore button */}
+              <button
+                onClick={() => handleRestore(selected)}
+                className="w-full px-3 py-2 bg-ink text-white text-sm font-medium rounded-lg hover:bg-ink/90 transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 flex items-center justify-center gap-2"
+              >
+                <span className="material-symbols-outlined text-[18px]">undo</span>
+                Restore
+              </button>
             </div>
+          )}
 
-            <div className="text-sm font-body line-clamp-4 leading-relaxed bg-gray-50 dark:bg-slate-700 rounded-lg px-3 py-2 border border-ink/10 dark:border-slate-600 overflow-y-auto max-h-[160px] custom-scrollbar">
-              {showDiff && editor ? (
-                (() => {
-                  const snapText = extractPlainText(selected.content);
-                  const currentText = editor.getText();
-                  const diff = diffWords(snapText, currentText);
-                  return (
-                    <div className="whitespace-pre-wrap">
-                      {diff.map((part, i) => {
-                        const style = part.added
-                          ? 'diff-added'
-                          : part.removed
-                          ? 'diff-removed'
-                          : 'text-ink dark:text-slate-200';
-                        return (
-                          <span key={i} className={style}>
-                            {part.value}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  );
-                })()
-              ) : (
-                <p className="text-ink dark:text-slate-200 whitespace-pre-wrap">{selected.preview || 'Empty document'}</p>
-              )}
+          {/* Clear button */}
+          {snapshots.length > 0 && (
+            <div className="border-t border-gray-200 dark:border-slate-700 p-3">
+              <button
+                onClick={handleClear}
+                className={`text-xs transition-colors ${
+                  confirmClear
+                    ? 'font-semibold text-red-500'
+                    : 'text-gray-400 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400'
+                }`}
+              >
+                {confirmClear ? 'Confirm clear all' : 'Clear history'}
+              </button>
             </div>
-
-            <button
-              onClick={() => handleRestore(selected)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-ink text-white font-display font-bold text-sm rounded-rough border-2 border-ink hover:bg-primary hover:text-ink transition-all"
-            >
-              <span className="material-symbols-outlined text-[18px]">restore</span>
-              Restore this version
-            </button>
-          </div>
-        )}
-
-        {/* Footer — clear history */}
-        {snapshots.length > 0 && (
-          <div className="border-t border-ink/10 dark:border-slate-700 px-5 py-3 relative z-10 bg-white dark:bg-slate-800">
-            <button
-              onClick={handleClear}
-              className={`text-xs font-marker transition-colors ${confirmClear ? 'text-red-500 font-bold' : 'text-gray-400 hover:text-red-400'}`}
-            >
-              {confirmClear ? 'Tap again to confirm clear all history' : 'Clear all history'}
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );

@@ -3,8 +3,6 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Editor } from '@tiptap/react';
-import gsap from 'gsap';
-
 
 interface Props {
   editor: Editor | null;
@@ -45,7 +43,6 @@ export function EditorToolbar({
   onPreviewToggle,
   docTitle,
 }: Props) {
-  const toolbarInnerRef = useRef<HTMLDivElement>(null);
   const [fontOpen, setFontOpen] = useState(false);
   const [imageOpen, setImageOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
@@ -57,18 +54,6 @@ export function EditorToolbar({
   const imageFileRef = useRef<HTMLInputElement>(null);
   const activeFamily = editor?.getAttributes('textStyle')?.fontFamily ?? '';
   const currentFont = FONTS.find((f) => f.css === activeFamily) ?? FONTS[0];
-
-  // GSAP: initial reveal animation for toolbar buttons
-  useEffect(() => {
-    if (!editor) return;
-    const el = toolbarInnerRef.current;
-    if (!el) return;
-    const buttons = el.querySelectorAll('button, a');
-    gsap.fromTo(buttons,
-      { y: -8, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.45, stagger: 0.04, ease: 'power3.out', delay: 0.3, overwrite: true }
-    );
-  }, [editor]);
 
   useEffect(() => {
     if (!fontOpen && !imageOpen && !tableOpen) return;
@@ -109,306 +94,333 @@ export function EditorToolbar({
 
   if (!editor) return null;
 
-  const fmtBtn = (
-    label: string,
-    icon: string,
-    action: () => void,
-    active: boolean,
-    hoverColor = 'hover:bg-lavender'
-  ) => (
-    <button
-      key={label}
-      onMouseDown={(e) => {
-        e.preventDefault();
-        action();
-      }}
-      aria-label={label}
-      className={`p-2 rounded-md transition-colors ${hoverColor} ${active ? 'bg-lavender text-ink' : 'text-ink/70 hover:text-ink'
+  const IconBtn = ({
+    icon,
+    label,
+    onClick,
+    active = false,
+  }: {
+    icon: string;
+    label: string;
+    onClick: () => void;
+    active?: boolean;
+  }) => (
+    <div className="relative group/btn">
+      <button
+        onClick={onClick}
+        aria-label={label}
+        className={`p-2 rounded-lg transition-all duration-200 ${
+          active
+            ? 'text-ink dark:text-slate-100 font-medium'
+            : 'text-ink/50 dark:text-slate-400 hover:text-ink dark:hover:text-slate-200 hover:bg-primary/10 dark:hover:bg-slate-800'
         }`}
-    >
-      <span className="material-symbols-outlined text-[20px]">{icon}</span>
-    </button>
+      >
+        <span className="material-symbols-outlined text-lg">{icon}</span>
+      </button>
+      {/* Hover tooltip box — above button with arrow */}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ink dark:bg-slate-800 text-canvas dark:text-slate-100 text-xs font-semibold rounded-lg shadow-lg opacity-0 invisible group-hover/btn:opacity-100 group-hover/btn:visible transition-all duration-200 whitespace-nowrap pointer-events-none border border-ink/20 dark:border-slate-700 z-50">
+        {label}
+        {/* Arrow pointing down */}
+        <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-ink dark:border-t-slate-800" />
+      </div>
+      {/* Inline label — below tooltip */}
+      <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1.5 bg-ink dark:bg-slate-800 text-canvas dark:text-slate-100 text-xs font-semibold rounded-lg whitespace-nowrap opacity-0 invisible group-hover/btn:opacity-100 group-hover/btn:visible transition-all duration-200 pointer-events-none border border-ink/20 dark:border-slate-700 z-50 shadow-md">
+        {label}
+      </span>
+    </div>
   );
 
   return (
-    /* The outer div is the hover trigger zone */
-    <div className="fixed top-0 left-0 right-0 h-20 z-50 flex justify-center items-start group focus-hidden">
-      {/* Gradient hint */}
-      <div className="absolute top-0 w-full h-2 bg-gradient-to-b from-gray-100 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-
-      {/* Toolbar — slides down on hover */}
+    <>
+      {/* Top toolbar — always visible, minimal */}
       <div
-        ref={toolbarInnerRef}
-        className={`
-          mt-3 max-w-[95vw] flex-wrap justify-center bg-white border-2 border-ink shadow-hard rounded-rough
-          px-4 py-2.5 flex items-center gap-2 sm:gap-4
-          transform -translate-y-[120%] group-hover:translate-y-0
-          transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-          ${focusMode ? 'opacity-0 pointer-events-none' : ''}
-        `}
+        className={`fixed top-0 left-0 right-0 z-50 bg-canvas dark:bg-slate-950 border-b border-ink/8 dark:border-slate-800/50 backdrop-blur-sm ${
+          focusMode ? 'opacity-0 pointer-events-none' : ''
+        }`}
       >
-        {/* Branding / back to library */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 border-r-2 border-ink/20 pr-4 hover:opacity-70 transition-opacity"
-          title="Back to Library"
-        >
-          <span className="material-symbols-outlined text-2xl">edit_note</span>
-          <span className="font-heading font-bold text-base hidden sm:block truncate max-w-[160px]">
-            {docTitle || 'Sable'}
-          </span>
-        </Link>
-
-        {/* Formatting */}
-        <div className="flex items-center gap-1">
-          {fmtBtn('Bold', 'format_bold', () => editor.chain().focus().toggleBold().run(), editor.isActive('bold'))}
-          {fmtBtn('Italic', 'format_italic', () => editor.chain().focus().toggleItalic().run(), editor.isActive('italic'))}
-          {fmtBtn('H1', 'format_h1', () => editor.chain().focus().toggleHeading({ level: 1 }).run(), editor.isActive('heading', { level: 1 }))}
-          {fmtBtn('H2', 'format_h2', () => editor.chain().focus().toggleHeading({ level: 2 }).run(), editor.isActive('heading', { level: 2 }))}
-          {fmtBtn('H3', 'format_h3', () => editor.chain().focus().toggleHeading({ level: 3 }).run(), editor.isActive('heading', { level: 3 }))}
-          <div className="w-px h-5 bg-gray-200 mx-1" />
-          {fmtBtn('Quote', 'format_quote', () => editor.chain().focus().toggleBlockquote().run(), editor.isActive('blockquote'), 'hover:bg-peach')}
-          {fmtBtn('Bullet list', 'format_list_bulleted', () => editor.chain().focus().toggleBulletList().run(), editor.isActive('bulletList'))}
-          {fmtBtn('Numbered list', 'format_list_numbered', () => editor.chain().focus().toggleOrderedList().run(), editor.isActive('orderedList'))}
-          {fmtBtn('Highlight', 'highlight', () => editor.chain().focus().toggleHighlight().run(), editor.isActive('highlight'), 'hover:bg-peach')}
-        </div>
-
-        <div className="w-px h-5 bg-gray-200 mx-1" />
-
-        {/* Image insert */}
-        <div ref={imageDropdownRef} className="relative">
-          <button
-            onClick={() => setImageOpen((v) => !v)}
-            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${imageOpen ? 'bg-mint border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
-              }`}
-            title="Insert image"
+        <div className="flex items-center justify-between h-14 px-5 gap-5">
+          {/* Left: Back & Title */}
+          <Link
+            href="/"
+            className="flex items-center gap-3 hover:opacity-70 transition-opacity min-w-0 group"
+            title="Back to Library"
           >
-            <span className="material-symbols-outlined text-[20px]">image</span>
-          </button>
-          {imageOpen && (
-            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard w-[280px] p-4 flex flex-col gap-3">
-              <span className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Insert Image</span>
-
-              {/* URL input */}
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && insertImageUrl()}
-                  placeholder="Paste image URL…"
-                  className="flex-1 border border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white"
-                  autoFocus
-                />
-                <button
-                  onClick={insertImageUrl}
-                  disabled={!imageUrl.trim()}
-                  className="px-3 py-2 bg-primary border border-ink/20 rounded-lg text-sm font-body font-semibold text-ink hover:bg-primary/80 transition-colors disabled:opacity-40"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="flex items-center gap-2 text-xs text-gray-400">
-                <div className="flex-1 h-px bg-gray-200" />
-                <span className="font-marker">or</span>
-                <div className="flex-1 h-px bg-gray-200" />
-              </div>
-
-              {/* File upload */}
-              <button
-                onClick={() => imageFileRef.current?.click()}
-                className="flex items-center justify-center gap-2 px-3 py-2.5 border-2 border-dashed border-ink/20 rounded-lg text-sm font-marker text-ink/60 hover:border-ink/40 hover:text-ink hover:bg-gray-50 transition-all"
-              >
-                <span className="material-symbols-outlined text-[18px]">upload_file</span>
-                Upload from device
-              </button>
-              <input
-                ref={imageFileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageUpload}
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Table insert */}
-        <div ref={tableDropdownRef} className="relative">
-          <button
-            onClick={() => setTableOpen((v) => !v)}
-            className={`flex items-center gap-1.5 px-2 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${
-              tableOpen ? 'bg-mint border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
-            }`}
-            title="Insert table"
-          >
-            <span className="material-symbols-outlined text-[20px]">table</span>
-          </button>
-          {tableOpen && (
-            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard p-4 flex flex-col gap-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-display font-bold uppercase tracking-wider text-gray-400">Insert Table</span>
-                <span className="text-xs font-marker text-primary">
-                  {tableHover.rows > 0 ? `${tableHover.rows} × ${tableHover.cols}` : ''}
-                </span>
-              </div>
-              <div
-                className="grid gap-1"
-                style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
-                onMouseLeave={() => setTableHover({ rows: 0, cols: 0 })}
-              >
-                {Array.from({ length: 36 }, (_, i) => {
-                  const row = Math.floor(i / 6) + 1;
-                  const col = (i % 6) + 1;
-                  return (
-                    <div
-                      key={i}
-                      onMouseEnter={() => setTableHover({ rows: row, cols: col })}
-                      onClick={() => {
-                        editor.chain().focus().insertTable({ rows: row, cols: col, withHeaderRow: true }).run();
-                        setTableOpen(false);
-                        setTableHover({ rows: 0, cols: 0 });
-                      }}
-                      className={`w-6 h-6 border-2 rounded-sm cursor-pointer transition-colors ${
-                        row <= tableHover.rows && col <= tableHover.cols
-                          ? 'bg-primary border-ink'
-                          : 'bg-gray-100 border-gray-300 hover:border-ink/50'
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-              <p className="text-[11px] font-marker text-gray-400 text-center">
-                {tableHover.rows > 0 ? `${tableHover.rows} rows × ${tableHover.cols} columns` : 'Hover to select size'}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <div className="w-px h-5 bg-gray-200 mx-1" />
-
-        {/* Font picker */}
-        <div ref={fontDropdownRef} className="relative">
-          <button
-            onClick={() => setFontOpen((v) => !v)}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm text-sm transition-all border-2 ${fontOpen ? 'bg-lavender border-ink' : 'border-transparent hover:border-ink/30 hover:bg-gray-50'
-              }`}
-            title="Change font"
-          >
-            <span className="material-symbols-outlined text-[18px]">font_download</span>
-            <span
-              className="hidden sm:inline text-sm leading-none"
-              style={{ fontFamily: currentFont.css || undefined }}
-            >
-              {currentFont.label}
+            <span className="material-symbols-outlined text-base text-primary dark:text-primary/70 group-hover:text-primary/80">arrow_back</span>
+            <span className="font-medium text-sm text-ink dark:text-slate-100 truncate hidden sm:block max-w-[200px]">
+              {docTitle || 'Untitled'}
             </span>
-          </button>
-          {fontOpen && (
-            <div className="absolute top-full mt-2 left-0 z-[60] bg-white border-2 border-ink rounded-xl shadow-hard min-w-[180px] max-h-72 overflow-y-auto scrollbar-hide">
-              {FONTS.map((font) => (
-                <button
-                  key={font.css}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    if (font.css === '') {
-                      editor.chain().focus().unsetFontFamily().run();
-                    } else {
-                      editor.chain().focus().setFontFamily(font.css).run();
-                    }
-                    setFontOpen(false);
-                  }}
-                  className={`w-full text-left px-4 py-2.5 hover:bg-primary/10 transition-colors flex items-center justify-between gap-3 ${font.css === activeFamily ? 'bg-primary/10' : ''
-                    }`}
-                  style={{ fontFamily: font.css || undefined }}
-                >
-                  <span className="text-sm text-ink">{font.label}</span>
-                  {font.css === activeFamily && (
-                    <span className="material-symbols-outlined text-primary text-[16px] flex-shrink-0">check</span>
-                  )}
-                </button>
-              ))}
+          </Link>
+
+          {/* Center: Format tools */}
+          <div className="flex items-center gap-0.5">
+            <IconBtn
+              icon="format_bold"
+              label="Bold"
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              active={editor.isActive('bold')}
+            />
+            <IconBtn
+              icon="format_italic"
+              label="Italic"
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              active={editor.isActive('italic')}
+            />
+            <IconBtn
+              icon="format_h1"
+              label="Heading 1"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+              active={editor.isActive('heading', { level: 1 })}
+            />
+            <IconBtn
+              icon="format_h2"
+              label="Heading 2"
+              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+              active={editor.isActive('heading', { level: 2 })}
+            />
+            <IconBtn
+              icon="format_quote"
+              label="Quote"
+              onClick={() => editor.chain().focus().toggleBlockquote().run()}
+              active={editor.isActive('blockquote')}
+            />
+            <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
+            <IconBtn
+              icon="format_list_bulleted"
+              label="Bullet List"
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              active={editor.isActive('bulletList')}
+            />
+            <IconBtn
+              icon="format_list_numbered"
+              label="Numbered List"
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              active={editor.isActive('orderedList')}
+            />
+            <IconBtn
+              icon="highlight"
+              label="Highlight"
+              onClick={() => editor.chain().focus().toggleHighlight().run()}
+              active={editor.isActive('highlight')}
+            />
+          </div>
+
+          {/* Right: Tools & Actions */}
+          <div className="flex items-center gap-0.5">
+            {/* Font */}
+            <div ref={fontDropdownRef} className="relative">
+              <IconBtn
+                icon="font_download"
+                label="Font"
+                onClick={() => {
+                  setFontOpen(!fontOpen);
+                  setImageOpen(false);
+                  setTableOpen(false);
+                }}
+                active={fontOpen}
+              />
+              {fontOpen && (
+                <div className="absolute top-full right-0 mt-2 z-[60] bg-canvas dark:bg-slate-900 border border-ink/20 dark:border-slate-800 rounded-xl shadow-lg min-w-[160px] overflow-hidden">
+                  <div className="max-h-64 overflow-y-auto">
+                    {FONTS.map((font) => (
+                      <button
+                        key={font.css}
+                        onMouseDown={(e) => {
+                          e.preventDefault();
+                          if (font.css === '') {
+                            editor.chain().focus().unsetFontFamily().run();
+                          } else {
+                            editor.chain().focus().setFontFamily(font.css).run();
+                          }
+                          setFontOpen(false);
+                        }}
+                        className={`w-full text-left text-sm px-4 py-2.5 hover:bg-primary/10 dark:hover:bg-slate-800 transition-colors flex items-center justify-between ${
+                          font.css === activeFamily ? 'bg-lavender/20 dark:bg-slate-800/50 text-ink dark:text-slate-50 font-medium' : 'text-ink/70 dark:text-slate-300'
+                        }`}
+                        style={{ fontFamily: font.css || undefined }}
+                      >
+                        <span>{font.label}</span>
+                        {font.css === activeFamily && (
+                          <span className="material-symbols-outlined text-sm text-primary">check</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
+
+            {/* Image */}
+            <div ref={imageDropdownRef} className="relative">
+              <IconBtn
+                icon="image"
+                label="Image"
+                onClick={() => {
+                  setImageOpen(!imageOpen);
+                  setFontOpen(false);
+                  setTableOpen(false);
+                }}
+                active={imageOpen}
+              />
+              {imageOpen && (
+                <div className="absolute top-full right-0 mt-2 z-[60] bg-canvas dark:bg-slate-900 border border-ink/20 dark:border-slate-800 rounded-xl shadow-lg w-72 p-4 space-y-3">
+                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide">URL</div>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && insertImageUrl()}
+                      placeholder="Paste URL…"
+                      className="flex-1 text-sm border border-ink/20 dark:border-slate-700 rounded-lg px-3 py-2 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 placeholder:text-ink/40 focus:outline-none focus:border-primary"
+                      autoFocus
+                    />
+                    <button
+                      onClick={insertImageUrl}
+                      disabled={!imageUrl.trim()}
+                      className="px-3 py-2 bg-primary text-ink rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs text-ink/40">
+                    <div className="flex-1 h-px bg-ink/10" />
+                    <span>or</span>
+                    <div className="flex-1 h-px bg-ink/10" />
+                  </div>
+                  <button
+                    onClick={() => imageFileRef.current?.click()}
+                    className="w-full text-sm border border-dashed border-ink/20 dark:border-slate-700 rounded-lg px-3 py-2.5 text-ink/60 dark:text-slate-400 hover:text-ink dark:hover:text-slate-200 hover:border-ink/40 transition-all"
+                  >
+                    Upload file
+                  </button>
+                  <input
+                    ref={imageFileRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                </div>
+              )}
+            </div>
+
+            {/* Table */}
+            <div ref={tableDropdownRef} className="relative">
+              <IconBtn
+                icon="table"
+                label="Table"
+                onClick={() => {
+                  setTableOpen(!tableOpen);
+                  setFontOpen(false);
+                  setImageOpen(false);
+                }}
+                active={tableOpen}
+              />
+              {tableOpen && (
+                <div className="absolute top-full right-0 mt-2 z-[60] bg-canvas dark:bg-slate-900 border border-ink/20 dark:border-slate-800 rounded-xl shadow-lg p-4">
+                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide mb-3">Table size</div>
+                  <div
+                    className="grid gap-1.5"
+                    style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
+                    onMouseLeave={() => setTableHover({ rows: 0, cols: 0 })}
+                  >
+                    {Array.from({ length: 36 }, (_, i) => {
+                      const row = Math.floor(i / 6) + 1;
+                      const col = (i % 6) + 1;
+                      return (
+                        <div
+                          key={i}
+                          onMouseEnter={() => setTableHover({ rows: row, cols: col })}
+                          onClick={() => {
+                            editor.chain().focus().insertTable({ rows: row, cols: col, withHeaderRow: true }).run();
+                            setTableOpen(false);
+                            setTableHover({ rows: 0, cols: 0 });
+                          }}
+                          className={`w-6 h-6 border rounded-md cursor-pointer transition-all ${
+                            row <= tableHover.rows && col <= tableHover.cols
+                              ? 'bg-primary border-primary'
+                              : 'bg-surface dark:bg-slate-800 border-ink/20 dark:border-slate-700'
+                          }`}
+                        />
+                      );
+                    })}
+                  </div>
+                  {tableHover.rows > 0 && (
+                    <div className="text-xs text-ink/60 dark:text-slate-400 mt-3 text-center">
+                      {tableHover.rows} × {tableHover.cols}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
+
+            {/* View toggles */}
+            <IconBtn
+              icon={showPreview ? 'visibility_off' : 'visibility'}
+              label="Preview"
+              onClick={onPreviewToggle}
+              active={showPreview}
+            />
+            <IconBtn
+              icon="toc"
+              label="Outline"
+              onClick={onOutlineToggle}
+            />
+            <IconBtn
+              icon="search"
+              label="Find"
+              onClick={onFindToggle}
+            />
+
+            <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
+
+            {/* Panels */}
+            <IconBtn
+              icon="draw"
+              label="Sketchpad"
+              onClick={onSketchpadToggle}
+            />
+            <IconBtn
+              icon="dashboard"
+              label="Mood Board"
+              onClick={onMoodBoardToggle}
+            />
+            <IconBtn
+              icon="history"
+              label="History"
+              onClick={onHistoryOpen}
+            />
+
+            <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
+
+            {/* Publish */}
+            <div className="relative group/btn">
+              <button
+                onClick={onPublishOpen}
+                className="px-4 py-2 bg-primary text-ink rounded-lg hover:bg-primary/90 transition-all text-sm font-medium flex items-center gap-2"
+              >
+                <span className="material-symbols-outlined text-lg">publish</span>
+                <span className="hidden sm:inline">Publish</span>
+              </button>
+              {/* Hover tooltip box */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-ink dark:bg-slate-800 text-canvas dark:text-slate-100 text-xs font-semibold rounded-lg shadow-lg opacity-0 invisible group-hover/btn:opacity-100 group-hover/btn:visible transition-all duration-200 whitespace-nowrap pointer-events-none border border-ink/20 dark:border-slate-700 z-50">
+                Export / Publish
+                {/* Arrow pointing down */}
+                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-3 border-r-3 border-t-3 border-l-transparent border-r-transparent border-t-ink dark:border-t-slate-800" />
+              </div>
+              {/* Inline label */}
+              <span className="absolute left-1/2 -translate-x-1/2 top-full mt-2 px-2 py-1.5 bg-ink dark:bg-slate-800 text-canvas dark:text-slate-100 text-xs font-semibold rounded-lg whitespace-nowrap opacity-0 invisible group-hover/btn:opacity-100 group-hover/btn:visible transition-all duration-200 pointer-events-none border border-ink/20 dark:border-slate-700 z-50 shadow-md">
+                Export / Publish
+              </span>
+            </div>
+          </div>
         </div>
-
-        <div className="w-px h-5 bg-gray-200 mx-1" />
-
-        {/* Preview toggle */}
-        <button
-          onClick={onPreviewToggle}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-rough-sm font-marker text-base transition-all ${showPreview
-            ? 'bg-lavender border-2 border-ink text-ink'
-            : 'border-2 border-transparent hover:border-ink hover:bg-lavender/50'
-            }`}
-          title="Toggle live preview"
-        >
-          <span className="material-symbols-outlined text-[18px]">
-            {showPreview ? 'visibility_off' : 'visibility'}
-          </span>
-          <span className="hidden sm:inline">Preview</span>
-        </button>
-
-        {/* Outline */}
-        <button
-          onClick={onOutlineToggle}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose/40 hover:bg-rose border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
-          title="Open Outline"
-        >
-          <span className="material-symbols-outlined text-[18px]">toc</span>
-          <span className="hidden sm:inline">Outline</span>
-        </button>
-
-        {/* Find */}
-        <button
-          onClick={onFindToggle}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base focus-hidden"
-          title="Find & Replace (Ctrl+F)"
-        >
-          <span className="material-symbols-outlined text-[18px]">search</span>
-          <span className="hidden sm:inline">Find</span>
-        </button>
-
-        {/* Sketchpad */}
-        <button
-          onClick={onSketchpadToggle}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-mint/50 hover:bg-mint border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
-          title="Open Sketchpad"
-        >
-          <span className="material-symbols-outlined text-[18px]">draw</span>
-          <span className="hidden sm:inline">Sketchpad</span>
-        </button>
-
-        {/* Mood Board */}
-        <button
-          onClick={onMoodBoardToggle}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-peach/50 hover:bg-peach border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
-          title="Open Mood Board"
-        >
-          <span className="material-symbols-outlined text-[18px]">dashboard</span>
-          <span className="hidden sm:inline">Mood Board</span>
-        </button>
-
-        {/* History */}
-        <button
-          onClick={onHistoryOpen}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-lavender/40 hover:bg-lavender border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
-          title="Version History"
-        >
-          <span className="material-symbols-outlined text-[18px]">history</span>
-          <span className="hidden sm:inline">History</span>
-        </button>
-
-        {/* Publish */}
-        <button
-          onClick={onPublishOpen}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-ink text-white border-2 border-ink rounded-rough-sm hover:bg-primary hover:text-ink transition-all font-marker text-base"
-          title="Export / Publish"
-        >
-          <span className="material-symbols-outlined text-[18px]">publish</span>
-          <span className="hidden sm:inline">Publish</span>
-        </button>
       </div>
-    </div>
+
+      {/* Spacer */}
+      <div className="h-14" />
+    </>
   );
 }
