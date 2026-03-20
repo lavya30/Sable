@@ -105,7 +105,7 @@ export function NewDocumentCard() {
               {/* Right Column: Templates */}
               <div className="flex-1 flex flex-col gap-1.5 border-t-2 md:border-t-0 md:border-l-2 border-ink/10 dark:border-slate-700 pt-5 md:pt-0 md:pl-8">
                 <label className="text-sm font-display font-bold text-ink dark:text-slate-200">Template</label>
-                <div className="flex flex-col gap-2 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="flex flex-col gap-2 max-h-[320px] overflow-y-auto pr-2 custom-scrollbar" data-lenis-prevent>
                   {TEMPLATES.map(t => (
                     <button
                       key={t.id}
@@ -134,10 +134,10 @@ export function NewDocumentCard() {
             </div>
 
             {/* Footer Actions */}
-            <div className="px-6 py-4 bg-gray-50 dark:bg-slate-750 border-t-2 border-ink dark:border-slate-600 flex gap-3 justify-end rounded-b-lg">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-slate-800 border-t-2 border-ink dark:border-slate-600 flex gap-3 justify-end rounded-b-lg">
               <button
                 onClick={() => setShowDialog(false)}
-                className="px-5 py-2.5 rounded-lg border-2 border-ink dark:border-slate-400 font-body text-sm text-ink dark:text-slate-100 hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors shadow-hard-sm hover:shadow-hard-hover"
+                className="px-5 py-2.5 rounded-lg border-2 border-ink dark:border-slate-400 bg-white dark:bg-slate-700 font-body text-sm text-ink dark:text-slate-100 hover:bg-gray-100 dark:hover:bg-slate-600 transition-colors shadow-hard-sm hover:shadow-hard-hover"
               >
                 Cancel
               </button>
