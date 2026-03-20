@@ -88,17 +88,6 @@ export default function LibraryPage() {
       {/* Sidebar */}
       <aside className="w-64 shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-white dark:bg-slate-800">
         <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar" data-lenis-prevent>
-          {/* User Profile */}
-          <div className="flex items-center gap-3 mb-8 px-2">
-            <div className="w-10 h-10 rounded-full bg-white dark:bg-slate-700 border-2 border-ink dark:border-slate-500 flex items-center justify-center text-xl overflow-hidden shadow-sm">
-              <span className="material-symbols-outlined text-ink dark:text-slate-100">face_5</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-heading text-sm font-bold text-ink dark:text-slate-100 leading-tight">Writer</span>
-              <span className="text-xs text-gray-500 font-mono">writer@sable.app</span>
-            </div>
-          </div>
-
           <div className="space-y-8">
             {/* MAIN Section */}
             <div>
