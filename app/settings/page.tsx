@@ -19,9 +19,9 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
 
   return (
-    <div className="bg-canvas text-ink font-body min-h-screen">
+    <div className="bg-canvas dark:bg-background-dark text-ink dark:text-slate-100 font-body min-h-screen">
       {/* ── Top bar ─────────────────────────────────────────── */}
-      <header className="sticky top-0 z-20 bg-canvas/80 backdrop-blur-md border-b border-ink/8">
+      <header className="sticky top-0 z-20 bg-canvas/80 dark:bg-background-dark/80 backdrop-blur-md border-b border-ink/8 dark:border-slate-700">
         <div className="max-w-[820px] mx-auto px-6 py-4 flex items-center justify-between">
           <Link
             href="/"
@@ -100,16 +100,16 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
       {/* Feature pills */}
       <div className="grid grid-cols-2 gap-3">
         {[
-          { icon: 'visibility_off', title: 'Zero telemetry', desc: 'Nothing leaves your device unless you export', color: 'bg-mint/15 border-mint/30' },
-          { icon: 'hard_drive', title: 'Local storage', desc: 'Your data lives in the browser. You own every byte', color: 'bg-lavender/15 border-lavender/30' },
-          { icon: 'spa', title: 'Calm workspace', desc: 'No productivity pressure, no streak counters', color: 'bg-peach/15 border-peach/30' },
-          { icon: 'wifi_off', title: 'Offline ready', desc: 'Works without internet, always accessible', color: 'bg-rose/15 border-rose/30' },
+          { icon: 'visibility_off', title: 'Zero telemetry', desc: 'Nothing leaves your device unless you export', color: 'bg-mint/15 dark:bg-mint/10 border-mint/30 dark:border-mint/20' },
+          { icon: 'hard_drive', title: 'Local storage', desc: 'Your data lives in the browser. You own every byte', color: 'bg-lavender/15 dark:bg-lavender/10 border-lavender/30 dark:border-lavender/20' },
+          { icon: 'spa', title: 'Calm workspace', desc: 'No productivity pressure, no streak counters', color: 'bg-peach/15 dark:bg-peach/10 border-peach/30 dark:border-peach/20' },
+          { icon: 'wifi_off', title: 'Offline ready', desc: 'Works without internet, always accessible', color: 'bg-rose/15 dark:bg-rose/10 border-rose/30 dark:border-rose/20' },
         ].map((item) => (
           <div key={item.title} className={`${item.color} border rounded-xl px-4 py-3.5 flex items-start gap-3`}>
-            <span className="material-symbols-outlined text-[20px] text-ink/50 mt-0.5 shrink-0">{item.icon}</span>
+            <span className="material-symbols-outlined text-[20px] text-ink/50 dark:text-slate-400 mt-0.5 shrink-0">{item.icon}</span>
             <div className="min-w-0">
-              <p className="font-display font-bold text-[13px] text-ink">{item.title}</p>
-              <p className="text-[11px] text-ink/40 leading-snug mt-0.5">{item.desc}</p>
+              <p className="font-display font-bold text-[13px] text-ink dark:text-slate-100">{item.title}</p>
+              <p className="text-[11px] text-ink/40 dark:text-slate-400 leading-snug mt-0.5">{item.desc}</p>
             </div>
           </div>
         ))}
@@ -142,12 +142,12 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
         <div className="flex gap-3">
           <button
             onClick={exportAllData}
-            className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 bg-white hover:border-ink/20 hover:shadow-sm transition-all group"
+            className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all group"
           >
             <span className="material-symbols-outlined text-[20px] text-primary group-hover:scale-110 transition-transform">download</span>
             <div className="text-left">
-              <p className="font-display font-semibold text-sm">Export</p>
-              <p className="text-[11px] text-ink/35">Download all notebooks</p>
+              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Export</p>
+              <p className="text-[11px] text-ink/35 dark:text-slate-400">Download all notebooks</p>
             </div>
           </button>
           <ImportButton />
@@ -172,11 +172,11 @@ function ImportButton() {
   };
 
   return (
-    <label className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 bg-white hover:border-ink/20 hover:shadow-sm transition-all cursor-pointer group">
+    <label className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all cursor-pointer group">
       <span className="material-symbols-outlined text-[20px] text-lavender group-hover:scale-110 transition-transform">upload</span>
       <div className="text-left">
-        <p className="font-display font-semibold text-sm">Import</p>
-        <p className={`text-[11px] ${error ? 'text-red-500' : 'text-ink/35'}`}>{error || 'Restore from backup'}</p>
+        <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Import</p>
+        <p className={`text-[11px] ${error ? 'text-red-500' : 'text-ink/35 dark:text-slate-400'}`}>{error || 'Restore from backup'}</p>
       </div>
       <input type="file" accept=".json" className="hidden" onChange={handleImport} />
     </label>
@@ -348,15 +348,15 @@ function AboutTab() {
     <div className="space-y-8">
       {/* App identity */}
       <div className="flex items-center gap-5">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-mint/30 border border-primary/15 flex items-center justify-center shrink-0">
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-mint/30 dark:from-primary/10 dark:to-mint/10 border border-primary/15 dark:border-primary/20 flex items-center justify-center shrink-0">
           <span className="material-symbols-outlined text-primary text-[32px]">edit_note</span>
         </div>
         <div>
-          <h3 className="font-heading font-bold text-2xl text-ink">Sable</h3>
-          <p className="text-sm text-ink/40 font-body mt-0.5">
+          <h3 className="font-heading font-bold text-2xl text-ink dark:text-slate-100">Sable</h3>
+          <p className="text-sm text-ink/40 dark:text-slate-400 font-body mt-0.5">
             A calm, distraction-free writing space for writers who value privacy.
           </p>
-          <p className="text-xs text-ink/25 font-mono mt-1">v1.0.0</p>
+          <p className="text-xs text-ink/25 dark:text-slate-500 font-mono mt-1">v1.0.0</p>
         </div>
       </div>
 
@@ -364,15 +364,15 @@ function AboutTab() {
       <Section title="Built With">
         <div className="flex flex-wrap gap-2">
           {[
-            { name: 'Next.js', color: 'bg-ink/5' },
-            { name: 'TipTap', color: 'bg-primary/8' },
-            { name: 'Tailwind CSS', color: 'bg-blue-50' },
-            { name: 'GSAP', color: 'bg-green-50' },
-            { name: 'Electron', color: 'bg-indigo-50' },
+            { name: 'Next.js', color: 'bg-ink/5 dark:bg-slate-700' },
+            { name: 'TipTap', color: 'bg-primary/8 dark:bg-green-900/20' },
+            { name: 'Tailwind CSS', color: 'bg-blue-50 dark:bg-blue-900/20' },
+            { name: 'GSAP', color: 'bg-green-50 dark:bg-emerald-900/20' },
+            { name: 'Electron', color: 'bg-indigo-50 dark:bg-indigo-900/20' },
           ].map((tech) => (
             <span
               key={tech.name}
-              className={`${tech.color} px-3.5 py-1.5 rounded-lg text-xs font-display font-semibold text-ink/60 border border-ink/5`}
+              className={`${tech.color} px-3.5 py-1.5 rounded-lg text-xs font-display font-semibold text-ink/60 dark:text-slate-200 border border-ink/5 dark:border-slate-600`}
             >
               {tech.name}
             </span>
@@ -384,14 +384,14 @@ function AboutTab() {
       <Section title="Feedback">
         <button
           onClick={() => setFeedbackOpen(true)}
-          className="w-full flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 bg-white hover:border-ink/20 hover:shadow-sm transition-all group"
+          className="w-full flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all group"
         >
-          <span className="material-symbols-outlined text-[20px] text-ink/30 group-hover:text-ink/50 transition-colors">chat_bubble</span>
+          <span className="material-symbols-outlined text-[20px] text-ink/30 dark:text-slate-400 group-hover:text-ink/50 dark:group-hover:text-slate-200 transition-colors">chat_bubble</span>
           <div className="text-left flex-1">
-            <p className="font-display font-semibold text-sm text-ink">Send feedback</p>
-            <p className="text-[11px] text-ink/35">Share thoughts or report an issue</p>
+            <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Send feedback</p>
+            <p className="text-[11px] text-ink/35 dark:text-slate-400">Share thoughts or report an issue</p>
           </div>
-          <span className="material-symbols-outlined text-[16px] text-ink/20 group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+          <span className="material-symbols-outlined text-[16px] text-ink/20 dark:text-slate-500 group-hover:translate-x-0.5 transition-transform">chevron_right</span>
         </button>
       </Section>
 
@@ -414,7 +414,7 @@ function AboutTab() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section>
-      <h4 className="font-display font-bold text-xs uppercase tracking-widest text-ink/30 mb-3">{title}</h4>
+      <h4 className="font-display font-bold text-xs uppercase tracking-widest text-ink/30 dark:text-slate-400 mb-3">{title}</h4>
       {children}
     </section>
   );
