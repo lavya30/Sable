@@ -58,6 +58,7 @@ State is client-side and local-first.
 - Documents are stored under `sable_documents` in `localStorage`.
 - Settings are stored under `sable_settings` in `localStorage`.
 - Snapshot history is stored per document under `sable_history_<docId>` via `lib/history.ts`.
+- Daily writing goals are stored locally (e.g. `sable-goal-date-id`).
 - Backup/import-export behavior is implemented in `lib/backup.ts` and includes:
   - `sable_documents`
   - `sable_settings`
@@ -71,14 +72,14 @@ There is no database in the current codebase.
 
 `lib/types.ts` defines the key types:
 
-- `SableDocument`
+- `SableDocument` (includes `tags: string[]` for organization)
 - `MoodBoardItem`
 - `MarginNote`
 
 Important details:
 
 - Document `content` is stored as a stringified Tiptap JSON document, not plain Markdown or HTML.
-- The app is built around local document metadata like favorites, archive state, notes, mood board items, and margin notes.
+- The app is built around local document metadata like favorites, archive state, tags, notes, mood board items, and margin notes.
 
 ### Editor/UI
 
@@ -97,10 +98,16 @@ The settings experience lives in:
 - `app/settings/page.tsx`
 - `context/SettingsContext.tsx`
 
+Global navigation:
+
+- `components/CommandPalette.tsx` implements a global ⌘K command palette (via `cmdk`).
+
 Important supporting client modules include:
 
+- `lib/templates.ts` for predefined structural starter content
 - `lib/history.ts` for version snapshots
-- `components/editor/HistoryPanel.tsx` for restoring snapshots
+- `components/editor/HistoryPanel.tsx` for restoring and `diff`-ing snapshots
+- `components/editor/FindReplacePanel.tsx` coupled with Tiptap for document-wide sweeps
 - `lib/backup.ts` for import/export
 - `lib/writingStats.ts` and `hooks/useWritingTracker.ts` for writing metrics
 
@@ -117,6 +124,7 @@ There are two server routes in the current app:
 
 - Calls OpenAI directly using `fetch`
 - Uses `https://api.openai.com/v1/chat/completions`
+- Triggered by inline IDE slash commands (via `lib/slash-command.ts`) or the dedicated `AIAgentPanel.tsx`
 - Supports `fix_grammar`, `rewrite`, `summarize`, and `continue`
 - Uses `OPENAI_MODEL ?? 'gpt-4o-mini'`
 
@@ -157,7 +165,7 @@ For AI-related changes:
 
 - Because the app uses static export, not every Next.js server feature is a good fit
 - Electron packaging depends on the exported `out/` structure remaining valid
-- Search in `app/page.tsx` currently checks `d.content.toLowerCase()`, which is searching raw serialized content rather than extracted plain text
+- Search in `app/page.tsx` currently checks `d.content.toLowerCase()` and `d.tags`, meaning it searches raw serialized content rather than extracted plain text
 - The repo does not currently include a formal test suite
 
 ## Recommended Workflow For Future Work
@@ -185,7 +193,12 @@ For AI-related changes:
 - `context/DocumentsContext.tsx`
 - `context/SettingsContext.tsx`
 - `components/editor/HistoryPanel.tsx`
+- `components/editor/EditorCanvas.tsx`
+- `components/editor/FindReplacePanel.tsx`
+- `components/CommandPalette.tsx`
 - `lib/backup.ts`
 - `lib/documents.ts`
 - `lib/history.ts`
+- `lib/slash-command.ts`
+- `lib/templates.ts`
 - `lib/types.ts`

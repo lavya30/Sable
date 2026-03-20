@@ -146,6 +146,16 @@ export function DocumentCard({ doc }: Props) {
               Empty notebook…
             </p>
           )}
+
+          {doc.tags && doc.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-3">
+              {doc.tags.map((tag) => (
+                <span key={tag} className="px-1.5 py-0.5 text-[10px] font-display font-bold bg-mint/50 dark:bg-emerald-900/40 text-ink dark:text-emerald-100 rounded border border-mint dark:border-emerald-700/50 uppercase tracking-wider">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-between mt-4">

@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { Snapshot, loadSnapshots, clearHistory, relativeSnapshotTime } from '@/lib/history';
+import { Snapshot, loadSnapshots, clearHistory, relativeSnapshotTime, extractPlainText } from '@/lib/history';
+import { diffWords } from 'diff';
 
 interface Props {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [selected, setSelected] = useState<Snapshot | null>(null);
   const [confirmClear, setConfirmClear] = useState(false);
+  const [showDiff, setShowDiff] = useState(false);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -127,17 +129,54 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
 
         {/* Selected snapshot preview + restore */}
         {selected && (
-          <div className="border-t-2 border-ink/10 px-5 py-4 relative z-10 bg-white">
-            <div className="mb-3">
-              <p className="text-xs text-gray-400 font-marker mb-1">
+          <div className="border-t-2 border-ink/10 px-5 py-4 relative z-10 bg-white flex flex-col gap-3">
+            <div className="flex items-center justify-between">
+              <p className="text-xs text-gray-400 font-marker">
                 {new Date(selected.savedAt).toLocaleString([], {
                   month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
                 })}
               </p>
-              <p className="text-sm text-ink/80 font-body line-clamp-3 leading-relaxed bg-gray-50 rounded-lg px-3 py-2 border border-ink/10">
-                {selected.preview || 'Empty document'}
-              </p>
+              {editor && (
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-display font-bold text-ink hover:opacity-80 transition-opacity">
+                  <input
+                    type="checkbox"
+                    checked={showDiff}
+                    onChange={(e) => setShowDiff(e.target.checked)}
+                    className="w-3.5 h-3.5 accent-ink rounded-sm"
+                  />
+                  Show Diff
+                </label>
+              )}
             </div>
+
+            <div className="text-sm font-body line-clamp-4 leading-relaxed bg-gray-50 rounded-lg px-3 py-2 border border-ink/10 overflow-y-auto max-h-[160px] custom-scrollbar">
+              {showDiff && editor ? (
+                (() => {
+                  const snapText = extractPlainText(selected.content);
+                  const currentText = editor.getText();
+                  const diff = diffWords(snapText, currentText);
+                  return (
+                    <div className="whitespace-pre-wrap">
+                      {diff.map((part, i) => {
+                        const style = part.added
+                          ? 'diff-added'
+                          : part.removed
+                          ? 'diff-removed'
+                          : 'text-ink/80';
+                        return (
+                          <span key={i} className={style}>
+                            {part.value}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  );
+                })()
+              ) : (
+                <p className="text-ink/80 whitespace-pre-wrap">{selected.preview || 'Empty document'}</p>
+              )}
+            </div>
+
             <button
               onClick={() => handleRestore(selected)}
               className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-ink text-white font-display font-bold text-sm rounded-rough border-2 border-ink hover:bg-primary hover:text-ink transition-all"

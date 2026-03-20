@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import { SableDocument } from '@/lib/types';
+import { TemplateId } from '@/lib/templates';
 import {
   createDocument,
   generateId,
@@ -18,7 +19,7 @@ import {
 
 interface DocumentsContextType {
   documents: SableDocument[];
-  createDoc: () => SableDocument;
+  createDoc: (templateId?: TemplateId) => SableDocument;
   getDoc: (id: string) => SableDocument | undefined;
   updateDoc: (id: string, partial: Partial<SableDocument>) => void;
   deleteDoc: (id: string) => void;
@@ -47,8 +48,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
     }
   }, [documents, hydrated]);
 
-  const createDoc = useCallback((): SableDocument => {
-    const doc = createDocument();
+  const createDoc = useCallback((templateId?: TemplateId): SableDocument => {
+    const doc = createDocument(templateId);
     setDocuments((prev) => [doc, ...prev]);
     return doc;
   }, []);

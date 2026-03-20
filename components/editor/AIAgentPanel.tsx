@@ -9,6 +9,8 @@ interface Props {
   isOpen: boolean;
   onClose: () => void;
   editor: Editor | null;
+  initialAction?: AgentAction;
+  initialContext?: string;
 }
 
 const ACTIONS: Array<{ key: AgentAction; label: string; icon: string }> = [
@@ -18,8 +20,8 @@ const ACTIONS: Array<{ key: AgentAction; label: string; icon: string }> = [
   { key: 'continue', label: 'Continue', icon: 'arrow_forward' },
 ];
 
-export function AIAgentPanel({ isOpen, onClose, editor }: Props) {
-  const [action, setAction] = useState<AgentAction>('fix_grammar');
+export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_grammar', initialContext = '' }: Props) {
+  const [action, setAction] = useState<AgentAction>(initialAction);
   const [instruction, setInstruction] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -55,6 +57,14 @@ export function AIAgentPanel({ isOpen, onClose, editor }: Props) {
       return {
         text: fullText,
         range: { from, to },
+        context: fullText.slice(0, 20000),
+      };
+    }
+
+    if (initialContext) {
+      return {
+        text: initialContext,
+        range: { from: editor.state.selection.from, to: editor.state.selection.from },
         context: fullText.slice(0, 20000),
       };
     }

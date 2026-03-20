@@ -34,6 +34,7 @@ export interface SableDocument {
   notes: string; // scratchpad side notes
   moodBoard: MoodBoardItem[];
   marginNotes: MarginNote[];
+  tags: string[];
 }
 
 export type LibraryTab = 'recent' | 'favorites' | 'archived';

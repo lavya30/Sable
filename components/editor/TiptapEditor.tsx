@@ -17,6 +17,9 @@ import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallba
 import { Editor } from '@tiptap/react';
 import { checkGrammar, buildTextAndMap, LTMatch } from '@/lib/grammar';
 import { lookupWord, DictResult } from '@/lib/dictionary';
+import { SlashCommandExtension } from '@/lib/slash-command';
+import { createSlashSuggestion } from './SlashCommand';
+import SearchAndReplace from '@sereneinserenade/tiptap-search-and-replace';
 
 // Tiptap-managed decoration — wraps the current word with .is-focus-word.
 // Uses Decoration.inline() so a <span> is inserted that CSS can target.
@@ -139,10 +142,11 @@ interface Props {
   lineSpacing: number;
   focusMode: boolean;
   readOnly?: boolean;
+  onSlashCommand?: (command: string, context: string) => void;
 }
 
 const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
-  { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false },
+  { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false, onSlashCommand },
   ref
 ) {
   const grammarMatchesRef = useRef<LTMatch[]>([]);
@@ -187,12 +191,21 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       ResizableImage,
       FocusWordDecoration,
       GrammarExtension,
+      SlashCommandExtension.configure({
+        suggestion: createSlashSuggestion((command, context) => {
+          onSlashCommand?.(command, context);
+        }),
+      }),
       TextStyle,
       FontFamily,
       Table.configure({ resizable: false }),
       TableRow,
       TableHeader,
       TableCell,
+      SearchAndReplace.configure({
+        searchResultClass: 'search-result',
+        disableRegex: false,
+      }),
     ],
     editorProps: {
       attributes: {

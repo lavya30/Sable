@@ -10,6 +10,8 @@ interface Props {
   editor: Editor | null;
   onSketchpadToggle: () => void;
   onMoodBoardToggle: () => void;
+  onOutlineToggle: () => void;
+  onFindToggle: () => void;
   onPublishOpen: () => void;
   onHistoryOpen: () => void;
   focusMode: boolean;
@@ -34,6 +36,8 @@ export function EditorToolbar({
   editor,
   onSketchpadToggle,
   onMoodBoardToggle,
+  onOutlineToggle,
+  onFindToggle,
   onPublishOpen,
   onHistoryOpen,
   focusMode,
@@ -136,8 +140,8 @@ export function EditorToolbar({
       <div
         ref={toolbarInnerRef}
         className={`
-          mt-3 bg-white border-2 border-ink shadow-hard rounded-rough
-          px-4 py-2.5 flex items-center gap-4
+          mt-3 max-w-[95vw] flex-wrap justify-center bg-white border-2 border-ink shadow-hard rounded-rough
+          px-4 py-2.5 flex items-center gap-2 sm:gap-4
           transform -translate-y-[120%] group-hover:translate-y-0
           transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
           ${focusMode ? 'opacity-0 pointer-events-none' : ''}
@@ -343,6 +347,26 @@ export function EditorToolbar({
             {showPreview ? 'visibility_off' : 'visibility'}
           </span>
           <span className="hidden sm:inline">Preview</span>
+        </button>
+
+        {/* Outline */}
+        <button
+          onClick={onOutlineToggle}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose/40 hover:bg-rose border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base"
+          title="Open Outline"
+        >
+          <span className="material-symbols-outlined text-[18px]">toc</span>
+          <span className="hidden sm:inline">Outline</span>
+        </button>
+
+        {/* Find */}
+        <button
+          onClick={onFindToggle}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-100 hover:bg-gray-200 border-2 border-transparent hover:border-ink rounded-rough-sm transition-all font-marker text-base focus-hidden"
+          title="Find & Replace (Ctrl+F)"
+        >
+          <span className="material-symbols-outlined text-[18px]">search</span>
+          <span className="hidden sm:inline">Find</span>
         </button>
 
         {/* Sketchpad */}

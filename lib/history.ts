@@ -9,7 +9,7 @@ export interface Snapshot {
 const MAX_SNAPSHOTS = 25;
 const HISTORY_PREFIX = 'sable_history_';
 
-function extractPlainText(json: string): string {
+export function extractPlainText(json: string): string {
   try {
     const walk = (node: { type?: string; text?: string; content?: unknown[] }): string => {
       if (node.type === 'text') return node.text ?? '';

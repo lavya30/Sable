@@ -60,7 +60,8 @@ export default function LibraryPage() {
       list = list.filter(
         (d) =>
           d.title.toLowerCase().includes(q) ||
-          d.content.toLowerCase().includes(q)
+          d.content.toLowerCase().includes(q) ||
+          (d.tags && d.tags.some(t => t.toLowerCase().includes(q)))
       );
     }
 

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ExportFormat, SableDocument } from '@/lib/types';
 import { exportHTML, exportMarkdown, exportPDF, exportZine } from '@/lib/export';
+import { useDocuments } from '@/context/DocumentsContext';
+import { TagInput } from './../library/TagInput';
 
 interface Props {
   isOpen: boolean;
@@ -19,8 +21,17 @@ const FORMATS: { key: ExportFormat; label: string; icon: string; bg: string; til
 ];
 
 export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
+  const { updateDoc } = useDocuments();
   const [selected, setSelected] = useState<ExportFormat>('pdf');
   const [exporting, setExporting] = useState(false);
+  const [tags, setTags] = useState<string[]>(doc.tags ?? []);
+
+  // Update parent doc if tags change via the modal
+  useEffect(() => {
+    if (JSON.stringify(tags) !== JSON.stringify(doc.tags ?? [])) {
+      updateDoc(doc.id, { tags });
+    }
+  }, [tags, doc.id, doc.tags, updateDoc]);
 
   if (!isOpen) return null;
 
@@ -77,11 +88,11 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
         </div>
 
         {/* Format cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           {FORMATS.map(({ key, label, icon, bg, tilt }) => (
             <label
               key={key}
-              className="group relative flex flex-col items-center justify-center h-36 rounded-xl border-2 border-ink bg-white shadow-hard-sm cursor-pointer transition-all hover:-translate-y-1 hover:shadow-hard"
+              className="group relative flex flex-col items-center justify-center h-32 rounded-xl border-2 border-ink bg-white shadow-hard-sm cursor-pointer transition-all hover:-translate-y-1 hover:shadow-hard"
             >
               <input
                 type="radio"
@@ -102,6 +113,12 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
               </span>
             </label>
           ))}
+        </div>
+
+        {/* Tags Editor */}
+        <div className="mb-8 flex flex-col gap-2">
+          <label className="text-sm font-display font-bold text-ink mb-1">Document Tags</label>
+          <TagInput tags={tags} onChange={setTags} placeholder="Add tags to organize your library..." />
         </div>
 
         {/* Actions */}

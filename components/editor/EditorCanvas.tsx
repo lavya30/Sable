@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useRef, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -22,6 +22,11 @@ import { AmbientPlayer } from './AmbientPlayer';
 import { AutoSaveIndicator, SaveStatus } from './AutoSaveIndicator';
 import { HistoryPanel } from './HistoryPanel';
 import { AIAgentPanel } from './AIAgentPanel';
+import { WritingGoal } from './WritingGoal';
+import { SprintTimer } from './SprintTimer';
+import { ReadabilityBadge } from './ReadabilityBadge';
+import { OutlinePanel } from './OutlinePanel';
+import { FindReplacePanel } from './FindReplacePanel';
 import { saveSnapshot } from '@/lib/history';
 import { MarginNote } from '@/lib/types';
 
@@ -37,14 +42,20 @@ export function EditorCanvas({ docId }: Props) {
   const [editor, setEditor] = useState<Editor | null>(null);
   const [html, setHtml] = useState('');
   const [focusMode, setFocusMode] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [typewriterMode, setTypewriterMode] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [showSketchpad, setShowSketchpad] = useState(false);
   const [showMoodBoard, setShowMoodBoard] = useState(false);
+  const [showOutline, setShowOutline] = useState(false);
+  const [showFindReplace, setShowFindReplace] = useState(false);
   const [showPublish, setShowPublish] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [showHistory, setShowHistory] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
+  const [aiInitialAction, setAiInitialAction] = useState<'fix_grammar' | 'rewrite' | 'summarize' | 'continue' | undefined>();
+  const [aiInitialContext, setAiInitialContext] = useState('');
   const hasChangedRef = useRef(false);
   const lastSavedContentRef = useRef<string>('');
   const SNAPSHOT_INTERVAL = (settings.snapshotInterval ?? 5) * 60 * 1000;
@@ -107,6 +118,19 @@ export function EditorCanvas({ docId }: Props) {
   // Writing activity tracking
   useWritingTracker(editor);
 
+  // Global Ctrl+F listener
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      // Toggle find & replace if cmd+f or ctrl+f
+      if (e.key === 'f' && (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setShowFindReplace((v) => !v);
+      }
+    };
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
+  }, []);
+
   if (!doc || doc.isDeleted) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-canvas">
@@ -141,9 +165,19 @@ export function EditorCanvas({ docId }: Props) {
     return editorRef.current?.getHTML() ?? html;
   }
 
+  function handleSlashCommand(command: string, context: string) {
+    if (['fix_grammar', 'rewrite', 'summarize', 'continue'].includes(command)) {
+      setAiInitialAction(command as any);
+      setAiInitialContext(context);
+      setShowAIAssistant(true);
+    }
+  }
+
   return (
     <div
       className={`text-ink font-body min-h-screen flex flex-col relative overflow-x-hidden selection:bg-mint selection:text-ink transition-all duration-300 ${focusMode ? 'focus-mode-active' : ''
+        } ${isFullscreen ? 'fullscreen-editor' : ''
+        } ${typewriterMode ? 'typewriter-mode' : ''
         } ${settings.theme === 'dark'
           ? 'bg-background-dark'
           : 'bg-canvas'
@@ -154,6 +188,8 @@ export function EditorCanvas({ docId }: Props) {
         editor={editor}
         onSketchpadToggle={() => setShowSketchpad(true)}
         onMoodBoardToggle={() => setShowMoodBoard(true)}
+        onOutlineToggle={() => setShowOutline((v) => !v)}
+        onFindToggle={() => setShowFindReplace((v) => !v)}
         onPublishOpen={() => setShowPublish(true)}
         onHistoryOpen={() => setShowHistory(true)}
         focusMode={focusMode}
@@ -188,6 +224,7 @@ export function EditorCanvas({ docId }: Props) {
                 fontSize={settings.fontSize}
                 lineSpacing={settings.lineSpacing}
                 focusMode={focusMode}
+                onSlashCommand={handleSlashCommand}
               />
             </div>
           </div>
@@ -230,7 +267,19 @@ export function EditorCanvas({ docId }: Props) {
       {/* â”€â”€ Bottom-right controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <footer ref={footerRef} className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
         <div className="focus-hidden">
+          <WritingGoal wordCount={editor?.storage?.characterCount?.words() ?? 0} docId={docId} />
+        </div>
+
+        <div className="focus-hidden">
+          <SprintTimer currentWordCount={editor?.storage?.characterCount?.words() ?? 0} />
+        </div>
+
+        <div className="focus-hidden">
           <AmbientPlayer />
+        </div>
+
+        <div className="focus-hidden">
+          <ReadabilityBadge editor={editor} />
         </div>
 
         <div className="focus-hidden">
@@ -238,6 +287,18 @@ export function EditorCanvas({ docId }: Props) {
         </div>
 
 
+
+        {/* Typewriter scroll toggle */}
+        <button
+          onClick={() => setTypewriterMode((v) => !v)}
+          aria-label={typewriterMode ? 'Exit Typewriter' : 'Typewriter Mode'}
+          className={`btn-magnetic group relative flex items-center justify-center w-12 h-12 border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all ${typewriterMode ? 'bg-peach' : 'bg-white'}`}
+        >
+          <span className={`material-symbols-outlined transition-colors ${typewriterMode ? 'text-ink' : 'group-hover:text-peach'}`}>keyboard</span>
+          <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {typewriterMode ? 'Exit Typewriter' : 'Typewriter'}
+          </span>
+        </button>
 
         {/* Focus mode toggle */}
         <button
@@ -253,6 +314,20 @@ export function EditorCanvas({ docId }: Props) {
           </span>
           <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             {focusMode ? 'Exit Focus' : 'Focus Mode'}
+          </span>
+        </button>
+
+        {/* Fullscreen toggle */}
+        <button
+          onClick={() => setIsFullscreen((v) => !v)}
+          aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+          className={`btn-magnetic group relative flex items-center justify-center w-12 h-12 border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all ${isFullscreen ? 'bg-mint' : 'bg-white'}`}
+        >
+          <span className={`material-symbols-outlined transition-colors ${isFullscreen ? 'text-ink' : 'group-hover:text-mint'}`}>
+            {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
+          </span>
+          <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+            {isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           </span>
         </button>
 
@@ -297,6 +372,18 @@ export function EditorCanvas({ docId }: Props) {
         onChange={handleMoodBoardChange}
       />
 
+      <OutlinePanel
+        isOpen={showOutline}
+        onClose={() => setShowOutline(false)}
+        editor={editor}
+      />
+
+      <FindReplacePanel
+        isOpen={showFindReplace}
+        onClose={() => setShowFindReplace(false)}
+        editor={editor}
+      />
+
       <PublishModal
         isOpen={showPublish}
         onClose={() => setShowPublish(false)}
@@ -319,8 +406,14 @@ export function EditorCanvas({ docId }: Props) {
 
       <AIAgentPanel
         isOpen={showAIAssistant}
-        onClose={() => setShowAIAssistant(false)}
+        onClose={() => {
+          setShowAIAssistant(false);
+          setAiInitialContext('');
+          setAiInitialAction(undefined);
+        }}
         editor={editor}
+        initialAction={aiInitialAction}
+        initialContext={aiInitialContext}
       />
 
       <AutoSaveIndicator status={saveStatus} />

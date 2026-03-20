@@ -1,4 +1,5 @@
 import { SableDocument, CoverColor } from './types';
+import { TemplateId, TEMPLATES } from './templates';
 
 const STORAGE_KEY = 'sable_documents';
 
@@ -31,15 +32,14 @@ export function saveDocuments(docs: SableDocument[]): void {
   }
 }
 
-export function createDocument(): SableDocument {
+export function createDocument(templateId: TemplateId = 'blank'): SableDocument {
   const now = new Date().toISOString();
+  const template = TEMPLATES.find((t) => t.id === templateId) || TEMPLATES[0];
+
   return {
     id: generateId(),
     title: 'Untitled',
-    content: JSON.stringify({
-      type: 'doc',
-      content: [{ type: 'paragraph', content: [] }],
-    }),
+    content: JSON.stringify(template.content),
     coverColor: randomCoverColor(),
     createdAt: now,
     updatedAt: now,
@@ -49,6 +49,7 @@ export function createDocument(): SableDocument {
     notes: '',
     moodBoard: [],
     marginNotes: [],
+    tags: [],
   };
 }
 
