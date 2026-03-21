@@ -2,18 +2,18 @@
 
 ## Project Overview
 
-Sable is a focused writing app built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, and Electron.
+Sable is a local-first writing app built with Next.js 16, React 19, TypeScript, Tailwind CSS 4, Tiptap, and Electron.
 
-The app has two primary runtime modes:
+The app has two practical runtime targets:
 
-- Web/Next.js during development via `next dev`
-- Electron for desktop packaging, loading the exported static Next build from `out/`
+- Next.js in development
+- Electron on Windows, loading the statically exported Next app from `out/`
 
-The product centers on local-first document editing with optional AI-assisted writing and grammar help.
+The product is centered on private, on-device writing with rich editing, writing tools, local export/import, and optional AI assistance.
 
 ## Core Commands
 
-Use `bun` for regular project workflows unless there is a clear reason to use another tool.
+Use `bun` for normal workflows.
 
 ```bash
 bun install
@@ -24,159 +24,231 @@ bun run electron:dev
 bun run electron:build
 ```
 
+Additional repo scripts:
+
+```bash
+bun run start
+bun run lint
+```
+
 Notes:
 
-- `bun run build` runs `next build` and emits a static export because `next.config.ts` sets `output: 'export'`.
+- `next.config.ts` sets `output: 'export'`, so builds must remain compatible with static export.
 - `bun run electron:dev` starts Next on port `3000` and then launches Electron.
-- `bun run electron:build` depends on a successful web build and packages the Windows desktop app with `electron-builder`.
+- `bun run electron:build` runs the web build first, then packages the Windows app with `electron-builder`.
+- Build artifacts already present in the repo include `.next/`, `out/`, and `dist/`.
 
-## Environment Variables
+## Environment And External Services
 
-The only OpenAI-related environment variables currently used by the repo are:
+Environment variables used by the repo:
 
 - `OPENAI_API_KEY`
-- `OPENAI_MODEL`
+- `OPENAI_MODEL` (optional, defaults to `gpt-4o-mini`)
 
-`OPENAI_MODEL` is optional. The code falls back to `gpt-4o-mini` when it is unset.
+External network calls in the current codebase:
 
-## Architecture
+- OpenAI Chat Completions from `app/api/agent/route.ts`
+- LanguageTool from `app/api/grammar/route.ts`
+- LanguageTool directly from `lib/grammar.ts` on the client for inline grammar checking
+- Dictionary API from `lib/dictionary.ts`
+- FormSubmit from `components/FeedbackModal.tsx`
 
-### App Shell
+This means the app is local-first, but not fully offline for AI, grammar, dictionary, or feedback features.
 
-- `app/layout.tsx` sets up global fonts, global CSS, and providers.
-- `app/providers.tsx` wraps the app with `SettingsProvider`, `DocumentsProvider`, and smooth scrolling.
-- `app/page.tsx` is the main library/dashboard view.
-- `app/editor/EditorPageClient.tsx` routes to the editor based on the `id` query param.
+## High-Level Architecture
 
-### State and Persistence
+### App Structure
 
-State is client-side and local-first.
+- `app/layout.tsx` defines metadata, global CSS, and the root provider wrapper.
+- `app/providers.tsx` mounts `SettingsProvider`, `DocumentsProvider`, Lenis scrolling, and the global command palette.
+- `app/page.tsx` is the document library.
+- `app/editor/page.tsx` and `app/editor/EditorPageClient.tsx` route into the editor by `id` query param.
+- `app/settings/page.tsx` is the standalone settings screen.
 
-- `context/DocumentsContext.tsx` is the primary document state container.
-- `context/SettingsContext.tsx` stores UI/editor settings.
-- `lib/documents.ts` handles `localStorage` load/save and document creation helpers.
-- Documents are stored under `sable_documents` in `localStorage`.
-- Settings are stored under `sable_settings` in `localStorage`.
-- Snapshot history is stored per document under `sable_history_<docId>` via `lib/history.ts`.
-- Daily writing goals are stored locally (e.g. `sable-goal-date-id`).
-- Backup/import-export behavior is implemented in `lib/backup.ts` and includes:
-  - `sable_documents`
-  - `sable_settings`
-  - `sable_writing_stats`
-  - `sable-goal-*`
-  - `sable_history_*`
+### State And Persistence
 
-There is no database in the current codebase.
+The app has no database. State is persisted in `localStorage`.
+
+Primary stores:
+
+- `context/DocumentsContext.tsx`
+- `context/SettingsContext.tsx`
+
+Important storage keys:
+
+- `sable_documents`
+- `sable_settings`
+- `sable_writing_stats`
+- `sable_history_<docId>`
+- `sable-goal-*`
+
+Document persistence helpers live in `lib/documents.ts`.
+Backup/import-export for all Sable-related keys lives in `lib/backup.ts`.
+Writing analytics persistence lives in `lib/writingStats.ts`.
+Snapshot history lives in `lib/history.ts`.
 
 ### Document Model
 
-`lib/types.ts` defines the key types:
+The core document type is `SableDocument` in `lib/types.ts`.
 
-- `SableDocument` (includes `tags: string[]` for organization)
-- `MoodBoardItem`
-- `MarginNote`
+Important fields:
 
-Important details:
+- `content`: stringified Tiptap JSON
+- `notes`: sketchpad text
+- `moodBoard`: mood board items
+- `marginNotes`: paragraph-anchored side notes
+- `tags`
+- `isDeleted`, `isFavorited`, `isArchived`
 
-- Document `content` is stored as a stringified Tiptap JSON document, not plain Markdown or HTML.
-- The app is built around local document metadata like favorites, archive state, tags, notes, mood board items, and margin notes.
+Do not treat document content as Markdown or plain HTML in storage. Tiptap JSON is the source of truth.
 
-### Editor/UI
+### Editor Surface
 
-The editor-related UI lives mostly in:
+The editor shell is `components/editor/EditorCanvas.tsx`.
 
-- `components/editor/*`
-- `app/editor/*`
+Major editor features currently implemented:
 
-The library/home view lives mostly in:
+- Tiptap-based rich text editing in `components/editor/TiptapEditor.tsx`
+- live HTML preview
+- debounced autosave into document state
+- periodic local snapshots
+- slash-command driven AI actions
+- side-panel AI assistant
+- grammar highlighting and suggestions
+- dictionary lookup for selected words
+- image paste/drop with inline image nodes
+- table editing
+- search and replace
+- outline panel
+- margin note gutter
+- mood board panel
+- sketchpad panel
+- readability badge
+- word count badge
+- writing goals
+- sprint timer
+- ambient sound player
+- keystroke sound effects
+- publish/export modal
+
+The editor also has focus mode, typewriter mode, and a client-side fullscreen UI state.
+
+### Library And Settings Surface
+
+Library behavior is mainly in:
 
 - `app/page.tsx`
 - `components/library/*`
 
-The settings experience lives in:
+Current library features include:
+
+- recent, favorites, and archived views
+- title/content/tag search
+- sort by updated time
+- create, rename, duplicate, archive, favorite, soft-delete
+- import/export of all local data
+
+Settings behavior is mainly in:
 
 - `app/settings/page.tsx`
 - `context/SettingsContext.tsx`
 
-Global navigation:
+Current persisted settings:
 
-- `components/CommandPalette.tsx` implements a global ⌘K command palette (via `cmdk`).
+- theme
+- font size
+- line spacing
+- snapshot interval
+- keystroke sound theme and volume
+- ambient sound type and volume
 
-Important supporting client modules include:
+### Export And Publishing
 
-- `lib/templates.ts` for predefined structural starter content
-- `lib/history.ts` for version snapshots
-- `components/editor/HistoryPanel.tsx` for restoring and `diff`-ing snapshots
-- `components/editor/FindReplacePanel.tsx` coupled with Tiptap for document-wide sweeps
-- `lib/backup.ts` for import/export
-- `lib/writingStats.ts` and `hooks/useWritingTracker.ts` for writing metrics
+Document export lives in `lib/export.ts` and is triggered from `components/editor/PublishModal.tsx`.
 
-Visual behavior includes GSAP-based UI motion and Lenis smooth scrolling.
+Supported export/publish formats:
+
+- PDF via print iframe
+- Markdown via `turndown`
+- HTML
+- zine/booklet-style print layout
+
+Tags are also editable inside the publish modal and persist back to the document.
+
+### Command Surface
+
+- `components/CommandPalette.tsx` implements the global `Cmd/Ctrl + K` palette.
+- `lib/slash-command.ts` and `components/editor/SlashCommand.tsx` implement slash-command suggestions inside the editor.
 
 ### API Routes
 
-There are two server routes in the current app:
+Server routes:
 
 - `app/api/agent/route.ts`
 - `app/api/grammar/route.ts`
 
 `app/api/agent/route.ts`:
 
-- Calls OpenAI directly using `fetch`
-- Uses `https://api.openai.com/v1/chat/completions`
-- Triggered by inline IDE slash commands (via `lib/slash-command.ts`) or the dedicated `AIAgentPanel.tsx`
-- Supports `fix_grammar`, `rewrite`, `summarize`, and `continue`
-- Uses `OPENAI_MODEL ?? 'gpt-4o-mini'`
+- validates action and input size
+- requires `OPENAI_API_KEY`
+- calls `https://api.openai.com/v1/chat/completions`
+- supports `fix_grammar`, `rewrite`, `summarize`, and `continue`
+- returns plain text suggestions only
+- uses a 20 second timeout
 
 `app/api/grammar/route.ts`:
 
-- Calls the public LanguageTool API
-- Returns matches only
-- Fails soft by returning an empty match list on errors
+- proxies requests to the public LanguageTool API
+- returns `{ matches: [] }` on invalid input or failure
+- uses an 8 second timeout
+
+Important: inline grammar checking in the editor does not use this route. `lib/grammar.ts` calls LanguageTool directly from the client.
 
 ### Electron
 
-`electron/main.js` is the desktop wrapper.
+Electron entry point: `electron/main.js`
 
-Key behavior:
+Current behavior:
 
-- In development, Electron loads `http://localhost:3000`
-- In packaged mode, Electron serves the static exported app from `out/` through a custom `app://` protocol
-- The custom protocol includes range request handling for media playback
+- dev mode loads `http://localhost:3000`
+- packaged mode serves the static export from `out/` over a custom `app://` protocol
+- the custom protocol handles HTML route fallback and byte-range requests for media
+- Electron is configured for Windows packaging via `electron-builder`
+
+Any changes to routing, asset paths, or media loading need to remain compatible with both static export and the custom Electron protocol.
 
 ## Conventions For Changes
 
-When editing this repo, prefer the existing architectural style:
+When changing this repo:
 
-- Keep document and settings state in the existing React contexts unless there is a clear reason to introduce a new store
-- Preserve the local-first model and avoid introducing backend persistence unless explicitly requested
-- Treat Tiptap JSON as the source of truth for document content
-- Preserve existing localStorage key formats unless a migration is intentionally added
-- Keep Electron packaging compatible with static export
-- Avoid introducing dependencies unless the current stack cannot handle the requirement cleanly
-
-For AI-related changes:
-
-- Preserve the current soft-failure behavior where practical
-- Keep prompts and output contracts strict because the UI expects plain text suggestions
-- Be explicit about request limits and timeouts
+- Keep state in the existing React contexts unless there is a strong reason not to.
+- Preserve the local-first storage model.
+- Treat Tiptap JSON as canonical document content.
+- Preserve `localStorage` key formats unless you add an explicit migration path.
+- Keep static export compatibility.
+- Keep Electron packaging compatibility with `out/`.
+- Avoid introducing server-side assumptions that do not work with exported Next builds.
+- Prefer soft-failure behavior for network-backed helpers where that pattern already exists.
+- Be careful with user-facing AI output contracts; the UI expects plain text suggestions, not structured markdown.
 
 ## Things To Watch
 
-- Because the app uses static export, not every Next.js server feature is a good fit
-- Electron packaging depends on the exported `out/` structure remaining valid
-- Search in `app/page.tsx` currently checks `d.content.toLowerCase()` and `d.tags`, meaning it searches raw serialized content rather than extracted plain text
-- The repo does not currently include a formal test suite
+- Search in `app/page.tsx` currently matches against raw serialized `d.content`, not extracted plain text.
+- `deleteDoc` in `DocumentsContext` is a soft delete (`isDeleted: true`), not physical removal.
+- Grammar support is split between a server route and direct client fetches to LanguageTool.
+- The settings page markets the app as offline/local-only, but several features rely on third-party network calls.
+- There is no formal automated test suite in the repo right now.
+- The worktree may contain generated or user-authored changes; do not assume `app/layout.tsx` or `public/` assets are untouched.
 
 ## Recommended Workflow For Future Work
 
-1. Read the relevant page, component, context, and helper modules before changing behavior.
-2. If the feature touches document state, inspect `DocumentsContext` and `lib/documents.ts` first.
-3. If the feature touches settings, inspect `SettingsContext`.
-4. If the feature touches backup/import, inspect `lib/backup.ts` and the library/settings entry points that call it.
-5. If the feature touches history/versioning, inspect `lib/history.ts` and `components/editor/HistoryPanel.tsx`.
-6. If the feature touches AI behavior, inspect `app/api/agent/route.ts` and any calling editor components.
-7. After changes, run the narrowest useful verification command, then run `bun run build` if the change affects integration boundaries.
+1. Read the relevant page, panel, context, and helper modules before changing behavior.
+2. If the feature touches persistence, inspect `context/DocumentsContext.tsx`, `context/SettingsContext.tsx`, and the relevant `lib/*` storage helpers first.
+3. If the feature touches editor behavior, inspect `components/editor/EditorCanvas.tsx` and `components/editor/TiptapEditor.tsx` before changing surrounding UI.
+4. If the feature touches AI flows, inspect both `components/editor/AIAgentPanel.tsx` and `app/api/agent/route.ts`.
+5. If the feature touches grammar, inspect both `app/api/grammar/route.ts` and `lib/grammar.ts`.
+6. If the feature touches export or backup, inspect `lib/export.ts`, `lib/backup.ts`, and `components/editor/PublishModal.tsx`.
+7. Run the narrowest useful verification command after changes; use `bun run build` when you touch integration boundaries, routing, export behavior, or Electron-facing assets.
 
 ## High-Value Files
 
@@ -192,13 +264,21 @@ For AI-related changes:
 - `app/api/grammar/route.ts`
 - `context/DocumentsContext.tsx`
 - `context/SettingsContext.tsx`
-- `components/editor/HistoryPanel.tsx`
 - `components/editor/EditorCanvas.tsx`
+- `components/editor/TiptapEditor.tsx`
+- `components/editor/AIAgentPanel.tsx`
+- `components/editor/PublishModal.tsx`
+- `components/editor/HistoryPanel.tsx`
 - `components/editor/FindReplacePanel.tsx`
 - `components/CommandPalette.tsx`
-- `lib/backup.ts`
+- `components/FeedbackModal.tsx`
 - `lib/documents.ts`
-- `lib/history.ts`
-- `lib/slash-command.ts`
-- `lib/templates.ts`
 - `lib/types.ts`
+- `lib/templates.ts`
+- `lib/history.ts`
+- `lib/backup.ts`
+- `lib/export.ts`
+- `lib/writingStats.ts`
+- `lib/grammar.ts`
+- `lib/dictionary.ts`
+- `lib/slash-command.ts`

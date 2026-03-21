@@ -1,0 +1,4 @@
+# If you find a security vulnerability, please contact:
+Contact: https://github.com/lavya30/Sable/issues
+Preferred-Languages: en
+Canonical: https://sable.app/.well-known/security.txt

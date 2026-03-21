@@ -1,0 +1,13 @@
+/* TEAM */
+Developer: Lavya Goel
+GitHub: https://github.com/lavya30
+Twitter: @LavyaG12728
+
+Developer: [Name]
+GitHub: [GitHub URL]
+
+/* SITE */
+Last update: 2026-03-21
+Language: English
+Standards: HTML5, CSS3, ES2024
+Software: Next.js, React, Tiptap, Electron, Tailwind CSS
