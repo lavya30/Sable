@@ -131,8 +131,14 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
     if (!editor || !suggestion.trim() || !targetRange) return;
 
     const maxPos = editor.state.doc.content.size;
-    const from = Math.max(1, Math.min(targetRange.from, maxPos));
+    const from = Math.max(0, Math.min(targetRange.from, maxPos));
     const to = Math.max(from, Math.min(targetRange.to, maxPos));
+
+    // Validate range is valid for insertion
+    if (from > to || from < 0 || to > maxPos) {
+      console.error('Invalid text range for suggestion insertion', { from, to, maxPos });
+      return;
+    }
 
     editor.chain().focus().setTextSelection({ from, to }).insertContent(suggestion).run();
   }

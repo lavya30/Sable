@@ -50,8 +50,13 @@ export function saveSnapshot(docId: string, content: string): void {
     const existing = loadSnapshots(docId);
     const updated = [snapshot, ...existing].slice(0, MAX_SNAPSHOTS);
     localStorage.setItem(`${HISTORY_PREFIX}${docId}`, JSON.stringify(updated));
-  } catch {
-    // storage quota exceeded — ignore
+  } catch (error) {
+    if (error instanceof Error && error.name === 'QuotaExceededError') {
+      console.warn('Storage quota exceeded. History snapshots not saved.');
+      // Optionally notify user via a global notification system
+    } else {
+      console.error('Error saving snapshot:', error);
+    }
   }
 }
 

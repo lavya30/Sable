@@ -42,7 +42,10 @@ export async function checkGrammar(text: string): Promise<LTMatch[]> {
       body: params.toString(),
       signal: AbortSignal.timeout(10000),
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Grammar check failed: ${res.status} ${res.statusText}`);
+      return [];
+    }
     const data = await res.json() as { matches?: Record<string, unknown>[] };
     return (data.matches ?? []).map((m) => ({
       offset: m.offset as number,
@@ -53,7 +56,8 @@ export async function checkGrammar(text: string): Promise<LTMatch[]> {
         .map((r) => r.value),
       issueType: ((m.rule as Record<string, string>)?.issueType) ?? 'other',
     }));
-  } catch {
+  } catch (error) {
+    console.error('Grammar check error:', error instanceof Error ? error.message : String(error));
     return [];
   }
 }

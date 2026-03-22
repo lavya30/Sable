@@ -63,10 +63,10 @@ export function importAllData(file: File): Promise<void> {
     reader.onload = () => {
       try {
         const text = reader.result as string;
-        const data = JSON.parse(text) as Record<string, string>;
+        const data = JSON.parse(text) as Record<string, unknown>;
 
         if (typeof data !== 'object' || data === null || Array.isArray(data)) {
-          throw new Error('Invalid backup file format');
+          throw new Error('Invalid backup file format: must be a JSON object');
         }
 
         // Validate that at least one Sable key exists
@@ -81,14 +81,23 @@ export function importAllData(file: File): Promise<void> {
           throw new Error('This file does not appear to be a Sable backup');
         }
 
-        // Write only Sable-related entries to localStorage
+        // Write only Sable-related entries to localStorage with validation
         for (const [key, value] of Object.entries(data)) {
-          if (typeof value === 'string' && (
-            KNOWN_KEYS.includes(key) ||
-            key.startsWith('sable-goal-') ||
-            key.startsWith('sable_history_')
-          )) {
-            localStorage.setItem(key, value);
+          if (typeof value !== 'string') {
+            console.warn(`Skipping invalid value for key "${key}": expected string, got ${typeof value}`);
+            continue;
+          }
+          if (KNOWN_KEYS.includes(key) || key.startsWith('sable-goal-') || key.startsWith('sable_history_')) {
+            try {
+              // Validate JSON structure for known keys
+              if (key === 'sable_documents' || key === 'sable_settings' || key === 'sable_writing_stats') {
+                JSON.parse(value); // Ensure it's valid JSON
+              }
+              localStorage.setItem(key, value);
+            } catch (error) {
+              console.error(`Failed to import key "${key}":`, error instanceof Error ? error.message : String(error));
+              throw new Error(`Corrupted data in backup file for key: ${key}`);
+            }
           }
         }
 
@@ -96,11 +105,16 @@ export function importAllData(file: File): Promise<void> {
         window.location.reload();
         resolve();
       } catch (err) {
+        console.error('Import error:', err instanceof Error ? err.message : String(err));
         reject(err);
       }
     };
 
-    reader.onerror = () => reject(new Error('Failed to read file'));
+    reader.onerror = () => {
+      const error = new Error('Failed to read backup file');
+      console.error(error);
+      reject(error);
+    };
     reader.readAsText(file);
   });
 }
