@@ -1,0 +1,22 @@
+{
+  "name": "Sable",
+  "short_name": "Sable",
+  "description": "A focused writing app",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1324",
+  "theme_color": "#13ec75",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
