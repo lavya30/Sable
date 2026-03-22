@@ -27,12 +27,14 @@ export async function POST(req: NextRequest) {
     });
 
     if (!res.ok) {
+      console.error('LanguageTool API error:', res.status, res.statusText);
       return NextResponse.json({ matches: [] });
     }
 
     const data = await res.json() as { matches?: Record<string, unknown>[] };
     return NextResponse.json({ matches: data.matches ?? [] });
-  } catch {
+  } catch (error) {
+    console.error('Grammar check error:', error instanceof Error ? error.message : String(error));
     return NextResponse.json({ matches: [] });
   }
 }

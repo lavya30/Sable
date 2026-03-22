@@ -18,7 +18,8 @@ export function loadDocuments(): SableDocument[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as SableDocument[]) : [];
-  } catch {
+  } catch (error) {
+    console.error('Failed to load documents from localStorage:', error instanceof Error ? error.message : String(error));
     return [];
   }
 }

@@ -218,6 +218,11 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         if (!files?.length) return false;
         const file = files[0];
         if (!file.type.startsWith('image/')) return false;
+        // Validate file size (5MB limit)
+        if (file.size > 5 * 1024 * 1024) {
+          console.error('Image file too large. Maximum size is 5MB.');
+          return false;
+        }
         event.preventDefault();
         const reader = new FileReader();
         reader.onload = () => {
@@ -226,6 +231,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           const node = view.state.schema.nodes.image.create({ src });
           const tr = view.state.tr.insert(pos, node);
           view.dispatch(tr);
+        };
+        reader.onerror = () => {
+          console.error('Error reading dropped image file.');
         };
         reader.readAsDataURL(file);
         return true;
@@ -238,12 +246,20 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
             event.preventDefault();
             const file = item.getAsFile();
             if (!file) return false;
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+              console.error('Image file too large. Maximum size is 5MB.');
+              return false;
+            }
             const reader = new FileReader();
             reader.onload = () => {
               const src = reader.result as string;
               const node = view.state.schema.nodes.image.create({ src });
               const tr = view.state.tr.replaceSelectionWith(node);
               view.dispatch(tr);
+            };
+            reader.onerror = () => {
+              console.error('Error reading pasted image file.');
             };
             reader.readAsDataURL(file);
             return true;
@@ -254,9 +270,16 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     },
     content: (() => {
       try {
-        return JSON.parse(content);
-      } catch {
-        return content;
+        const parsed = JSON.parse(content);
+        // Validate that parsed content is an object (valid Tiptap JSON)
+        if (typeof parsed === 'object' && parsed !== null) {
+          return parsed;
+        }
+        console.warn('Invalid Tiptap JSON structure, using empty doc');
+        return { type: 'doc', content: [] };
+      } catch (error) {
+        console.error('Error parsing editor content:', error instanceof Error ? error.message : String(error));
+        return { type: 'doc', content: [] };
       }
     })(),
     editable: !readOnly,
@@ -310,9 +333,15 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     if (!editor) return;
     const newJson = (() => {
       try {
-        return JSON.parse(content);
-      } catch {
-        return content;
+        const parsed = JSON.parse(content);
+        if (typeof parsed === 'object' && parsed !== null && parsed.type === 'doc') {
+          return parsed;
+        }
+        console.warn('Invalid Tiptap JSON structure in external update, preserving current content');
+        return editor.getJSON();
+      } catch (error) {
+        console.error('Error parsing external content update:', error instanceof Error ? error.message : String(error));
+        return editor.getJSON();
       }
     })();
     // Only update if the content actually differs to avoid cursor jumps

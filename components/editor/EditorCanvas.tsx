@@ -166,8 +166,9 @@ export function EditorCanvas({ docId }: Props) {
   }
 
   function handleSlashCommand(command: string, context: string) {
-    if (['fix_grammar', 'rewrite', 'summarize', 'continue'].includes(command)) {
-      setAiInitialAction(command as any);
+    const validCommands = ['fix_grammar', 'rewrite', 'summarize', 'continue'] as const;
+    if (validCommands.includes(command as any)) {
+      setAiInitialAction(command as 'fix_grammar' | 'rewrite' | 'summarize' | 'continue');
       setAiInitialContext(context);
       setShowAIAssistant(true);
     }
