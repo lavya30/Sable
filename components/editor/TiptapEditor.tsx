@@ -716,20 +716,20 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       {grammarTooltip && (
         <div
           data-grammar-tooltip
-          className="fixed z-[200] bg-ink text-white rounded-rough shadow-xl p-3 max-w-xs text-sm pointer-events-auto"
+          className="fixed z-[200] bg-ink dark:bg-canvas text-white dark:text-ink rounded-rough shadow-xl p-3 max-w-xs text-sm pointer-events-auto"
           style={{ left: grammarTooltip.x, top: grammarTooltip.y }}
           onMouseEnter={cancelTooltipHide}
           onMouseLeave={scheduleTooltipHide}
         >
-          <p className="text-white/80 mb-2 text-xs leading-snug">{grammarTooltip.match.message}</p>
+          <p className="text-white/80 dark:text-ink/80 mb-2 text-xs leading-snug">{grammarTooltip.match.message}</p>
           {grammarTooltip.match.replacements.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
-              <p className="w-full text-[10px] text-white/50 mb-0.5">Suggestions:</p>
+              <p className="w-full text-[10px] text-white/50 dark:text-ink/50 mb-0.5">Suggestions:</p>
               {grammarTooltip.match.replacements.map((r) => (
                 <button
                   key={r}
                   onClick={() => applyGrammarSuggestion(r)}
-                  className="bg-mint text-ink text-xs px-2 py-0.5 rounded font-medium hover:bg-mint/80 transition-colors"
+                  className="bg-mint dark:bg-primary text-ink dark:text-canvas text-xs px-2 py-0.5 rounded font-medium hover:bg-mint/80 dark:hover:bg-primary/80 transition-colors"
                 >
                   {r}
                 </button>
@@ -737,7 +737,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
             </div>
           )}
           {grammarTooltip.match.replacements.length === 0 && (
-            <p className="text-white/40 text-[10px] mt-1">No suggestions available</p>
+            <p className="text-white/40 dark:text-ink/40 text-[10px] mt-1">No suggestions available</p>
           )}
         </div>
       )}
