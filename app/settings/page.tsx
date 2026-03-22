@@ -153,6 +153,135 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
           <ImportButton />
         </div>
       </Section>
+
+      {/* AI Assistant */}
+      <Section title="AI Assistant">
+        <div className="rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <span className="material-symbols-outlined text-[20px] text-primary mt-0.5 shrink-0">smart_toy</span>
+            <div>
+              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">AI Provider Config</p>
+              <p className="text-[11px] text-ink/40 dark:text-slate-400 leading-snug mt-0.5">
+                Choose your AI provider and paste your API key. Your key is securely stored only on this device.
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4 pt-1">
+            <div>
+              <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Provider</label>
+              <select
+                value={settings.aiProvider}
+                onChange={(e) => updateSettings({ aiProvider: e.target.value as 'openai' | 'gemini' | 'claude' })}
+                className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
+              >
+                <option value="openai">OpenAI</option>
+                <option value="gemini">Google Gemini</option>
+                <option value="claude">Anthropic Claude</option>
+              </select>
+            </div>
+
+            {settings.aiProvider === 'openai' && (
+              <>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">OpenAI API Key</label>
+                  <input
+                    type="password"
+                    value={settings.openaiApiKey}
+                    onChange={(e) => updateSettings({ openaiApiKey: e.target.value.trim() })}
+                    placeholder="sk-proj-..."
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <select
+                    value={settings.openaiModel}
+                    onChange={(e) => updateSettings({ openaiModel: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
+                  >
+                    <option value="gpt-4o-mini">GPT-4o Mini — fast &amp; affordable</option>
+                    <option value="gpt-4o">GPT-4o — balanced</option>
+                    <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
+                    <option value="gpt-4.1">GPT-4.1 — smartest</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {settings.aiProvider === 'gemini' && (
+              <>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Gemini API Key</label>
+                  <input
+                    type="password"
+                    value={settings.geminiApiKey}
+                    onChange={(e) => updateSettings({ geminiApiKey: e.target.value.trim() })}
+                    placeholder="AIzaSy..."
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <select
+                    value={settings.geminiModel}
+                    onChange={(e) => updateSettings({ geminiModel: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
+                  >
+                    <option value="gemini-2.0-flash">Gemini 2.0 Flash — fast &amp; affordable</option>
+                    <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash — thinking</option>
+                    <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro — smartest</option>
+                  </select>
+                </div>
+              </>
+            )}
+
+            {settings.aiProvider === 'claude' && (
+              <>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Claude API Key</label>
+                  <input
+                    type="password"
+                    value={settings.claudeApiKey}
+                    onChange={(e) => updateSettings({ claudeApiKey: e.target.value.trim() })}
+                    placeholder="sk-ant-..."
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
+                    autoComplete="off"
+                    spellCheck={false}
+                  />
+                </div>
+                <div>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <select
+                    value={settings.claudeModel}
+                    onChange={(e) => updateSettings({ claudeModel: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
+                  >
+                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku — fast &amp; affordable</option>
+                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4 — balanced</option>
+                    <option value="claude-opus-4-20250514">Claude Opus 4 — smartest</option>
+                  </select>
+                </div>
+              </>
+            )}
+          </div>
+
+          {(() => {
+            const keyMap = { openai: settings.openaiApiKey, gemini: settings.geminiApiKey, claude: settings.claudeApiKey };
+            const labelMap = { openai: 'OpenAI', gemini: 'Gemini', claude: 'Claude' };
+            return keyMap[settings.aiProvider] ? (
+              <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 font-display font-semibold pt-1">
+                <span className="material-symbols-outlined text-[16px]">check_circle</span>
+                Key saved ({labelMap[settings.aiProvider]}) — AI assistant is ready
+              </div>
+            ) : null;
+          })()}
+        </div>
+      </Section>
     </div>
   );
 }

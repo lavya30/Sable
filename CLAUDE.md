@@ -42,18 +42,35 @@ Notes:
 
 Environment variables used by the repo:
 
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL` (optional, defaults to `gpt-4o-mini`)
+- `OPENAI_API_KEY` (legacy `.env` file; no longer used at runtime — API keys are now managed via user settings)
+- `OPENAI_MODEL` (legacy; no longer used)
 
 External network calls in the current codebase:
 
-- OpenAI Chat Completions from `app/api/agent/route.ts`
+- **AI providers** (client-side, from `lib/ai.ts`):
+  - OpenAI Chat Completions (`api.openai.com`)
+  - Google Gemini (`generativelanguage.googleapis.com`)
+  - Anthropic Claude (`api.anthropic.com`)
 - LanguageTool from `app/api/grammar/route.ts`
 - LanguageTool directly from `lib/grammar.ts` on the client for inline grammar checking
 - Dictionary API from `lib/dictionary.ts`
 - FormSubmit from `components/FeedbackModal.tsx`
 
 This means the app is local-first, but not fully offline for AI, grammar, dictionary, or feedback features.
+
+### AI Provider Architecture (BYOK)
+
+The app uses a **Bring Your Own Key** model. Users configure their preferred AI provider and API key in Settings → AI Assistant. Keys are stored in `localStorage` and never leave the device.
+
+Supported providers and models:
+
+| Provider | Models | Auth |
+|----------|--------|------|
+| OpenAI | GPT-4o Mini, GPT-4o, GPT-4.1 Mini, GPT-4.1 | `Authorization: Bearer <key>` |
+| Google Gemini | Gemini 2.0 Flash, Gemini 2.5 Flash, Gemini 2.5 Pro | `?key=<key>` query param |
+| Anthropic Claude | Claude 3.5 Haiku, Claude Sonnet 4, Claude Opus 4 | `x-api-key: <key>` header |
+
+The client-side AI helper is `lib/ai.ts`. It builds task prompts, routes requests to the correct provider endpoint, and parses provider-specific response shapes. The old server-side route (`app/api/agent/route.ts`) has been deleted.
 
 ## High-Level Architecture
 
@@ -161,6 +178,10 @@ Current persisted settings:
 - snapshot interval
 - keystroke sound theme and volume
 - ambient sound type and volume
+- AI provider (`openai`, `gemini`, or `claude`)
+- OpenAI API key and model
+- Gemini API key and model
+- Claude API key and model
 
 ### Export And Publishing
 
@@ -184,17 +205,7 @@ Tags are also editable inside the publish modal and persist back to the document
 
 Server routes:
 
-- `app/api/agent/route.ts`
 - `app/api/grammar/route.ts`
-
-`app/api/agent/route.ts`:
-
-- validates action and input size
-- requires `OPENAI_API_KEY`
-- calls `https://api.openai.com/v1/chat/completions`
-- supports `fix_grammar`, `rewrite`, `summarize`, and `continue`
-- returns plain text suggestions only
-- uses a 20 second timeout
 
 `app/api/grammar/route.ts`:
 
@@ -203,6 +214,8 @@ Server routes:
 - uses an 8 second timeout
 
 Important: inline grammar checking in the editor does not use this route. `lib/grammar.ts` calls LanguageTool directly from the client.
+
+Note: the old `app/api/agent/route.ts` has been removed. AI requests are now handled entirely client-side via `lib/ai.ts`.
 
 ### Electron
 
@@ -245,7 +258,7 @@ When changing this repo:
 1. Read the relevant page, panel, context, and helper modules before changing behavior.
 2. If the feature touches persistence, inspect `context/DocumentsContext.tsx`, `context/SettingsContext.tsx`, and the relevant `lib/*` storage helpers first.
 3. If the feature touches editor behavior, inspect `components/editor/EditorCanvas.tsx` and `components/editor/TiptapEditor.tsx` before changing surrounding UI.
-4. If the feature touches AI flows, inspect both `components/editor/AIAgentPanel.tsx` and `app/api/agent/route.ts`.
+4. If the feature touches AI flows, inspect `components/editor/AIAgentPanel.tsx`, `lib/ai.ts`, and the AI settings in `context/SettingsContext.tsx`.
 5. If the feature touches grammar, inspect both `app/api/grammar/route.ts` and `lib/grammar.ts`.
 6. If the feature touches export or backup, inspect `lib/export.ts`, `lib/backup.ts`, and `components/editor/PublishModal.tsx`.
 7. Run the narrowest useful verification command after changes; use `bun run build` when you touch integration boundaries, routing, export behavior, or Electron-facing assets.
@@ -260,18 +273,19 @@ When changing this repo:
 - `app/page.tsx`
 - `app/settings/page.tsx`
 - `app/editor/EditorPageClient.tsx`
-- `app/api/agent/route.ts`
 - `app/api/grammar/route.ts`
 - `context/DocumentsContext.tsx`
 - `context/SettingsContext.tsx`
 - `components/editor/EditorCanvas.tsx`
 - `components/editor/TiptapEditor.tsx`
 - `components/editor/AIAgentPanel.tsx`
+- `components/editor/SettingsOverlay.tsx`
 - `components/editor/PublishModal.tsx`
 - `components/editor/HistoryPanel.tsx`
 - `components/editor/FindReplacePanel.tsx`
 - `components/CommandPalette.tsx`
 - `components/FeedbackModal.tsx`
+- `lib/ai.ts`
 - `lib/documents.ts`
 - `lib/types.ts`
 - `lib/templates.ts`

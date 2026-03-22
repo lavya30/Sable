@@ -3,8 +3,9 @@ Developer: Lavya Goel
 GitHub: https://github.com/lavya30
 Twitter: @LavyaG12728
 
-Developer: [Name]
-GitHub: [GitHub URL]
+Developer: Shlok Singh
+GitHub: https://github.com/slok0066
+
 
 /* SITE */
 Last update: 2026-03-21
