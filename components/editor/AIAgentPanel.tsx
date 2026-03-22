@@ -2,6 +2,8 @@
 
 import { useMemo, useState } from 'react';
 import type { Editor } from '@tiptap/react';
+import { callAI } from '@/lib/ai';
+import { useSettings } from '@/context/SettingsContext';
 
 type AgentAction = 'fix_grammar' | 'rewrite' | 'summarize' | 'continue';
 
@@ -21,6 +23,7 @@ const ACTIONS: Array<{ key: AgentAction; label: string; icon: string }> = [
 ];
 
 export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_grammar', initialContext = '' }: Props) {
+  const { settings } = useSettings();
   const [action, setAction] = useState<AgentAction>(initialAction);
   const [instruction, setInstruction] = useState('');
   const [loading, setLoading] = useState(false);
@@ -81,6 +84,18 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
   async function handleGenerate() {
     if (!editor) return;
 
+    const providerConfig = {
+      openai:  { key: settings.openaiApiKey,  model: settings.openaiModel,  label: 'OpenAI' },
+      gemini:  { key: settings.geminiApiKey,  model: settings.geminiModel,  label: 'Google Gemini' },
+      claude:  { key: settings.claudeApiKey,  model: settings.claudeModel,  label: 'Anthropic Claude' },
+    };
+    const cfg = providerConfig[settings.aiProvider];
+
+    if (!cfg.key) {
+      setError(`No API key configured for ${cfg.label}. Go to Settings → AI Assistant to add your key.`);
+      return;
+    }
+
     const payload = getRequestText();
     if (!payload.text.trim()) {
       setError('Select text or write some content first.');
@@ -93,30 +108,23 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
     setSourceText(payload.text);
     setTargetRange(payload.range);
 
-    try {
-      const res = await fetch('/api/agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action,
-          text: payload.text,
-          context: payload.context,
-          instruction,
-        }),
-      });
+    const result = await callAI({
+      action,
+      text: payload.text,
+      context: payload.context,
+      instruction,
+      apiKey: cfg.key,
+      model: cfg.model,
+      provider: settings.aiProvider,
+    });
 
-      const data = (await res.json()) as { suggestion?: string; error?: string };
-      if (!res.ok) {
-        setError(data.error ?? 'AI request failed.');
-        return;
-      }
-
-      setSuggestion(data.suggestion ?? '');
-    } catch {
-      setError('Network error. Please try again.');
-    } finally {
-      setLoading(false);
+    if (result.error) {
+      setError(result.error);
+    } else {
+      setSuggestion(result.suggestion ?? '');
     }
+
+    setLoading(false);
   }
 
   function handleApply() {

@@ -19,6 +19,13 @@ export interface Settings {
   keystrokeVolume: number;
   ambientSound: AmbientSoundType;
   ambientVolume: number;
+  aiProvider: 'openai' | 'gemini' | 'claude';
+  openaiApiKey: string;
+  openaiModel: string;
+  geminiApiKey: string;
+  geminiModel: string;
+  claudeApiKey: string;
+  claudeModel: string;
 }
 
 interface SettingsContextType {
@@ -37,6 +44,13 @@ const defaultSettings: Settings = {
   keystrokeVolume: 0.5,
   ambientSound: 'off',
   ambientVolume: 0.5,
+  aiProvider: 'openai',
+  openaiApiKey: '',
+  openaiModel: 'gpt-4o-mini',
+  geminiApiKey: '',
+  geminiModel: 'gemini-2.0-flash',
+  claudeApiKey: '',
+  claudeModel: 'claude-sonnet-4-20250514',
 };
 
 const SettingsContext = createContext<SettingsContextType | null>(null);
