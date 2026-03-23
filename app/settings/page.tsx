@@ -485,7 +485,7 @@ function AboutTab() {
           <p className="text-sm text-ink/40 dark:text-slate-400 font-body mt-0.5">
             A calm, distraction-free writing space for writers who value privacy.
           </p>
-          <p className="text-xs text-ink/25 dark:text-slate-500 font-mono mt-1">v1.0.0</p>
+          <p className="text-xs text-ink/25 dark:text-slate-500 font-mono mt-1">v0.1.0</p>
         </div>
       </div>
 
