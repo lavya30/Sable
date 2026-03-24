@@ -75,6 +75,7 @@
   "build": {
     "appId": "com.sable.app",
     "productName": "Sable",
+    "icon": "public/icon.ico",
     "directories": {
       "output": "dist"
     },
@@ -88,8 +89,7 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "public/icon.png",
-      "signAndEditExecutable": false
+      "icon": "public/icon.ico"
     },
     "nsis": {
       "oneClick": false,

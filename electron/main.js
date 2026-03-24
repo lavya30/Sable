@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow, protocol } = require('electron')
+const { app, BrowserWindow, protocol, Menu } = require('electron')
 const path = require('path')
 const fs = require('fs')
 
@@ -53,13 +53,17 @@ function createWindow() {
   const isDev = !app.isPackaged
 
   const iconPath = app.isPackaged
-    ? path.join(__dirname, '..', 'out', 'icon.png')
-    : path.join(__dirname, '..', 'public', 'icon.png')
+    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'out', 'icon.ico')
+    : path.join(__dirname, '..', 'public', 'icon.ico')
+
+  // Remove default menu bar
+  Menu.setApplicationMenu(null)
 
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
     icon: iconPath,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

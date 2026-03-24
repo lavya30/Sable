@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: 'Sable',
   description: 'A focused writing app for distraction-free creative writing.',
   icons: {
-    icon: '/icon.png',
+    icon: '/icon.ico',
     apple: '/icon.png',
   },
   manifest: '/site.webmanifest',
