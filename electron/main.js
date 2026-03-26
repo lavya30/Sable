@@ -53,7 +53,7 @@ function createWindow() {
   const isDev = !app.isPackaged
 
   const iconPath = app.isPackaged
-    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'out', 'icon.ico')
+    ? path.join(process.resourcesPath, 'app.asar.unpacked', 'icon.ico')
     : path.join(__dirname, '..', 'public', 'icon.ico')
 
   // Remove default menu bar

@@ -3,6 +3,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  experimental: {
+    workerThreads: true,
+  },
 }
 
 export default nextConfig

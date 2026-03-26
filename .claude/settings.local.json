@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-ChildItem -Recurse -Depth 2 -Directory | Where-Object { $_.FullName -notmatch 'node_modules|\\\\.next|out|dist|\\\\.git' } | Select-Object -ExpandProperty FullName\")",
+      "Bash(bun run:*)",
+      "Bash(copy:*)",
+      "Bash(powershell -Command \"Copy-Item 'D:\\\\projects\\\\Sable\\\\public\\\\icon.ico' 'D:\\\\projects\\\\Sable\\\\icon.ico' -Force\")"
+    ]
+  }
+}

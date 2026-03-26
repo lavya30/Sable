@@ -12,7 +12,7 @@
     "lint": "next lint",
     "electron": "electron .",
     "electron:dev": "concurrently \"npx next dev --port 3000\" \"wait-on http://localhost:3000 && electron .\"",
-    "electron:build": "bun run build && electron-builder --win"
+    "electron:build": "bun run build && node -e \"require('fs').copyFileSync('public/icon.ico', 'icon.ico')\" && electron-builder --win && node -e \"require('fs').unlinkSync('icon.ico')\""
   },
   "dependencies": {
     "@floating-ui/dom": "^1.7.5",
@@ -75,24 +75,32 @@
   "build": {
     "appId": "com.sable.app",
     "productName": "Sable",
-    "icon": "public/icon.ico",
+    "icon": "icon.ico",
+    "afterPack": "./electron/after-pack.js",
+    "npmRebuild": false,
     "directories": {
       "output": "dist"
     },
     "files": [
       "electron/**/*",
       "out/**/*",
+      "icon.ico",
       "package.json"
     ],
     "asarUnpack": [
-      "out/**/*"
+      "out/**/*",
+      "icon.ico"
     ],
     "win": {
       "target": "nsis",
-      "icon": "public/icon.ico"
+      "icon": "icon.ico",
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,
+      "installerIcon": "icon.ico",
+      "installerHeaderIcon": "icon.ico",
+      "uninstallerIcon": "icon.ico",
       "allowToChangeInstallationDirectory": true
     }
   }
