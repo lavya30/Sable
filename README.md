@@ -149,7 +149,7 @@ Built with modern web technologies and packaged as a native desktop app via Elec
 
 ### Download
 
-> Coming soon — Windows installer (`Sable Setup.exe`) will be available on the [Releases](../../releases) page.
+>  Windows installer (`Sable Setup.exe`) will be available on the [Releases](../../releases) page.
 
 ### ⚠️ Windows SmartScreen Notice
 
