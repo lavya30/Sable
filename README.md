@@ -151,6 +151,20 @@ Built with modern web technologies and packaged as a native desktop app via Elec
 
 > Coming soon — Windows installer (`Sable Setup.exe`) will be available on the [Releases](../../releases) page.
 
+### ⚠️ Windows SmartScreen Notice
+
+When you run the installer for the first time, Windows Defender SmartScreen may show a **"Windows protected your PC"** warning. This is **completely normal** for open-source applications that are not commercially code-signed.
+
+**Sable is 100% open source** — you can inspect every line of code in this repository. The app contains no telemetry, no tracking, and no network calls except the optional features you explicitly enable (AI, grammar checking).
+
+**To proceed with installation:**
+
+1. Click **"More info"** on the SmartScreen dialog
+2. Click **"Run anyway"**
+3. The installer will proceed normally
+
+> 💡 **Why does this happen?** Code signing certificates cost $200–600/year. As an independent open-source project, Sable is not commercially signed. This warning appears for *any* unsigned application and is not an indication of malware. If you prefer, you can always [build from source](#build-from-source) instead.
+
 ### Build from Source
 
 Make sure you have [Node.js](https://nodejs.org/) (v18+) and [Bun](https://bun.sh/) installed.

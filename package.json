@@ -1,8 +1,11 @@
 {
   "name": "sable",
   "version": "0.1.0",
-  "description": "A focused writing app",
-  "author": "Sable",
+  "description": "Sable — A calm, distraction-free writing space for writers who value privacy.",
+  "author": {
+    "name": "Lavya",
+    "url": "https://github.com/lavya30"
+  },
   "private": true,
   "main": "electron/main.js",
   "scripts": {
@@ -75,6 +78,7 @@
   "build": {
     "appId": "com.sable.app",
     "productName": "Sable",
+    "copyright": "Copyright © 2026 Lavya",
     "icon": "icon.ico",
     "afterPack": "./electron/after-pack.js",
     "npmRebuild": false,
@@ -94,14 +98,19 @@
     "win": {
       "target": "nsis",
       "icon": "icon.ico",
-      "signAndEditExecutable": false
+      "signAndEditExecutable": false,
+      "publisherName": "Lavya",
+      "legalTrademarks": "Sable"
     },
     "nsis": {
       "oneClick": false,
       "installerIcon": "icon.ico",
       "installerHeaderIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
-      "allowToChangeInstallationDirectory": true
+      "allowToChangeInstallationDirectory": true,
+      "displayLanguageSelector": false,
+      "installerSidebar": null,
+      "shortcutName": "Sable"
     }
   }
 }
