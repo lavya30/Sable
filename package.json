@@ -63,7 +63,7 @@
     "eslint-config-next": "16.2.12",
     "prettier": "3.9.6",
     "tailwindcss": "^4",
-    "typescript": "^5",
+    "typescript": "^7",
     "wait-on": "^9.0.4"
   },
   "ignoreScripts": [
