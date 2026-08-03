@@ -2,7 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { ExportFormat, SableDocument } from '@/lib/types';
-import { exportHTML, exportMarkdown, exportPDF, exportZine } from '@/lib/export';
+import {
+  exportHTML,
+  exportMarkdown,
+  exportPDF,
+  exportZine,
+} from '@/lib/export';
 import { useDocuments } from '@/context/DocumentsContext';
 import { TagInput } from './../library/TagInput';
 
@@ -13,11 +18,41 @@ interface Props {
   getHTML: () => string;
 }
 
-const FORMATS: { key: ExportFormat; label: string; icon: string; bg: string; tilt: string }[] = [
-  { key: 'pdf', label: 'PDF', icon: 'picture_as_pdf', bg: 'peer-checked:bg-primary', tilt: 'group-hover:-rotate-2 group-hover:scale-105' },
-  { key: 'markdown', label: 'Markdown', icon: 'markdown', bg: 'peer-checked:bg-lavender', tilt: 'group-hover:rotate-2 group-hover:scale-105' },
-  { key: 'html', label: 'HTML', icon: 'html', bg: 'peer-checked:bg-peach', tilt: 'group-hover:-rotate-1 group-hover:scale-105' },
-  { key: 'zine', label: 'Zine', icon: 'auto_stories', bg: 'peer-checked:bg-rose', tilt: 'group-hover:rotate-3 group-hover:scale-105' },
+const FORMATS: {
+  key: ExportFormat;
+  label: string;
+  icon: string;
+  bg: string;
+  tilt: string;
+}[] = [
+  {
+    key: 'pdf',
+    label: 'PDF',
+    icon: 'picture_as_pdf',
+    bg: 'peer-checked:bg-primary',
+    tilt: 'group-hover:-rotate-2 group-hover:scale-105',
+  },
+  {
+    key: 'markdown',
+    label: 'Markdown',
+    icon: 'markdown',
+    bg: 'peer-checked:bg-lavender',
+    tilt: 'group-hover:rotate-2 group-hover:scale-105',
+  },
+  {
+    key: 'html',
+    label: 'HTML',
+    icon: 'html',
+    bg: 'peer-checked:bg-peach',
+    tilt: 'group-hover:-rotate-1 group-hover:scale-105',
+  },
+  {
+    key: 'zine',
+    label: 'Zine',
+    icon: 'auto_stories',
+    bg: 'peer-checked:bg-rose',
+    tilt: 'group-hover:rotate-3 group-hover:scale-105',
+  },
 ];
 
 export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
@@ -60,7 +95,13 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
         {/* Decorative corners */}
         <div className="absolute -top-3 -left-3 -z-10">
           <svg fill="none" height="60" width="60" viewBox="0 0 60 60">
-            <path d="M10 50 C 10 20, 20 10, 50 10" fill="none" stroke="#13ec75" strokeLinecap="round" strokeWidth="3" />
+            <path
+              d="M10 50 C 10 20, 20 10, 50 10"
+              fill="none"
+              stroke="#13ec75"
+              strokeLinecap="round"
+              strokeWidth="3"
+            />
           </svg>
         </div>
         <div className="absolute -bottom-2 -right-2 -z-10">
@@ -74,7 +115,9 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
           onClick={onClose}
           className="absolute top-5 right-5 p-2 rounded-full hover:bg-gray-100 transition-colors"
         >
-          <span className="material-symbols-outlined text-2xl text-ink">close</span>
+          <span className="material-symbols-outlined text-2xl text-ink">
+            close
+          </span>
         </button>
 
         {/* Header */}
@@ -117,8 +160,14 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
 
         {/* Tags Editor */}
         <div className="mb-8 flex flex-col gap-2">
-          <label className="text-sm font-display font-bold text-ink mb-1">Document Tags</label>
-          <TagInput tags={tags} onChange={setTags} placeholder="Add tags to organize your library..." />
+          <label className="text-sm font-display font-bold text-ink mb-1">
+            Document Tags
+          </label>
+          <TagInput
+            tags={tags}
+            onChange={setTags}
+            placeholder="Add tags to organize your library..."
+          />
         </div>
 
         {/* Actions */}
@@ -137,9 +186,17 @@ export function PublishModal({ isOpen, onClose, doc, getHTML }: Props) {
               </>
             ) : (
               <>
-                {selected === 'pdf' ? 'Print / Save as PDF' : selected === 'zine' ? 'Print Zine / Booklet' : 'Make it Real'}
+                {selected === 'pdf'
+                  ? 'Print / Save as PDF'
+                  : selected === 'zine'
+                    ? 'Print Zine / Booklet'
+                    : 'Make it Real'}
                 <span className="material-symbols-outlined text-2xl">
-                  {selected === 'pdf' ? 'print' : selected === 'zine' ? 'auto_stories' : 'arrow_forward'}
+                  {selected === 'pdf'
+                    ? 'print'
+                    : selected === 'zine'
+                      ? 'auto_stories'
+                      : 'arrow_forward'}
                 </span>
               </>
             )}

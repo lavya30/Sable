@@ -3,7 +3,9 @@ import './globals.css';
 import { Providers } from './providers';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000',
+  ),
   title: 'Sable',
   description: 'A focused writing app for distraction-free creative writing.',
   icons: {
@@ -14,7 +16,14 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Sable',
     description: 'A focused writing app for distraction-free creative writing.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'Sable – A focused writing app' }],
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Sable – A focused writing app',
+      },
+    ],
     type: 'website',
   },
   twitter: {
@@ -24,7 +33,7 @@ export const metadata: Metadata = {
     images: ['/og-image.png'],
   },
   other: {
-    'author': 'Lavya Goel',
+    author: 'Lavya Goel',
   },
 };
 

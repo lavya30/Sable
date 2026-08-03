@@ -54,7 +54,9 @@ export function EditorCanvas({ docId }: Props) {
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
   const [showHistory, setShowHistory] = useState(false);
   const [showAIAssistant, setShowAIAssistant] = useState(false);
-  const [aiInitialAction, setAiInitialAction] = useState<'fix_grammar' | 'rewrite' | 'summarize' | 'continue' | undefined>();
+  const [aiInitialAction, setAiInitialAction] = useState<
+    'fix_grammar' | 'rewrite' | 'summarize' | 'continue' | undefined
+  >();
   const [aiInitialContext, setAiInitialContext] = useState('');
   const hasChangedRef = useRef(false);
   const lastSavedContentRef = useRef<string>('');
@@ -69,15 +71,32 @@ export function EditorCanvas({ docId }: Props) {
   // GSAP page entrance animation
   useEffect(() => {
     if (mainRef.current) {
-      gsap.fromTo(mainRef.current,
+      gsap.fromTo(
+        mainRef.current,
         { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out', delay: 0.1, overwrite: true }
+        {
+          y: 0,
+          opacity: 1,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: 0.1,
+          overwrite: true,
+        },
       );
     }
     if (footerRef.current) {
-      gsap.fromTo(footerRef.current.children,
+      gsap.fromTo(
+        footerRef.current.children,
         { scale: 0.7, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.5, stagger: 0.1, ease: 'back.out(1.7)', delay: 0.5, overwrite: true }
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: 'back.out(1.7)',
+          delay: 0.5,
+          overwrite: true,
+        },
       );
     }
   }, []);
@@ -113,7 +132,11 @@ export function EditorCanvas({ docId }: Props) {
   }, [docId, SNAPSHOT_INTERVAL]);
 
   // Keystroke sounds
-  useKeystrokeSounds(editor, settings.keystrokeSounds, settings.keystrokeVolume);
+  useKeystrokeSounds(
+    editor,
+    settings.keystrokeSounds,
+    settings.keystrokeVolume,
+  );
 
   // Writing activity tracking
   useWritingTracker(editor);
@@ -153,7 +176,9 @@ export function EditorCanvas({ docId }: Props) {
     updateDoc(docId, { notes });
   }
 
-  function handleMoodBoardChange(moodBoard: import('@/lib/types').MoodBoardItem[]) {
+  function handleMoodBoardChange(
+    moodBoard: import('@/lib/types').MoodBoardItem[],
+  ) {
     updateDoc(docId, { moodBoard });
   }
 
@@ -166,9 +191,16 @@ export function EditorCanvas({ docId }: Props) {
   }
 
   function handleSlashCommand(command: string, context: string) {
-    const validCommands = ['fix_grammar', 'rewrite', 'summarize', 'continue'] as const;
+    const validCommands = [
+      'fix_grammar',
+      'rewrite',
+      'summarize',
+      'continue',
+    ] as const;
     if (validCommands.includes(command as any)) {
-      setAiInitialAction(command as 'fix_grammar' | 'rewrite' | 'summarize' | 'continue');
+      setAiInitialAction(
+        command as 'fix_grammar' | 'rewrite' | 'summarize' | 'continue',
+      );
       setAiInitialContext(context);
       setShowAIAssistant(true);
     }
@@ -176,13 +208,11 @@ export function EditorCanvas({ docId }: Props) {
 
   return (
     <div
-      className={`text-ink font-body min-h-screen flex flex-col relative overflow-x-hidden selection:bg-mint selection:text-ink transition-all duration-300 ${focusMode ? 'focus-mode-active' : ''
-        } ${isFullscreen ? 'fullscreen-editor' : ''
-        } ${typewriterMode ? 'typewriter-mode' : ''
-        } ${settings.theme === 'dark'
-          ? 'bg-background-dark'
-          : 'bg-canvas'
-        }`}
+      className={`text-ink font-body min-h-screen flex flex-col relative overflow-x-hidden selection:bg-mint selection:text-ink transition-all duration-300 ${
+        focusMode ? 'focus-mode-active' : ''
+      } ${isFullscreen ? 'fullscreen-editor' : ''} ${
+        typewriterMode ? 'typewriter-mode' : ''
+      } ${settings.theme === 'dark' ? 'bg-background-dark' : 'bg-canvas'}`}
     >
       {/* â”€â”€ Auto-hiding toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <EditorToolbar
@@ -202,16 +232,21 @@ export function EditorCanvas({ docId }: Props) {
       {/* â”€â”€ Main editing area â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <main ref={mainRef} className="flex-grow flex pt-20 pb-28">
         {/* Editor + margin notes wrapper */}
-        <div className={`transition-all duration-300 flex justify-center w-full ${showPreview ? '' : 'px-6 sm:px-12'}`}>
+        <div
+          className={`transition-all duration-300 flex justify-center w-full ${showPreview ? '' : 'px-6 sm:px-12'}`}
+        >
           {/* Left spacer for symmetry (matches gutter width) */}
-          {!showPreview && <div className="w-56 flex-shrink-0 hidden xl:block" />}
+          {!showPreview && (
+            <div className="w-56 flex-shrink-0 hidden xl:block" />
+          )}
 
           {/* Editor pane */}
           <div
-            className={`transition-all duration-300 overflow-y-auto ${showPreview
-              ? 'w-1/2 px-8 border-r-2 border-ink/10'
-              : 'w-full max-w-[720px]'
-              }`}
+            className={`transition-all duration-300 overflow-y-auto ${
+              showPreview
+                ? 'w-1/2 px-8 border-r-2 border-ink/10'
+                : 'w-full max-w-[720px]'
+            }`}
           >
             <div className="relative">
               <TiptapEditor
@@ -266,13 +301,21 @@ export function EditorCanvas({ docId }: Props) {
       )}
 
       {/* â”€â”€ Bottom-right controls â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <footer ref={footerRef} className="fixed bottom-6 right-6 z-50 flex items-end gap-3">
+      <footer
+        ref={footerRef}
+        className="fixed bottom-6 right-6 z-50 flex items-end gap-3"
+      >
         <div className="focus-hidden">
-          <WritingGoal wordCount={editor?.storage?.characterCount?.words() ?? 0} docId={docId} />
+          <WritingGoal
+            wordCount={editor?.storage?.characterCount?.words() ?? 0}
+            docId={docId}
+          />
         </div>
 
         <div className="focus-hidden">
-          <SprintTimer currentWordCount={editor?.storage?.characterCount?.words() ?? 0} />
+          <SprintTimer
+            currentWordCount={editor?.storage?.characterCount?.words() ?? 0}
+          />
         </div>
 
         <div className="focus-hidden">
@@ -287,15 +330,17 @@ export function EditorCanvas({ docId }: Props) {
           <WordCountBadge editor={editor} />
         </div>
 
-
-
         {/* Typewriter scroll toggle */}
         <button
           onClick={() => setTypewriterMode((v) => !v)}
           aria-label={typewriterMode ? 'Exit Typewriter' : 'Typewriter Mode'}
           className={`btn-magnetic group relative flex items-center justify-center w-12 h-12 border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all ${typewriterMode ? 'bg-peach' : 'bg-white'}`}
         >
-          <span className={`material-symbols-outlined transition-colors ${typewriterMode ? 'text-ink' : 'group-hover:text-peach'}`}>keyboard</span>
+          <span
+            className={`material-symbols-outlined transition-colors ${typewriterMode ? 'text-ink' : 'group-hover:text-peach'}`}
+          >
+            keyboard
+          </span>
           <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
             {typewriterMode ? 'Exit Typewriter' : 'Typewriter'}
           </span>
@@ -308,8 +353,9 @@ export function EditorCanvas({ docId }: Props) {
           className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all"
         >
           <span
-            className={`material-symbols-outlined transition-colors ${focusMode ? 'text-lavender' : 'group-hover:text-lavender'
-              }`}
+            className={`material-symbols-outlined transition-colors ${
+              focusMode ? 'text-lavender' : 'group-hover:text-lavender'
+            }`}
           >
             {focusMode ? 'visibility_off' : 'visibility'}
           </span>
@@ -324,7 +370,9 @@ export function EditorCanvas({ docId }: Props) {
           aria-label={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
           className={`btn-magnetic group relative flex items-center justify-center w-12 h-12 border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all ${isFullscreen ? 'bg-mint' : 'bg-white'}`}
         >
-          <span className={`material-symbols-outlined transition-colors ${isFullscreen ? 'text-ink' : 'group-hover:text-mint'}`}>
+          <span
+            className={`material-symbols-outlined transition-colors ${isFullscreen ? 'text-ink' : 'group-hover:text-mint'}`}
+          >
             {isFullscreen ? 'fullscreen_exit' : 'fullscreen'}
           </span>
           <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">

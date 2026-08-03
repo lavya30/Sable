@@ -23,7 +23,10 @@ function collectAllSableKeys(): Record<string, string> {
   // Dynamic keys (goals, history)
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);
-    if (key && (key.startsWith('sable-goal-') || key.startsWith('sable_history_'))) {
+    if (
+      key &&
+      (key.startsWith('sable-goal-') || key.startsWith('sable_history_'))
+    ) {
       const val = localStorage.getItem(key);
       if (val) data[key] = val;
     }
@@ -42,10 +45,7 @@ export function exportAllData(): void {
   const a = document.createElement('a');
   a.href = url;
 
-  const date = new Date()
-    .toISOString()
-    .slice(0, 10)
-    .replace(/-/g, '');
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
   a.download = `sable-backup-${date}.json`;
   document.body.appendChild(a);
   a.click();
@@ -74,7 +74,7 @@ export function importAllData(file: File): Promise<void> {
           (k) =>
             KNOWN_KEYS.includes(k) ||
             k.startsWith('sable-goal-') ||
-            k.startsWith('sable_history_')
+            k.startsWith('sable_history_'),
         );
 
         if (!hasSableKey) {
@@ -84,18 +84,31 @@ export function importAllData(file: File): Promise<void> {
         // Write only Sable-related entries to localStorage with validation
         for (const [key, value] of Object.entries(data)) {
           if (typeof value !== 'string') {
-            console.warn(`Skipping invalid value for key "${key}": expected string, got ${typeof value}`);
+            console.warn(
+              `Skipping invalid value for key "${key}": expected string, got ${typeof value}`,
+            );
             continue;
           }
-          if (KNOWN_KEYS.includes(key) || key.startsWith('sable-goal-') || key.startsWith('sable_history_')) {
+          if (
+            KNOWN_KEYS.includes(key) ||
+            key.startsWith('sable-goal-') ||
+            key.startsWith('sable_history_')
+          ) {
             try {
               // Validate JSON structure for known keys
-              if (key === 'sable_documents' || key === 'sable_settings' || key === 'sable_writing_stats') {
+              if (
+                key === 'sable_documents' ||
+                key === 'sable_settings' ||
+                key === 'sable_writing_stats'
+              ) {
                 JSON.parse(value); // Ensure it's valid JSON
               }
               localStorage.setItem(key, value);
             } catch (error) {
-              console.error(`Failed to import key "${key}":`, error instanceof Error ? error.message : String(error));
+              console.error(
+                `Failed to import key "${key}":`,
+                error instanceof Error ? error.message : String(error),
+              );
               throw new Error(`Corrupted data in backup file for key: ${key}`);
             }
           }
@@ -105,7 +118,10 @@ export function importAllData(file: File): Promise<void> {
         window.location.reload();
         resolve();
       } catch (err) {
-        console.error('Import error:', err instanceof Error ? err.message : String(err));
+        console.error(
+          'Import error:',
+          err instanceof Error ? err.message : String(err),
+        );
         reject(err);
       }
     };

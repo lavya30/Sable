@@ -39,16 +39,25 @@ export function OutlinePanel({ isOpen, onClose, editor }: Props) {
     if (!editor || !isOpen) return;
     extractHeadings();
     editor.on('update', extractHeadings);
-    return () => { editor.off('update', extractHeadings); };
+    return () => {
+      editor.off('update', extractHeadings);
+    };
   }, [editor, isOpen, extractHeadings]);
 
   function scrollToHeading(pos: number) {
     if (!editor) return;
-    editor.chain().focus().setTextSelection(pos + 1).run();
+    editor
+      .chain()
+      .focus()
+      .setTextSelection(pos + 1)
+      .run();
     // Scroll the heading into view
     const domAtPos = editor.view.domAtPos(pos + 1);
     if (domAtPos?.node) {
-      const el = domAtPos.node instanceof HTMLElement ? domAtPos.node : domAtPos.node.parentElement;
+      const el =
+        domAtPos.node instanceof HTMLElement
+          ? domAtPos.node
+          : domAtPos.node.parentElement;
       el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   }
@@ -60,14 +69,18 @@ export function OutlinePanel({ isOpen, onClose, editor }: Props) {
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 border-b-2 border-ink/10">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary text-[20px]">toc</span>
+          <span className="material-symbols-outlined text-primary text-[20px]">
+            toc
+          </span>
           <h3 className="font-heading font-bold text-sm">Outline</h3>
         </div>
         <button
           onClick={onClose}
           className="p-1 rounded-lg hover:bg-ink/5 transition-colors"
         >
-          <span className="material-symbols-outlined text-[18px] text-ink/40">close</span>
+          <span className="material-symbols-outlined text-[18px] text-ink/40">
+            close
+          </span>
         </button>
       </div>
 
@@ -75,7 +88,9 @@ export function OutlinePanel({ isOpen, onClose, editor }: Props) {
       <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
         {headings.length === 0 ? (
           <div className="text-center py-12">
-            <span className="material-symbols-outlined text-3xl text-ink/15 mb-2 block">format_h1</span>
+            <span className="material-symbols-outlined text-3xl text-ink/15 mb-2 block">
+              format_h1
+            </span>
             <p className="text-sm text-ink/30 font-body">
               No headings yet. Add H1, H2, or H3 headings to see your outline.
             </p>
@@ -90,13 +105,15 @@ export function OutlinePanel({ isOpen, onClose, editor }: Props) {
                   h.level === 1 ? '' : h.level === 2 ? 'pl-6' : 'pl-9'
                 }`}
               >
-                <span className={`font-display block truncate transition-colors group-hover:text-ink ${
-                  h.level === 1
-                    ? 'font-bold text-sm text-ink'
-                    : h.level === 2
-                    ? 'font-semibold text-[13px] text-ink/70'
-                    : 'text-xs text-ink/50'
-                }`}>
+                <span
+                  className={`font-display block truncate transition-colors group-hover:text-ink ${
+                    h.level === 1
+                      ? 'font-bold text-sm text-ink'
+                      : h.level === 2
+                        ? 'font-semibold text-[13px] text-ink/70'
+                        : 'text-xs text-ink/50'
+                  }`}
+                >
                   {h.text || '(empty heading)'}
                 </span>
               </button>

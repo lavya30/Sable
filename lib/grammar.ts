@@ -37,7 +37,7 @@ export async function checkGrammar(text: string): Promise<LTMatch[]> {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
       body: params.toString(),
       signal: AbortSignal.timeout(10000),
@@ -46,7 +46,7 @@ export async function checkGrammar(text: string): Promise<LTMatch[]> {
       console.error(`Grammar check failed: ${res.status} ${res.statusText}`);
       return [];
     }
-    const data = await res.json() as { matches?: Record<string, unknown>[] };
+    const data = (await res.json()) as { matches?: Record<string, unknown>[] };
     return (data.matches ?? []).map((m) => ({
       offset: m.offset as number,
       length: m.length as number,
@@ -54,10 +54,13 @@ export async function checkGrammar(text: string): Promise<LTMatch[]> {
       replacements: ((m.replacements as Array<{ value: string }>) ?? [])
         .slice(0, 5)
         .map((r) => r.value),
-      issueType: ((m.rule as Record<string, string>)?.issueType) ?? 'other',
+      issueType: (m.rule as Record<string, string>)?.issueType ?? 'other',
     }));
   } catch (error) {
-    console.error('Grammar check error:', error instanceof Error ? error.message : String(error));
+    console.error(
+      'Grammar check error:',
+      error instanceof Error ? error.message : String(error),
+    );
     return [];
   }
 }

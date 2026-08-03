@@ -26,11 +26,9 @@ export function AutoSaveIndicator({ status }: Props) {
 
   return (
     <div
-      className={`fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full border-2 border-ink/10 shadow-hard-sm font-marker text-sm transition-all duration-500 ${status === 'saving'
-          ? 'bg-peach/80 text-ink'
-          : 'bg-mint/80 text-ink'
-        } ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'
-        }`}
+      className={`fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full border-2 border-ink/10 shadow-hard-sm font-marker text-sm transition-all duration-500 ${
+        status === 'saving' ? 'bg-peach/80 text-ink' : 'bg-mint/80 text-ink'
+      } ${visible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`}
     >
       {status === 'saving' ? (
         <>
@@ -39,7 +37,9 @@ export function AutoSaveIndicator({ status }: Props) {
         </>
       ) : (
         <>
-          <span className="material-symbols-outlined text-[16px] text-primary">check_circle</span>
+          <span className="material-symbols-outlined text-[16px] text-primary">
+            check_circle
+          </span>
           Saved
         </>
       )}

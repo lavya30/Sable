@@ -12,7 +12,10 @@ import { useAmbientSound, AMBIENT_SOUNDS } from '@/hooks/useAmbientSound';
 export function AmbientPlayer() {
   const { settings, updateSettings } = useSettings();
   const [expanded, setExpanded] = useState(false);
-  const { isPlaying } = useAmbientSound(settings.ambientSound, settings.ambientVolume);
+  const { isPlaying } = useAmbientSound(
+    settings.ambientSound,
+    settings.ambientVolume,
+  );
 
   const panelRef = useRef<HTMLDivElement>(null);
   const pillRef = useRef<HTMLDivElement>(null);
@@ -31,30 +34,42 @@ export function AmbientPlayer() {
   // GSAP entrance for the panel
   useEffect(() => {
     if (expanded && pillRef.current) {
-      gsap.fromTo(pillRef.current,
+      gsap.fromTo(
+        pillRef.current,
         { scale: 0.9, opacity: 0, y: 8 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.3, ease: 'back.out(1.7)', overwrite: true }
+        {
+          scale: 1,
+          opacity: 1,
+          y: 0,
+          duration: 0.3,
+          ease: 'back.out(1.7)',
+          overwrite: true,
+        },
       );
     }
   }, [expanded]);
 
-  const currentSound = AMBIENT_SOUNDS.find(s => s.value === settings.ambientSound) ?? AMBIENT_SOUNDS[0];
+  const currentSound =
+    AMBIENT_SOUNDS.find((s) => s.value === settings.ambientSound) ??
+    AMBIENT_SOUNDS[0];
 
   return (
     <div ref={panelRef} className="relative focus-hidden">
       {/* Toggle pill */}
       <button
-        onClick={() => setExpanded(v => !v)}
+        onClick={() => setExpanded((v) => !v)}
         className={`btn-magnetic group relative flex items-center gap-2 h-12 px-4 border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all ${
-          isPlaying
-            ? 'bg-lavender/40 border-ink'
-            : 'bg-white'
+          isPlaying ? 'bg-lavender/40 border-ink' : 'bg-white'
         }`}
         aria-label="Ambient sounds"
       >
-        <span className={`material-symbols-outlined text-[20px] transition-colors ${
-          isPlaying ? 'text-ink ambient-pulse' : 'text-gray-400 group-hover:text-ink'
-        }`}>
+        <span
+          className={`material-symbols-outlined text-[20px] transition-colors ${
+            isPlaying
+              ? 'text-ink ambient-pulse'
+              : 'text-gray-400 group-hover:text-ink'
+          }`}
+        >
           {isPlaying ? 'graphic_eq' : 'music_note'}
         </span>
         {isPlaying && (
@@ -77,12 +92,14 @@ export function AmbientPlayer() {
           {/* Title */}
           <div className="flex items-center justify-between">
             <h4 className="font-marker text-base text-ink flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary text-[18px]">headphones</span>
+              <span className="material-symbols-outlined text-primary text-[18px]">
+                headphones
+              </span>
               Ambient Vibes
             </h4>
             {isPlaying && (
               <div className="flex gap-0.5 items-end h-4">
-                {[0, 1, 2, 3].map(i => (
+                {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
                     className="w-1 bg-primary rounded-full ambient-bar"
@@ -108,12 +125,18 @@ export function AmbientPlayer() {
                     : 'bg-white border-ink/20 hover:border-ink/40 hover:shadow-hard-sm'
                 }`}
               >
-                <span className={`material-symbols-outlined text-[20px] ${
-                  settings.ambientSound === value ? 'text-ink' : 'text-gray-400'
-                }`}>
+                <span
+                  className={`material-symbols-outlined text-[20px] ${
+                    settings.ambientSound === value
+                      ? 'text-ink'
+                      : 'text-gray-400'
+                  }`}
+                >
                   {icon}
                 </span>
-                <span className="font-marker text-[10px] text-gray-600">{label}</span>
+                <span className="font-marker text-[10px] text-gray-600">
+                  {label}
+                </span>
               </button>
             ))}
           </div>
@@ -121,34 +144,52 @@ export function AmbientPlayer() {
           {/* Volume slider */}
           {settings.ambientSound !== 'off' && (
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[16px] text-gray-400">volume_down</span>
+              <span className="material-symbols-outlined text-[16px] text-gray-400">
+                volume_down
+              </span>
               <input
                 type="range"
                 min={0}
                 max={10}
                 value={Math.round(settings.ambientVolume * 10)}
                 onChange={(e) =>
-                  updateSettings({ ambientVolume: parseInt(e.target.value, 10) / 10 })
+                  updateSettings({
+                    ambientVolume: parseInt(e.target.value, 10) / 10,
+                  })
                 }
                 className="flex-1 accent-primary"
                 aria-label="Ambient volume"
               />
-              <span className="material-symbols-outlined text-[16px] text-gray-400">volume_up</span>
+              <span className="material-symbols-outlined text-[16px] text-gray-400">
+                volume_up
+              </span>
             </div>
           )}
 
           <div className="border-t border-ink/10 pt-3 flex flex-col gap-3">
             <h4 className="font-marker text-base text-ink flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-primary text-[18px]">music_note</span>
+              <span className="material-symbols-outlined text-primary text-[18px]">
+                music_note
+              </span>
               Keystroke Sounds
             </h4>
             <div className="grid grid-cols-4 gap-2">
-              {([
-                { value: 'off', icon: 'volume_off', label: 'Off' },
-                { value: 'typewriter', icon: 'keyboard', label: 'Typewriter' },
-                { value: 'mechanical', icon: 'keyboard_keys', label: 'Mechanical' },
-                { value: 'pen', icon: 'edit', label: 'Pen' },
-              ] as const).map(({ value, icon, label }) => (
+              {(
+                [
+                  { value: 'off', icon: 'volume_off', label: 'Off' },
+                  {
+                    value: 'typewriter',
+                    icon: 'keyboard',
+                    label: 'Typewriter',
+                  },
+                  {
+                    value: 'mechanical',
+                    icon: 'keyboard_keys',
+                    label: 'Mechanical',
+                  },
+                  { value: 'pen', icon: 'edit', label: 'Pen' },
+                ] as const
+              ).map(({ value, icon, label }) => (
                 <button
                   key={value}
                   onClick={() => updateSettings({ keystrokeSounds: value })}
@@ -158,28 +199,42 @@ export function AmbientPlayer() {
                       : 'bg-white border-ink/20 hover:border-ink/40 hover:shadow-hard-sm'
                   }`}
                 >
-                  <span className={`material-symbols-outlined text-[18px] ${
-                    settings.keystrokeSounds === value ? 'text-ink' : 'text-gray-400'
-                  }`}>{icon}</span>
-                  <span className="font-marker text-[9px] text-gray-600 text-center leading-tight">{label}</span>
+                  <span
+                    className={`material-symbols-outlined text-[18px] ${
+                      settings.keystrokeSounds === value
+                        ? 'text-ink'
+                        : 'text-gray-400'
+                    }`}
+                  >
+                    {icon}
+                  </span>
+                  <span className="font-marker text-[9px] text-gray-600 text-center leading-tight">
+                    {label}
+                  </span>
                 </button>
               ))}
             </div>
             {settings.keystrokeSounds !== 'off' && (
               <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-[16px] text-gray-400">volume_down</span>
+                <span className="material-symbols-outlined text-[16px] text-gray-400">
+                  volume_down
+                </span>
                 <input
                   type="range"
                   min={0}
                   max={10}
                   value={Math.round(settings.keystrokeVolume * 10)}
                   onChange={(e) =>
-                    updateSettings({ keystrokeVolume: parseInt(e.target.value, 10) / 10 })
+                    updateSettings({
+                      keystrokeVolume: parseInt(e.target.value, 10) / 10,
+                    })
                   }
                   className="flex-1 accent-primary"
                   aria-label="Keystroke volume"
                 />
-                <span className="material-symbols-outlined text-[16px] text-gray-400">volume_up</span>
+                <span className="material-symbols-outlined text-[16px] text-gray-400">
+                  volume_up
+                </span>
               </div>
             )}
           </div>

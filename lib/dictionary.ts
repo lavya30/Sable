@@ -13,10 +13,10 @@ export async function lookupWord(word: string): Promise<DictResult | null> {
   if (!word.trim()) return null;
   try {
     const res = await fetch(
-      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`
+      `https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word.toLowerCase())}`,
     );
     if (!res.ok) return null;
-    const data = await res.json() as Record<string, unknown>[];
+    const data = (await res.json()) as Record<string, unknown>[];
     if (!Array.isArray(data) || !data[0]) return null;
     const entry = data[0];
     return {

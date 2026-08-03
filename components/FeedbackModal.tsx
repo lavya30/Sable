@@ -13,7 +13,9 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
   const [message, setMessage] = useState('');
   const [screenshot, setScreenshot] = useState<string | null>(null);
   const [screenshotName, setScreenshotName] = useState('');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>(
+    'idle',
+  );
   const fileRef = useRef<HTMLInputElement>(null);
 
   const minChars = 10;
@@ -37,20 +39,23 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
     setStatus('sending');
 
     try {
-      const res = await fetch('https://formsubmit.co/ajax/lavya.goel@somaiya.edu', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
+      const res = await fetch(
+        'https://formsubmit.co/ajax/lavya.goel@somaiya.edu',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          body: JSON.stringify({
+            _subject: 'Sable App Feedback',
+            _template: 'table',
+            Rating: `${rating} / 5 ⭐`,
+            Message: message,
+            Screenshot: screenshot ? 'Screenshot attached (base64)' : 'None',
+          }),
         },
-        body: JSON.stringify({
-          _subject: 'Sable App Feedback',
-          _template: 'table',
-          Rating: `${rating} / 5 ⭐`,
-          Message: message,
-          Screenshot: screenshot ? 'Screenshot attached (base64)' : 'None',
-        }),
-      });
+      );
 
       if (res.ok) {
         setStatus('sent');
@@ -90,7 +95,10 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-ink/40 cursor-pointer" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-ink/40 cursor-pointer"
+        onClick={onClose}
+      />
 
       {/* Modal */}
       <div className="relative z-10 w-[480px] max-w-[92vw] bg-white border-2 border-ink rounded-2xl shadow-hard-lg p-8 flex flex-col items-center">
@@ -105,8 +113,12 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
         {status === 'sent' ? (
           /* ── Success State ────────────────────────── */
           <div className="py-8 flex flex-col items-center gap-4">
-            <span className="material-symbols-outlined text-primary text-[56px]">check_circle</span>
-            <h3 className="font-heading font-bold text-2xl text-ink">Thank you!</h3>
+            <span className="material-symbols-outlined text-primary text-[56px]">
+              check_circle
+            </span>
+            <h3 className="font-heading font-bold text-2xl text-ink">
+              Thank you!
+            </h3>
             <p className="text-sm text-ink/50 font-body text-center">
               Your feedback has been sent. We appreciate it!
             </p>
@@ -118,7 +130,8 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
               We appreciate your feedback.
             </h3>
             <p className="text-sm text-ink/50 font-body text-center mb-6 max-w-[340px]">
-              We are always looking for ways to improve your experience. Please take a moment to evaluate and tell us what you think.
+              We are always looking for ways to improve your experience. Please
+              take a moment to evaluate and tell us what you think.
             </p>
 
             {/* Star Rating */}
@@ -137,7 +150,9 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
                     height="44"
                     viewBox="0 0 24 24"
                     fill={(hoveredStar || rating) >= star ? '#FBBF24' : 'none'}
-                    stroke={(hoveredStar || rating) >= star ? '#FBBF24' : '#CBD5E1'}
+                    stroke={
+                      (hoveredStar || rating) >= star ? '#FBBF24' : '#CBD5E1'
+                    }
                     strokeWidth="1.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -165,7 +180,9 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
 
             {/* Screenshot Upload */}
             <div className="w-full mb-6">
-              <p className="font-display font-bold text-sm text-ink mb-2">Screenshot (Optional)</p>
+              <p className="font-display font-bold text-sm text-ink mb-2">
+                Screenshot (Optional)
+              </p>
               <div
                 onClick={() => fileRef.current?.click()}
                 onPaste={handlePaste}
@@ -174,8 +191,14 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
               >
                 {screenshot ? (
                   <div className="flex flex-col items-center gap-2">
-                    <img src={screenshot} alt="Screenshot preview" className="max-h-24 rounded-lg border border-ink/10" />
-                    <span className="text-xs text-ink/40 font-body">{screenshotName}</span>
+                    <img
+                      src={screenshot}
+                      alt="Screenshot preview"
+                      className="max-h-24 rounded-lg border border-ink/10"
+                    />
+                    <span className="text-xs text-ink/40 font-body">
+                      {screenshotName}
+                    </span>
                     <button
                       type="button"
                       onClick={(e) => {
@@ -190,9 +213,15 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
                   </div>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[28px] text-ink/25 mb-1">upload</span>
-                    <p className="text-sm font-body text-ink/50">Click to upload or paste image</p>
-                    <p className="text-[10px] font-body text-ink/25 mt-0.5">PNG, JPEG, GIF, WebP (max 20MB)</p>
+                    <span className="material-symbols-outlined text-[28px] text-ink/25 mb-1">
+                      upload
+                    </span>
+                    <p className="text-sm font-body text-ink/50">
+                      Click to upload or paste image
+                    </p>
+                    <p className="text-[10px] font-body text-ink/25 mt-0.5">
+                      PNG, JPEG, GIF, WebP (max 20MB)
+                    </p>
                   </>
                 )}
               </div>
@@ -208,7 +237,8 @@ export function FeedbackModal({ isOpen, onClose }: Props) {
             {/* Error message */}
             {status === 'error' && (
               <p className="text-xs text-red-500 font-body mb-3 self-start">
-                Failed to send. Please check your internet connection and try again.
+                Failed to send. Please check your internet connection and try
+                again.
               </p>
             )}
 

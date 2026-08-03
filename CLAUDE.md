@@ -64,11 +64,11 @@ The app uses a **Bring Your Own Key** model. Users configure their preferred AI 
 
 Supported providers and models:
 
-| Provider | Models | Auth |
-|----------|--------|------|
-| OpenAI | GPT-4o Mini, GPT-4o, GPT-4.1 Mini, GPT-4.1 | `Authorization: Bearer <key>` |
-| Google Gemini | Gemini 2.0 Flash, Gemini 2.5 Flash, Gemini 2.5 Pro | `?key=<key>` query param |
-| Anthropic Claude | Claude 3.5 Haiku, Claude Sonnet 4, Claude Opus 4 | `x-api-key: <key>` header |
+| Provider         | Models                                             | Auth                          |
+| ---------------- | -------------------------------------------------- | ----------------------------- |
+| OpenAI           | GPT-4o Mini, GPT-4o, GPT-4.1 Mini, GPT-4.1         | `Authorization: Bearer <key>` |
+| Google Gemini    | Gemini 2.0 Flash, Gemini 2.5 Flash, Gemini 2.5 Pro | `?key=<key>` query param      |
+| Anthropic Claude | Claude 3.5 Haiku, Claude Sonnet 4, Claude Opus 4   | `x-api-key: <key>` header     |
 
 The client-side AI helper is `lib/ai.ts`. It builds task prompts, routes requests to the correct provider endpoint, and parses provider-specific response shapes. The old server-side route (`app/api/agent/route.ts`) has been deleted.
 

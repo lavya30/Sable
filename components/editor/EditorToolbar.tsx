@@ -58,9 +58,12 @@ export function EditorToolbar({
   useEffect(() => {
     if (!fontOpen && !imageOpen && !tableOpen) return;
     const handler = (e: MouseEvent) => {
-      if (fontOpen && !fontDropdownRef.current?.contains(e.target as Node)) setFontOpen(false);
-      if (imageOpen && !imageDropdownRef.current?.contains(e.target as Node)) setImageOpen(false);
-      if (tableOpen && !tableDropdownRef.current?.contains(e.target as Node)) setTableOpen(false);
+      if (fontOpen && !fontDropdownRef.current?.contains(e.target as Node))
+        setFontOpen(false);
+      if (imageOpen && !imageDropdownRef.current?.contains(e.target as Node))
+        setImageOpen(false);
+      if (tableOpen && !tableDropdownRef.current?.contains(e.target as Node))
+        setTableOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -68,10 +71,14 @@ export function EditorToolbar({
 
   function insertImageUrl() {
     if (!editor || !imageUrl.trim()) return;
-    editor.chain().focus().insertContent({
-      type: 'image',
-      attrs: { src: imageUrl.trim() },
-    }).run();
+    editor
+      .chain()
+      .focus()
+      .insertContent({
+        type: 'image',
+        attrs: { src: imageUrl.trim() },
+      })
+      .run();
     setImageUrl('');
     setImageOpen(false);
   }
@@ -82,10 +89,14 @@ export function EditorToolbar({
     const reader = new FileReader();
     reader.onload = () => {
       const src = reader.result as string;
-      editor.chain().focus().insertContent({
-        type: 'image',
-        attrs: { src },
-      }).run();
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: 'image',
+          attrs: { src },
+        })
+        .run();
       setImageOpen(false);
     };
     reader.readAsDataURL(file);
@@ -145,7 +156,9 @@ export function EditorToolbar({
             className="flex items-center gap-3 hover:opacity-70 transition-opacity min-w-0 group"
             title="Back to Library"
           >
-            <span className="material-symbols-outlined text-base text-primary dark:text-primary/70 group-hover:text-primary/80">arrow_back</span>
+            <span className="material-symbols-outlined text-base text-primary dark:text-primary/70 group-hover:text-primary/80">
+              arrow_back
+            </span>
             <span className="font-medium text-sm text-ink dark:text-slate-100 truncate hidden sm:block max-w-[200px]">
               {docTitle || 'Untitled'}
             </span>
@@ -168,13 +181,17 @@ export function EditorToolbar({
             <IconBtn
               icon="format_h1"
               label="Heading 1"
-              onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 1 }).run()
+              }
               active={editor.isActive('heading', { level: 1 })}
             />
             <IconBtn
               icon="format_h2"
               label="Heading 2"
-              onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 2 }).run()
+              }
               active={editor.isActive('heading', { level: 2 })}
             />
             <IconBtn
@@ -229,18 +246,26 @@ export function EditorToolbar({
                           if (font.css === '') {
                             editor.chain().focus().unsetFontFamily().run();
                           } else {
-                            editor.chain().focus().setFontFamily(font.css).run();
+                            editor
+                              .chain()
+                              .focus()
+                              .setFontFamily(font.css)
+                              .run();
                           }
                           setFontOpen(false);
                         }}
                         className={`w-full text-left text-sm px-4 py-2.5 hover:bg-primary/10 dark:hover:bg-slate-800 transition-colors flex items-center justify-between ${
-                          font.css === activeFamily ? 'bg-lavender/20 dark:bg-slate-800/50 text-ink dark:text-slate-50 font-medium' : 'text-ink/70 dark:text-slate-300'
+                          font.css === activeFamily
+                            ? 'bg-lavender/20 dark:bg-slate-800/50 text-ink dark:text-slate-50 font-medium'
+                            : 'text-ink/70 dark:text-slate-300'
                         }`}
                         style={{ fontFamily: font.css || undefined }}
                       >
                         <span>{font.label}</span>
                         {font.css === activeFamily && (
-                          <span className="material-symbols-outlined text-sm text-primary">check</span>
+                          <span className="material-symbols-outlined text-sm text-primary">
+                            check
+                          </span>
                         )}
                       </button>
                     ))}
@@ -263,7 +288,9 @@ export function EditorToolbar({
               />
               {imageOpen && (
                 <div className="absolute top-full right-0 mt-2 z-[60] bg-canvas dark:bg-slate-900 border border-ink/20 dark:border-slate-800 rounded-xl shadow-lg w-72 p-4 space-y-3">
-                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide">URL</div>
+                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide">
+                    URL
+                  </div>
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -318,7 +345,9 @@ export function EditorToolbar({
               />
               {tableOpen && (
                 <div className="absolute top-full right-0 mt-2 z-[60] bg-canvas dark:bg-slate-900 border border-ink/20 dark:border-slate-800 rounded-xl shadow-lg p-4">
-                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide mb-3">Table size</div>
+                  <div className="text-xs font-medium text-ink/60 dark:text-slate-400 uppercase tracking-wide mb-3">
+                    Table size
+                  </div>
                   <div
                     className="grid gap-1.5"
                     style={{ gridTemplateColumns: 'repeat(6, 1fr)' }}
@@ -330,9 +359,19 @@ export function EditorToolbar({
                       return (
                         <div
                           key={i}
-                          onMouseEnter={() => setTableHover({ rows: row, cols: col })}
+                          onMouseEnter={() =>
+                            setTableHover({ rows: row, cols: col })
+                          }
                           onClick={() => {
-                            editor.chain().focus().insertTable({ rows: row, cols: col, withHeaderRow: true }).run();
+                            editor
+                              .chain()
+                              .focus()
+                              .insertTable({
+                                rows: row,
+                                cols: col,
+                                withHeaderRow: true,
+                              })
+                              .run();
                             setTableOpen(false);
                             setTableHover({ rows: 0, cols: 0 });
                           }}
@@ -363,16 +402,8 @@ export function EditorToolbar({
               onClick={onPreviewToggle}
               active={showPreview}
             />
-            <IconBtn
-              icon="toc"
-              label="Outline"
-              onClick={onOutlineToggle}
-            />
-            <IconBtn
-              icon="search"
-              label="Find"
-              onClick={onFindToggle}
-            />
+            <IconBtn icon="toc" label="Outline" onClick={onOutlineToggle} />
+            <IconBtn icon="search" label="Find" onClick={onFindToggle} />
 
             <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
 
@@ -387,11 +418,7 @@ export function EditorToolbar({
               label="Mood Board"
               onClick={onMoodBoardToggle}
             />
-            <IconBtn
-              icon="history"
-              label="History"
-              onClick={onHistoryOpen}
-            />
+            <IconBtn icon="history" label="History" onClick={onHistoryOpen} />
 
             <div className="w-px h-5 bg-ink/10 dark:bg-slate-800 mx-2" />
 
@@ -401,7 +428,9 @@ export function EditorToolbar({
                 onClick={onPublishOpen}
                 className="px-4 py-2 bg-primary text-ink rounded-lg hover:bg-primary/90 transition-all text-sm font-medium flex items-center gap-2"
               >
-                <span className="material-symbols-outlined text-lg">publish</span>
+                <span className="material-symbols-outlined text-lg">
+                  publish
+                </span>
                 <span className="hidden sm:inline">Publish</span>
               </button>
               {/* Hover tooltip box */}

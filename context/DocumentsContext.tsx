@@ -56,7 +56,7 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
 
   const getDoc = useCallback(
     (id: string) => documents.find((d) => d.id === id),
-    [documents]
+    [documents],
   );
 
   const updateDoc = useCallback(
@@ -65,11 +65,11 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
         prev.map((d) =>
           d.id === id
             ? { ...d, ...partial, updatedAt: new Date().toISOString() }
-            : d
-        )
+            : d,
+        ),
       );
     },
-    []
+    [],
   );
 
   const deleteDoc = useCallback((id: string) => {
@@ -77,8 +77,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       prev.map((d) =>
         d.id === id
           ? { ...d, isDeleted: true, updatedAt: new Date().toISOString() }
-          : d
-      )
+          : d,
+      ),
     );
   }, []);
 
@@ -99,16 +99,14 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
       setDocuments((prev) => [copy, ...prev]);
       return copy;
     },
-    [documents]
+    [documents],
   );
 
   const renameDoc = useCallback((id: string, title: string) => {
     setDocuments((prev) =>
       prev.map((d) =>
-        d.id === id
-          ? { ...d, title, updatedAt: new Date().toISOString() }
-          : d
-      )
+        d.id === id ? { ...d, title, updatedAt: new Date().toISOString() } : d,
+      ),
     );
   }, []);
 
@@ -121,8 +119,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
               isFavorited: !d.isFavorited,
               updatedAt: new Date().toISOString(),
             }
-          : d
-      )
+          : d,
+      ),
     );
   }, []);
 
@@ -135,8 +133,8 @@ export function DocumentsProvider({ children }: { children: React.ReactNode }) {
               isArchived: !d.isArchived,
               updatedAt: new Date().toISOString(),
             }
-          : d
-      )
+          : d,
+      ),
     );
   }, []);
 

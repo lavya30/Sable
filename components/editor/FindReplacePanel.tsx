@@ -40,7 +40,9 @@ export function FindReplacePanel({ isOpen, onClose, editor }: Props) {
   return (
     <div className="absolute top-4 right-4 z-50 bg-white border-2 border-ink rounded-xl shadow-hard p-3 w-[320px] flex flex-col gap-3 font-body animate-slide-down">
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-display font-bold uppercase tracking-wider text-ink/50 ml-1">Find & Replace</h3>
+        <h3 className="text-xs font-display font-bold uppercase tracking-wider text-ink/50 ml-1">
+          Find & Replace
+        </h3>
         <button
           onClick={onClose}
           className="p-1 rounded-md text-ink/40 hover:text-ink hover:bg-gray-100 transition-colors"
@@ -51,7 +53,9 @@ export function FindReplacePanel({ isOpen, onClose, editor }: Props) {
 
       <div className="flex flex-col gap-2">
         <div className="relative flex items-center bg-gray-50 border-2 border-ink/20 focus-within:border-primary rounded-lg px-2 overflow-hidden transition-colors">
-          <span className="material-symbols-outlined text-[18px] text-ink/40 shrink-0">search</span>
+          <span className="material-symbols-outlined text-[18px] text-ink/40 shrink-0">
+            search
+          </span>
           <input
             ref={searchInputRef}
             type="text"
@@ -75,21 +79,27 @@ export function FindReplacePanel({ isOpen, onClose, editor }: Props) {
                 className="p-1 hover:bg-gray-200 rounded text-ink/60 transition-colors"
                 title="Previous (Shift+Enter)"
               >
-                <span className="material-symbols-outlined text-[16px]">keyboard_arrow_up</span>
+                <span className="material-symbols-outlined text-[16px]">
+                  keyboard_arrow_up
+                </span>
               </button>
               <button
                 onClick={() => editor?.commands.nextSearchResult()}
                 className="p-1 hover:bg-gray-200 rounded text-ink/60 transition-colors"
                 title="Next (Enter)"
               >
-                <span className="material-symbols-outlined text-[16px]">keyboard_arrow_down</span>
+                <span className="material-symbols-outlined text-[16px]">
+                  keyboard_arrow_down
+                </span>
               </button>
             </div>
           )}
         </div>
 
         <div className="relative flex items-center bg-gray-50 border-2 border-ink/20 focus-within:border-peach rounded-lg px-2 overflow-hidden transition-colors">
-          <span className="material-symbols-outlined text-[18px] text-ink/40 shrink-0">find_replace</span>
+          <span className="material-symbols-outlined text-[18px] text-ink/40 shrink-0">
+            find_replace
+          </span>
           <input
             type="text"
             placeholder="Replace with..."

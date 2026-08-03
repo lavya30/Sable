@@ -6,7 +6,7 @@ import { useCallback, useRef } from 'react';
  */
 export function useDebounce<T extends (...args: Parameters<T>) => void>(
   fn: T,
-  delay: number
+  delay: number,
 ): (...args: Parameters<T>) => void {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fnRef = useRef<T>(fn);
@@ -19,6 +19,6 @@ export function useDebounce<T extends (...args: Parameters<T>) => void>(
         fnRef.current(...args);
       }, delay);
     },
-    [delay]
+    [delay],
   );
 }

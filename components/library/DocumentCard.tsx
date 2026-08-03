@@ -8,42 +8,78 @@ import { useDocuments } from '@/context/DocumentsContext';
 import { DocumentMenu } from './DocumentMenu';
 
 const COVER_BG: Record<CoverColor, string> = {
-  mint:     'bg-mint',
+  mint: 'bg-mint',
   lavender: 'bg-lavender',
-  peach:    'bg-peach',
-  rose:     'bg-rose',
+  peach: 'bg-peach',
+  rose: 'bg-rose',
 };
 
 const COVER_DOT: Record<CoverColor, string> = {
-  mint:     'bg-mint',
+  mint: 'bg-mint',
   lavender: 'bg-lavender',
-  peach:    'bg-peach',
-  rose:     'bg-rose',
+  peach: 'bg-peach',
+  rose: 'bg-rose',
 };
 
 // Decorative SVG doodles per cover colour
 const COVER_DOODLE: Record<CoverColor, React.ReactNode> = {
   mint: (
     <svg className="w-full h-full opacity-25" fill="none" viewBox="0 0 100 60">
-      <path d="M10 10H90M10 20H80M10 30H85M10 40H60" stroke="#2D3436" strokeLinecap="round" strokeWidth="2" />
+      <path
+        d="M10 10H90M10 20H80M10 30H85M10 40H60"
+        stroke="#2D3436"
+        strokeLinecap="round"
+        strokeWidth="2"
+      />
     </svg>
   ),
   lavender: (
     <svg className="w-full h-full opacity-25" fill="none" viewBox="0 0 100 60">
       <circle cx="30" cy="30" r="15" stroke="#2D3436" strokeWidth="2" />
-      <path d="M60 20L80 40M60 40L80 20" stroke="#2D3436" strokeLinecap="round" strokeWidth="2" />
+      <path
+        d="M60 20L80 40M60 40L80 20"
+        stroke="#2D3436"
+        strokeLinecap="round"
+        strokeWidth="2"
+      />
     </svg>
   ),
   peach: (
     <svg className="w-full h-full opacity-25" fill="none" viewBox="0 0 100 60">
-      <rect height="20" rx="2" stroke="#2D3436" strokeWidth="2" width="20" x="20" y="10" />
-      <rect height="20" rx="2" stroke="#2D3436" strokeWidth="2" width="20" x="50" y="10" />
-      <rect height="10" rx="2" stroke="#2D3436" strokeWidth="2" width="50" x="20" y="40" />
+      <rect
+        height="20"
+        rx="2"
+        stroke="#2D3436"
+        strokeWidth="2"
+        width="20"
+        x="20"
+        y="10"
+      />
+      <rect
+        height="20"
+        rx="2"
+        stroke="#2D3436"
+        strokeWidth="2"
+        width="20"
+        x="50"
+        y="10"
+      />
+      <rect
+        height="10"
+        rx="2"
+        stroke="#2D3436"
+        strokeWidth="2"
+        width="50"
+        x="20"
+        y="40"
+      />
     </svg>
   ),
   rose: (
     <div className="w-full h-full flex items-center justify-center">
-      <span className="material-symbols-outlined text-6xl text-ink opacity-25">favorite</span>
+      <span className="material-symbols-outlined text-6xl text-ink opacity-25">
+        favorite
+      </span>
     </div>
   ),
 };
@@ -111,7 +147,12 @@ export function DocumentCard({ doc }: Props) {
         {/* Favourite star */}
         {doc.isFavorited && (
           <div className="absolute top-3 left-3">
-            <span className="material-symbols-outlined text-ink text-lg" style={{ fontVariationSettings: "'FILL' 1" }}>star</span>
+            <span
+              className="material-symbols-outlined text-ink text-lg"
+              style={{ fontVariationSettings: "'FILL' 1" }}
+            >
+              star
+            </span>
           </div>
         )}
 
@@ -150,7 +191,10 @@ export function DocumentCard({ doc }: Props) {
           {doc.tags && doc.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-3">
               {doc.tags.map((tag) => (
-                <span key={tag} className="px-1.5 py-0.5 text-[10px] font-display font-bold bg-mint/50 dark:bg-emerald-900/40 text-ink dark:text-emerald-100 rounded border border-mint dark:border-emerald-700/50 uppercase tracking-wider">
+                <span
+                  key={tag}
+                  className="px-1.5 py-0.5 text-[10px] font-display font-bold bg-mint/50 dark:bg-emerald-900/40 text-ink dark:text-emerald-100 rounded border border-mint dark:border-emerald-700/50 uppercase tracking-wider"
+                >
                   {tag}
                 </span>
               ))}

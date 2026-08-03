@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    const { text } = await req.json() as { text: string };
+    const { text } = (await req.json()) as { text: string };
     if (!text || !text.trim()) {
       return NextResponse.json({ matches: [] });
     }
@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
+        Accept: 'application/json',
       },
       body: params.toString(),
       signal: AbortSignal.timeout(8000),
@@ -31,10 +31,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ matches: [] });
     }
 
-    const data = await res.json() as { matches?: Record<string, unknown>[] };
+    const data = (await res.json()) as { matches?: Record<string, unknown>[] };
     return NextResponse.json({ matches: data.matches ?? [] });
   } catch (error) {
-    console.error('Grammar check error:', error instanceof Error ? error.message : String(error));
+    console.error(
+      'Grammar check error:',
+      error instanceof Error ? error.message : String(error),
+    );
     return NextResponse.json({ matches: [] });
   }
 }

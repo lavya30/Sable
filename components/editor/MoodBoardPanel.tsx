@@ -14,12 +14,13 @@ function generateItemId(): string {
   return `mb_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 }
 
-const ADD_BUTTONS: { type: MoodBoardItemType; icon: string; label: string }[] = [
-  { type: 'image', icon: 'image', label: 'Image' },
-  { type: 'color', icon: 'palette', label: 'Color' },
-  { type: 'link', icon: 'link', label: 'Link' },
-  { type: 'note', icon: 'edit_note', label: 'Note' },
-];
+const ADD_BUTTONS: { type: MoodBoardItemType; icon: string; label: string }[] =
+  [
+    { type: 'image', icon: 'image', label: 'Image' },
+    { type: 'color', icon: 'palette', label: 'Color' },
+    { type: 'link', icon: 'link', label: 'Link' },
+    { type: 'note', icon: 'edit_note', label: 'Note' },
+  ];
 
 export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,7 +42,9 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   // Prevent body scroll when panel is open
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   function addItem(type: MoodBoardItemType, content: string, label: string) {
@@ -112,7 +115,10 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 cursor-pointer" onClick={onClose} />
+        <div
+          className="fixed inset-0 bg-ink/20 backdrop-blur-sm z-40 cursor-pointer"
+          onClick={onClose}
+        />
       )}
 
       <div
@@ -124,12 +130,19 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
         <div className="flex items-center justify-between px-6 py-4 border-b-2 border-ink/10 relative z-10">
           <div>
             <h2 className="text-2xl font-display font-extrabold tracking-tight text-ink flex items-center gap-2">
-              <span className="material-symbols-outlined text-primary">dashboard</span>
+              <span className="material-symbols-outlined text-primary">
+                dashboard
+              </span>
               Mood Board
             </h2>
-            <span className="text-sm font-marker text-gray-500 -rotate-1 inline-block">Pin your inspiration</span>
+            <span className="text-sm font-marker text-gray-500 -rotate-1 inline-block">
+              Pin your inspiration
+            </span>
           </div>
-          <button onClick={onClose} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+          <button
+            onClick={onClose}
+            className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+          >
             <span className="material-symbols-outlined text-ink">close</span>
           </button>
         </div>
@@ -142,8 +155,12 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
               onClick={() => handleAddClick(type)}
               className="flex-1 flex flex-col items-center justify-center gap-1 py-3 rounded-xl border-2 border-ink/15 bg-white hover:border-ink hover:-translate-y-0.5 hover:shadow-hard-sm transition-all cursor-pointer group"
             >
-              <span className="material-symbols-outlined text-[20px] text-gray-500 group-hover:text-primary transition-colors">{icon}</span>
-              <span className="text-[10px] font-marker text-gray-500 group-hover:text-ink transition-colors">{label}</span>
+              <span className="material-symbols-outlined text-[20px] text-gray-500 group-hover:text-primary transition-colors">
+                {icon}
+              </span>
+              <span className="text-[10px] font-marker text-gray-500 group-hover:text-ink transition-colors">
+                {label}
+              </span>
             </button>
           ))}
         </div>
@@ -158,10 +175,15 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
         />
 
         {/* Cards area — masonry columns */}
-        <div data-lenis-prevent className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 relative z-10">
+        <div
+          data-lenis-prevent
+          className="flex-1 overflow-y-auto scrollbar-hide px-5 py-4 relative z-10"
+        >
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-3 opacity-60">
-              <span className="material-symbols-outlined text-5xl text-gray-300">dashboard_customize</span>
+              <span className="material-symbols-outlined text-5xl text-gray-300">
+                dashboard_customize
+              </span>
               <p className="font-marker text-gray-400 text-sm max-w-[200px]">
                 Pin images, colors, links &amp; notes to build your mood board.
               </p>
@@ -169,7 +191,11 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
           ) : (
             <div className="columns-2 gap-3 [column-fill:_balance]">
               {items.map((item) => (
-                <MoodCard key={item.id} item={item} onRemove={() => removeItem(item.id)} />
+                <MoodCard
+                  key={item.id}
+                  item={item}
+                  onRemove={() => removeItem(item.id)}
+                />
               ))}
             </div>
           )}
@@ -194,9 +220,14 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Color picker modal */}
       {showColorModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowColorModal(false)} />
+          <div
+            className="absolute inset-0 cursor-pointer"
+            onClick={() => setShowColorModal(false)}
+          />
           <div className="relative w-full max-w-xs bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
-            <h3 className="font-display font-bold text-lg text-ink">Pick a Color</h3>
+            <h3 className="font-display font-bold text-lg text-ink">
+              Pick a Color
+            </h3>
 
             {/* Live preview swatch */}
             <div
@@ -238,9 +269,14 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Link modal */}
       {showLinkModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowLinkModal(false)} />
+          <div
+            className="absolute inset-0 cursor-pointer"
+            onClick={() => setShowLinkModal(false)}
+          />
           <div className="relative w-full max-w-sm bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
-            <h3 className="font-display font-bold text-lg text-ink">Add Link</h3>
+            <h3 className="font-display font-bold text-lg text-ink">
+              Add Link
+            </h3>
             <input
               type="url"
               value={linkUrl}
@@ -259,8 +295,18 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
               className="w-full border-2 border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white"
             />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowLinkModal(false)} className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors">Cancel</button>
-              <button onClick={handleLinkSubmit} className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink">Pin it</button>
+              <button
+                onClick={() => setShowLinkModal(false)}
+                className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLinkSubmit}
+                className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink"
+              >
+                Pin it
+              </button>
             </div>
           </div>
         </div>
@@ -269,9 +315,14 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
       {/* Note modal */}
       {showNoteModal && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 backdrop-blur-sm bg-white/30">
-          <div className="absolute inset-0 cursor-pointer" onClick={() => setShowNoteModal(false)} />
+          <div
+            className="absolute inset-0 cursor-pointer"
+            onClick={() => setShowNoteModal(false)}
+          />
           <div className="relative w-full max-w-sm bg-white border-[3px] border-ink rounded-wobble shadow-hard-lg p-6 z-10 flex flex-col gap-4">
-            <h3 className="font-display font-bold text-lg text-ink">Add Note</h3>
+            <h3 className="font-display font-bold text-lg text-ink">
+              Add Note
+            </h3>
             <input
               type="text"
               value={noteLabel}
@@ -288,8 +339,18 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
               className="w-full border-2 border-ink/20 rounded-lg px-3 py-2 text-sm font-body text-ink placeholder:text-gray-400 focus:outline-none focus:border-primary bg-white resize-none"
             />
             <div className="flex gap-2 justify-end">
-              <button onClick={() => setShowNoteModal(false)} className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors">Cancel</button>
-              <button onClick={handleNoteSubmit} className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink">Pin it</button>
+              <button
+                onClick={() => setShowNoteModal(false)}
+                className="px-4 py-2 text-sm font-marker text-gray-700 hover:text-ink transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleNoteSubmit}
+                className="px-4 py-2 bg-ink text-white text-sm font-display font-bold rounded-lg hover:bg-primary hover:text-ink transition-all border-2 border-ink"
+              >
+                Pin it
+              </button>
             </div>
           </div>
         </div>
@@ -300,7 +361,13 @@ export function MoodBoardPanel({ isOpen, onClose, items, onChange }: Props) {
 
 /* ── Individual card ────────────────────────────────────────── */
 
-function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => void }) {
+function MoodCard({
+  item,
+  onRemove,
+}: {
+  item: MoodBoardItem;
+  onRemove: () => void;
+}) {
   const baseClass =
     'relative break-inside-avoid mb-3 rounded-xl border-2 border-ink/15 bg-white overflow-hidden group hover:-translate-y-0.5 hover:shadow-hard-sm transition-all';
 
@@ -309,7 +376,9 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
       onClick={onRemove}
       className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/90 border border-ink/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-50 hover:border-red-300"
     >
-      <span className="material-symbols-outlined text-[14px] text-gray-500 hover:text-red-500">close</span>
+      <span className="material-symbols-outlined text-[14px] text-gray-500 hover:text-red-500">
+        close
+      </span>
     </button>
   );
 
@@ -317,10 +386,17 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
     case 'image':
       return (
         <div className={baseClass}>
-          <img src={item.content} alt={item.label} className="w-full object-cover" style={{ maxHeight: 200 }} />
+          <img
+            src={item.content}
+            alt={item.label}
+            className="w-full object-cover"
+            style={{ maxHeight: 200 }}
+          />
           {item.label && (
             <div className="px-3 py-2 border-t border-ink/10">
-              <span className="text-xs font-marker text-gray-500 line-clamp-1">{item.label}</span>
+              <span className="text-xs font-marker text-gray-500 line-clamp-1">
+                {item.label}
+              </span>
             </div>
           )}
           {deleteBtn}
@@ -330,10 +406,18 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
     case 'color':
       return (
         <div className={baseClass}>
-          <div className="h-24 w-full rounded-t-xl" style={{ backgroundColor: item.content }} />
+          <div
+            className="h-24 w-full rounded-t-xl"
+            style={{ backgroundColor: item.content }}
+          />
           <div className="px-3 py-2 border-t border-ink/10 flex items-center justify-between">
-            <span className="text-xs font-mono text-gray-500 uppercase tracking-wider">{item.content}</span>
-            <div className="w-4 h-4 rounded-full border-2 border-ink/20" style={{ backgroundColor: item.content }} />
+            <span className="text-xs font-mono text-gray-500 uppercase tracking-wider">
+              {item.content}
+            </span>
+            <div
+              className="w-4 h-4 rounded-full border-2 border-ink/20"
+              style={{ backgroundColor: item.content }}
+            />
           </div>
           {deleteBtn}
         </div>
@@ -348,10 +432,16 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
             rel="noopener noreferrer"
             className="flex items-start gap-2 p-3 hover:bg-primary/5 transition-colors"
           >
-            <span className="material-symbols-outlined text-primary text-[18px] mt-0.5 flex-shrink-0">link</span>
+            <span className="material-symbols-outlined text-primary text-[18px] mt-0.5 flex-shrink-0">
+              link
+            </span>
             <div className="min-w-0">
-              <div className="text-sm font-display font-bold text-ink line-clamp-2">{item.label}</div>
-              <div className="text-xs font-mono text-gray-400 truncate mt-0.5">{item.content}</div>
+              <div className="text-sm font-display font-bold text-ink line-clamp-2">
+                {item.label}
+              </div>
+              <div className="text-xs font-mono text-gray-400 truncate mt-0.5">
+                {item.content}
+              </div>
             </div>
           </a>
           {deleteBtn}
@@ -363,9 +453,13 @@ function MoodCard({ item, onRemove }: { item: MoodBoardItem; onRemove: () => voi
         <div className={`${baseClass} bg-peach/30`}>
           <div className="p-3">
             {item.label && item.label !== 'Note' && (
-              <div className="text-xs font-display font-bold text-ink mb-1">{item.label}</div>
+              <div className="text-xs font-display font-bold text-ink mb-1">
+                {item.label}
+              </div>
             )}
-            <p className="text-sm font-marker text-ink/80 whitespace-pre-wrap leading-relaxed">{item.content}</p>
+            <p className="text-sm font-marker text-ink/80 whitespace-pre-wrap leading-relaxed">
+              {item.content}
+            </p>
           </div>
           {deleteBtn}
         </div>

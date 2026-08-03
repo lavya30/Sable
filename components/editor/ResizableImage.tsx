@@ -7,15 +7,32 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 declare module '@tiptap/core' {
   interface Commands<ReturnType> {
     image: {
-      setImage: (options: { src: string; alt?: string; title?: string }) => ReturnType;
+      setImage: (options: {
+        src: string;
+        alt?: string;
+        title?: string;
+      }) => ReturnType;
     };
   }
 }
 
 /* ─── React Component for the Image Node View ──────────────────────────── */
 
-function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
-  node: { attrs: { src: string; alt: string; title: string; width: number | null; alignment: string } };
+function ResizableImageView({
+  node,
+  updateAttributes,
+  deleteNode,
+  selected,
+}: {
+  node: {
+    attrs: {
+      src: string;
+      alt: string;
+      title: string;
+      width: number | null;
+      alignment: string;
+    };
+  };
   updateAttributes: (attrs: Record<string, unknown>) => void;
   deleteNode: () => void;
   selected: boolean;
@@ -57,20 +74,21 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
   }, [isResizing, updateAttributes]);
 
   const justifyClass =
-    alignment === 'center' ? 'justify-center' :
-      alignment === 'right' ? 'justify-end' :
-        'justify-start';
+    alignment === 'center'
+      ? 'justify-center'
+      : alignment === 'right'
+        ? 'justify-end'
+        : 'justify-start';
 
   return (
-    <NodeViewWrapper
-      className={`flex my-4 ${justifyClass}`}
-      data-drag-handle
-    >
+    <NodeViewWrapper className={`flex my-4 ${justifyClass}`} data-drag-handle>
       <div
         className={`relative inline-block group ${isResizing ? '' : 'transition-all duration-200'}`}
         style={{ width: width ? `${width}px` : 'auto', maxWidth: '100%' }}
         onMouseEnter={() => setShowToolbar(true)}
-        onMouseLeave={() => { if (!isResizing) setShowToolbar(false); }}
+        onMouseLeave={() => {
+          if (!isResizing) setShowToolbar(false);
+        }}
       >
         {/* The image */}
         <img
@@ -78,10 +96,11 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
           src={src}
           alt={alt || ''}
           draggable={false}
-          className={`w-full h-auto rounded-lg border-2 transition-colors duration-200 ${selected
-            ? 'border-primary shadow-[4px_4px_0_rgba(19,236,117,0.2)]'
-            : 'border-ink/10 hover:border-mint'
-            }`}
+          className={`w-full h-auto rounded-lg border-2 transition-colors duration-200 ${
+            selected
+              ? 'border-primary shadow-[4px_4px_0_rgba(19,236,117,0.2)]'
+              : 'border-ink/10 hover:border-mint'
+          }`}
         />
 
         {/* Hover toolbar */}
@@ -92,12 +111,19 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
               <button
                 key={a}
                 onClick={() => updateAttributes({ alignment: a })}
-                className={`p-1 rounded transition-colors ${alignment === a ? 'text-mint' : 'text-white/70 hover:text-white'
-                  }`}
+                className={`p-1 rounded transition-colors ${
+                  alignment === a
+                    ? 'text-mint'
+                    : 'text-white/70 hover:text-white'
+                }`}
                 title={`Align ${a}`}
               >
                 <span className="material-symbols-outlined text-[16px]">
-                  {a === 'left' ? 'format_align_left' : a === 'center' ? 'format_align_center' : 'format_align_right'}
+                  {a === 'left'
+                    ? 'format_align_left'
+                    : a === 'center'
+                      ? 'format_align_center'
+                      : 'format_align_right'}
                 </span>
               </button>
             ))}
@@ -110,7 +136,9 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
               className="p-1 rounded text-white/70 hover:text-red-400 transition-colors"
               title="Delete image"
             >
-              <span className="material-symbols-outlined text-[16px]">delete</span>
+              <span className="material-symbols-outlined text-[16px]">
+                delete
+              </span>
             </button>
           </div>
         )}
@@ -122,7 +150,9 @@ function ResizableImageView({ node, updateAttributes, deleteNode, selected }: {
             className="absolute -bottom-1.5 -right-1.5 w-5 h-5 bg-white border-2 border-primary rounded-full cursor-se-resize z-20 flex items-center justify-center shadow-sm hover:scale-110 transition-transform"
             title="Drag to resize"
           >
-            <span className="material-symbols-outlined text-primary text-[12px]">open_in_full</span>
+            <span className="material-symbols-outlined text-primary text-[12px]">
+              open_in_full
+            </span>
           </div>
         )}
 
@@ -170,12 +200,20 @@ export const ResizableImage = Node.create({
 
   addCommands() {
     return {
-      setImage: (options: { src: string; alt?: string; title?: string }) => ({ commands }: { commands: { insertContent: (content: Record<string, unknown>) => boolean } }) => {
-        return commands.insertContent({
-          type: this.name,
-          attrs: options,
-        });
-      },
+      setImage:
+        (options: { src: string; alt?: string; title?: string }) =>
+        ({
+          commands,
+        }: {
+          commands: {
+            insertContent: (content: Record<string, unknown>) => boolean;
+          };
+        }) => {
+          return commands.insertContent({
+            type: this.name,
+            attrs: options,
+          });
+        },
     };
   },
 });

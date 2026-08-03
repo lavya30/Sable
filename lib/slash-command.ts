@@ -44,7 +44,15 @@ export const SlashCommandExtension = Extension.create({
       suggestion: {
         char: '/',
         pluginKey: new PluginKey('slashCommand'),
-        command: ({ editor, range, props }: { editor: unknown; range: unknown; props: SlashCommandItem }) => {
+        command: ({
+          editor,
+          range,
+          props,
+        }: {
+          editor: unknown;
+          range: unknown;
+          props: SlashCommandItem;
+        }) => {
           // This will be handled by the render function
           // The props contain the selected command
           void props;

@@ -1,9 +1,9 @@
 const STORAGE_KEY = 'sable_writing_stats';
 
 export interface DailyStats {
-  date: string;          // "YYYY-MM-DD"
-  wordsWritten: number;  // total new words added that day
-  sessions: number;      // number of editor opens
+  date: string; // "YYYY-MM-DD"
+  wordsWritten: number; // total new words added that day
+  sessions: number; // number of editor opens
   hourlyWords: number[]; // 24 slots (index 0 = midnight, 23 = 11pm)
 }
 
@@ -80,7 +80,9 @@ function addDays(d: Date, n: number): Date {
 function daysBetween(a: Date, b: Date): number {
   const aDate = new Date(a.getFullYear(), a.getMonth(), a.getDate());
   const bDate = new Date(b.getFullYear(), b.getMonth(), b.getDate());
-  return Math.round((bDate.getTime() - aDate.getTime()) / (1000 * 60 * 60 * 24));
+  return Math.round(
+    (bDate.getTime() - aDate.getTime()) / (1000 * 60 * 60 * 24),
+  );
 }
 
 // ─── Recording ───────────────────────────────────────────────
@@ -146,7 +148,7 @@ export function getLongestStreak(): number {
   let current = 1;
 
   for (let i = 1; i < dates.length; i++) {
-    const prev = new Date(dates[i - 1] + 'T00:00:00');  // ensure local parse
+    const prev = new Date(dates[i - 1] + 'T00:00:00'); // ensure local parse
     const curr = new Date(dates[i] + 'T00:00:00');
     const diff = daysBetween(prev, curr);
 
@@ -189,7 +191,11 @@ export function getBestHours(): { hour: number; words: number }[] {
  * Covers the full last year, starting from the same weekday as today
  * (matching GitHub's behavior).
  */
-export function getCalendarData(): { date: string; count: number; level: number }[] {
+export function getCalendarData(): {
+  date: string;
+  count: number;
+  level: number;
+}[] {
   const stats = loadStats();
   const data: { date: string; count: number; level: number }[] = [];
 

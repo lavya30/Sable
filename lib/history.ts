@@ -11,9 +11,22 @@ const HISTORY_PREFIX = 'sable_history_';
 
 export function extractPlainText(json: string): string {
   try {
-    const walk = (node: { type?: string; text?: string; content?: unknown[] }): string => {
+    const walk = (node: {
+      type?: string;
+      text?: string;
+      content?: unknown[];
+    }): string => {
       if (node.type === 'text') return node.text ?? '';
-      if (node.content) return (node.content as { type?: string; text?: string; content?: unknown[] }[]).map(walk).join(' ');
+      if (node.content)
+        return (
+          node.content as {
+            type?: string;
+            text?: string;
+            content?: unknown[];
+          }[]
+        )
+          .map(walk)
+          .join(' ');
       return '';
     };
     return walk(JSON.parse(json));
@@ -73,8 +86,24 @@ export function relativeSnapshotTime(isoString: string): string {
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday ' + new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  if (days === 1)
+    return (
+      'Yesterday ' +
+      new Date(isoString).toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      })
+    );
   if (days < 7) return `${days}d ago`;
-  return new Date(isoString).toLocaleDateString([], { month: 'short', day: 'numeric' }) +
-    ' ' + new Date(isoString).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  return (
+    new Date(isoString).toLocaleDateString([], {
+      month: 'short',
+      day: 'numeric',
+    }) +
+    ' ' +
+    new Date(isoString).toLocaleTimeString([], {
+      hour: '2-digit',
+      minute: '2-digit',
+    })
+  );
 }

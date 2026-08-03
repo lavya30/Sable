@@ -12,7 +12,7 @@ export type KeystrokeSoundTheme = 'off' | 'typewriter' | 'mechanical' | 'pen';
 export function useKeystrokeSounds(
   editor: Editor | null,
   theme: KeystrokeSoundTheme,
-  volume: number = 0.5
+  volume: number = 0.5,
 ) {
   const ctxRef = useRef<AudioContext | null>(null);
 

@@ -1,11 +1,6 @@
 'use client';
 
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 import { KeystrokeSoundTheme } from '@/hooks/useKeystrokeSounds';
 import { AmbientSoundType } from '@/hooks/useAmbientSound';
@@ -63,7 +58,10 @@ export function SettingsProvider({ children }: { children: React.ReactNode }) {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
-        setSettings({ ...defaultSettings, ...(JSON.parse(raw) as Partial<Settings>) });
+        setSettings({
+          ...defaultSettings,
+          ...(JSON.parse(raw) as Partial<Settings>),
+        });
       }
     } catch {
       /* ignore parse errors */

@@ -27,12 +27,14 @@ export default function SettingsPage() {
             href="/"
             className="flex items-center gap-2 text-ink/40 hover:text-ink transition-colors font-display text-sm group"
           >
-            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">arrow_back</span>
+            <span className="material-symbols-outlined text-[18px] group-hover:-translate-x-0.5 transition-transform">
+              arrow_back
+            </span>
             Library
           </Link>
-
-          <h1 className="font-heading font-bold text-lg tracking-tight">Settings</h1>
-
+          <h1 className="font-heading font-bold text-lg tracking-tight">
+            Settings
+          </h1>
           <div className="w-16" /> {/* spacer for centering */}
         </div>
 
@@ -49,7 +51,9 @@ export default function SettingsPage() {
                     : 'text-ink/35 hover:text-ink/60'
                 }`}
               >
-                <span className="material-symbols-outlined text-[18px]">{tab.icon}</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  {tab.icon}
+                </span>
                 {tab.label}
                 {activeTab === tab.id && (
                   <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-primary rounded-full" />
@@ -62,8 +66,12 @@ export default function SettingsPage() {
 
       {/* ── Content ──────────────────────────────────────────── */}
       <main className="max-w-[820px] mx-auto px-6 py-8">
-        {activeTab === 'general' && <GeneralTab settings={settings} updateSettings={updateSettings} />}
-        {activeTab === 'editor' && <EditorTab settings={settings} updateSettings={updateSettings} />}
+        {activeTab === 'general' && (
+          <GeneralTab settings={settings} updateSettings={updateSettings} />
+        )}
+        {activeTab === 'editor' && (
+          <EditorTab settings={settings} updateSettings={updateSettings} />
+        )}
         {activeTab === 'about' && <AboutTab />}
       </main>
     </div>
@@ -75,8 +83,12 @@ export default function SettingsPage() {
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
 interface TabProps {
-  settings: ReturnType<typeof import('@/context/SettingsContext').useSettings>['settings'];
-  updateSettings: ReturnType<typeof import('@/context/SettingsContext').useSettings>['updateSettings'];
+  settings: ReturnType<
+    typeof import('@/context/SettingsContext').useSettings
+  >['settings'];
+  updateSettings: ReturnType<
+    typeof import('@/context/SettingsContext').useSettings
+  >['updateSettings'];
 }
 
 function GeneralTab({ settings, updateSettings }: TabProps) {
@@ -87,12 +99,16 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
         <div className="absolute top-0 right-0 w-48 h-48 bg-primary/8 rounded-full blur-3xl -translate-y-1/2 translate-x-1/4" />
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
-            <span className="material-symbols-outlined text-primary text-[22px]">shield</span>
-            <h3 className="font-heading font-bold text-lg">Your notebook, your rules</h3>
+            <span className="material-symbols-outlined text-primary text-[22px]">
+              shield
+            </span>
+            <h3 className="font-heading font-bold text-lg">
+              Your notebook, your rules
+            </h3>
           </div>
           <p className="text-white/50 text-sm leading-relaxed max-w-lg">
-            Sable keeps everything on this device. No tracking, no analytics, no cloud
-            — only the quiet reflection you choose to write.
+            Sable keeps everything on this device. No tracking, no analytics, no
+            cloud — only the quiet reflection you choose to write.
           </p>
         </div>
       </div>
@@ -100,16 +116,49 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
       {/* Feature pills */}
       <div className="grid grid-cols-2 gap-3">
         {[
-          { icon: 'visibility_off', title: 'Zero telemetry', desc: 'Nothing leaves your device unless you export', color: 'bg-mint/15 dark:bg-mint/10 border-mint/30 dark:border-mint/20' },
-          { icon: 'hard_drive', title: 'Local storage', desc: 'Your data lives in the browser. You own every byte', color: 'bg-lavender/15 dark:bg-lavender/10 border-lavender/30 dark:border-lavender/20' },
-          { icon: 'spa', title: 'Calm workspace', desc: 'No productivity pressure, no streak counters', color: 'bg-peach/15 dark:bg-peach/10 border-peach/30 dark:border-peach/20' },
-          { icon: 'wifi_off', title: 'Offline ready', desc: 'Works without internet, always accessible', color: 'bg-rose/15 dark:bg-rose/10 border-rose/30 dark:border-rose/20' },
+          {
+            icon: 'visibility_off',
+            title: 'Zero telemetry',
+            desc: 'Nothing leaves your device unless you export',
+            color:
+              'bg-mint/15 dark:bg-mint/10 border-mint/30 dark:border-mint/20',
+          },
+          {
+            icon: 'hard_drive',
+            title: 'Local storage',
+            desc: 'Your data lives in the browser. You own every byte',
+            color:
+              'bg-lavender/15 dark:bg-lavender/10 border-lavender/30 dark:border-lavender/20',
+          },
+          {
+            icon: 'spa',
+            title: 'Calm workspace',
+            desc: 'No productivity pressure, no streak counters',
+            color:
+              'bg-peach/15 dark:bg-peach/10 border-peach/30 dark:border-peach/20',
+          },
+          {
+            icon: 'wifi_off',
+            title: 'Offline ready',
+            desc: 'Works without internet, always accessible',
+            color:
+              'bg-rose/15 dark:bg-rose/10 border-rose/30 dark:border-rose/20',
+          },
         ].map((item) => (
-          <div key={item.title} className={`${item.color} border rounded-xl px-4 py-3.5 flex items-start gap-3`}>
-            <span className="material-symbols-outlined text-[20px] text-ink/50 dark:text-slate-400 mt-0.5 shrink-0">{item.icon}</span>
+          <div
+            key={item.title}
+            className={`${item.color} border rounded-xl px-4 py-3.5 flex items-start gap-3`}
+          >
+            <span className="material-symbols-outlined text-[20px] text-ink/50 dark:text-slate-400 mt-0.5 shrink-0">
+              {item.icon}
+            </span>
             <div className="min-w-0">
-              <p className="font-display font-bold text-[13px] text-ink dark:text-slate-100">{item.title}</p>
-              <p className="text-[11px] text-ink/40 dark:text-slate-400 leading-snug mt-0.5">{item.desc}</p>
+              <p className="font-display font-bold text-[13px] text-ink dark:text-slate-100">
+                {item.title}
+              </p>
+              <p className="text-[11px] text-ink/40 dark:text-slate-400 leading-snug mt-0.5">
+                {item.desc}
+              </p>
             </div>
           </div>
         ))}
@@ -144,10 +193,16 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
             onClick={exportAllData}
             className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all group"
           >
-            <span className="material-symbols-outlined text-[20px] text-primary group-hover:scale-110 transition-transform">download</span>
+            <span className="material-symbols-outlined text-[20px] text-primary group-hover:scale-110 transition-transform">
+              download
+            </span>
             <div className="text-left">
-              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Export</p>
-              <p className="text-[11px] text-ink/35 dark:text-slate-400">Download all notebooks</p>
+              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">
+                Export
+              </p>
+              <p className="text-[11px] text-ink/35 dark:text-slate-400">
+                Download all notebooks
+              </p>
             </div>
           </button>
           <ImportButton />
@@ -158,21 +213,33 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
       <Section title="AI Assistant">
         <div className="rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 p-5 space-y-4">
           <div className="flex items-start gap-3">
-            <span className="material-symbols-outlined text-[20px] text-primary mt-0.5 shrink-0">smart_toy</span>
+            <span className="material-symbols-outlined text-[20px] text-primary mt-0.5 shrink-0">
+              smart_toy
+            </span>
             <div>
-              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">AI Provider Config</p>
+              <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">
+                AI Provider Config
+              </p>
               <p className="text-[11px] text-ink/40 dark:text-slate-400 leading-snug mt-0.5">
-                Choose your AI provider and paste your API key. Your key is securely stored only on this device.
+                Choose your AI provider and paste your API key. Your key is
+                securely stored only on this device.
               </p>
             </div>
           </div>
 
           <div className="space-y-4 pt-1">
             <div>
-              <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Provider</label>
+              <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                Provider
+              </label>
               <select
                 value={settings.aiProvider}
-                onChange={(e) => updateSettings({ aiProvider: e.target.value as 'openai' | 'gemini' | 'claude' })}
+                onChange={(e) =>
+                  updateSettings({
+                    aiProvider: e.target.value as
+                      'openai' | 'gemini' | 'claude',
+                  })
+                }
                 className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
               >
                 <option value="openai">OpenAI</option>
@@ -184,11 +251,15 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
             {settings.aiProvider === 'openai' && (
               <>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">OpenAI API Key</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    OpenAI API Key
+                  </label>
                   <input
                     type="password"
                     value={settings.openaiApiKey}
-                    onChange={(e) => updateSettings({ openaiApiKey: e.target.value.trim() })}
+                    onChange={(e) =>
+                      updateSettings({ openaiApiKey: e.target.value.trim() })
+                    }
                     placeholder="sk-proj-..."
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
                     autoComplete="off"
@@ -196,13 +267,19 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
                   />
                 </div>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    Model
+                  </label>
                   <select
                     value={settings.openaiModel}
-                    onChange={(e) => updateSettings({ openaiModel: e.target.value })}
+                    onChange={(e) =>
+                      updateSettings({ openaiModel: e.target.value })
+                    }
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
                   >
-                    <option value="gpt-4o-mini">GPT-4o Mini — fast &amp; affordable</option>
+                    <option value="gpt-4o-mini">
+                      GPT-4o Mini — fast &amp; affordable
+                    </option>
                     <option value="gpt-4o">GPT-4o — balanced</option>
                     <option value="gpt-4.1-mini">GPT-4.1 Mini</option>
                     <option value="gpt-4.1">GPT-4.1 — smartest</option>
@@ -214,11 +291,15 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
             {settings.aiProvider === 'gemini' && (
               <>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Gemini API Key</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    Gemini API Key
+                  </label>
                   <input
                     type="password"
                     value={settings.geminiApiKey}
-                    onChange={(e) => updateSettings({ geminiApiKey: e.target.value.trim() })}
+                    onChange={(e) =>
+                      updateSettings({ geminiApiKey: e.target.value.trim() })
+                    }
                     placeholder="AIzaSy..."
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
                     autoComplete="off"
@@ -226,15 +307,25 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
                   />
                 </div>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    Model
+                  </label>
                   <select
                     value={settings.geminiModel}
-                    onChange={(e) => updateSettings({ geminiModel: e.target.value })}
+                    onChange={(e) =>
+                      updateSettings({ geminiModel: e.target.value })
+                    }
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
                   >
-                    <option value="gemini-2.0-flash">Gemini 2.0 Flash — fast &amp; affordable</option>
-                    <option value="gemini-2.5-flash-preview-05-20">Gemini 2.5 Flash — thinking</option>
-                    <option value="gemini-2.5-pro-preview-05-06">Gemini 2.5 Pro — smartest</option>
+                    <option value="gemini-2.0-flash">
+                      Gemini 2.0 Flash — fast &amp; affordable
+                    </option>
+                    <option value="gemini-2.5-flash-preview-05-20">
+                      Gemini 2.5 Flash — thinking
+                    </option>
+                    <option value="gemini-2.5-pro-preview-05-06">
+                      Gemini 2.5 Pro — smartest
+                    </option>
                   </select>
                 </div>
               </>
@@ -243,11 +334,15 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
             {settings.aiProvider === 'claude' && (
               <>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Claude API Key</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    Claude API Key
+                  </label>
                   <input
                     type="password"
                     value={settings.claudeApiKey}
-                    onChange={(e) => updateSettings({ claudeApiKey: e.target.value.trim() })}
+                    onChange={(e) =>
+                      updateSettings({ claudeApiKey: e.target.value.trim() })
+                    }
                     placeholder="sk-ant-..."
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-mono placeholder:text-ink/20 dark:placeholder:text-slate-500 focus:border-primary focus:outline-none transition-colors"
                     autoComplete="off"
@@ -255,15 +350,25 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
                   />
                 </div>
                 <div>
-                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">Model</label>
+                  <label className="font-display font-semibold text-xs text-ink/50 dark:text-slate-400 block mb-1.5">
+                    Model
+                  </label>
                   <select
                     value={settings.claudeModel}
-                    onChange={(e) => updateSettings({ claudeModel: e.target.value })}
+                    onChange={(e) =>
+                      updateSettings({ claudeModel: e.target.value })
+                    }
                     className="w-full px-4 py-2.5 rounded-lg border border-ink/10 dark:border-slate-600 bg-canvas dark:bg-slate-800 text-ink dark:text-slate-100 text-sm font-display focus:border-primary focus:outline-none transition-colors"
                   >
-                    <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku — fast &amp; affordable</option>
-                    <option value="claude-sonnet-4-20250514">Claude Sonnet 4 — balanced</option>
-                    <option value="claude-opus-4-20250514">Claude Opus 4 — smartest</option>
+                    <option value="claude-3-5-haiku-20241022">
+                      Claude 3.5 Haiku — fast &amp; affordable
+                    </option>
+                    <option value="claude-sonnet-4-20250514">
+                      Claude Sonnet 4 — balanced
+                    </option>
+                    <option value="claude-opus-4-20250514">
+                      Claude Opus 4 — smartest
+                    </option>
                   </select>
                 </div>
               </>
@@ -271,12 +376,23 @@ function GeneralTab({ settings, updateSettings }: TabProps) {
           </div>
 
           {(() => {
-            const keyMap = { openai: settings.openaiApiKey, gemini: settings.geminiApiKey, claude: settings.claudeApiKey };
-            const labelMap = { openai: 'OpenAI', gemini: 'Gemini', claude: 'Claude' };
+            const keyMap = {
+              openai: settings.openaiApiKey,
+              gemini: settings.geminiApiKey,
+              claude: settings.claudeApiKey,
+            };
+            const labelMap = {
+              openai: 'OpenAI',
+              gemini: 'Gemini',
+              claude: 'Claude',
+            };
             return keyMap[settings.aiProvider] ? (
               <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400 font-display font-semibold pt-1">
-                <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                Key saved ({labelMap[settings.aiProvider]}) — AI assistant is ready
+                <span className="material-symbols-outlined text-[16px]">
+                  check_circle
+                </span>
+                Key saved ({labelMap[settings.aiProvider]}) — AI assistant is
+                ready
               </div>
             ) : null;
           })()}
@@ -302,18 +418,43 @@ function ImportButton() {
 
   return (
     <label className="flex-1 flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all cursor-pointer group">
-      <span className="material-symbols-outlined text-[20px] text-lavender group-hover:scale-110 transition-transform">upload</span>
+      <span className="material-symbols-outlined text-[20px] text-lavender group-hover:scale-110 transition-transform">
+        upload
+      </span>
       <div className="text-left">
-        <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Import</p>
-        <p className={`text-[11px] ${error ? 'text-red-500' : 'text-ink/35 dark:text-slate-400'}`}>{error || 'Restore from backup'}</p>
+        <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">
+          Import
+        </p>
+        <p
+          className={`text-[11px] ${error ? 'text-red-500' : 'text-ink/35 dark:text-slate-400'}`}
+        >
+          {error || 'Restore from backup'}
+        </p>
       </div>
-      <input type="file" accept=".json" className="hidden" onChange={handleImport} />
+      <input
+        type="file"
+        accept=".json"
+        className="hidden"
+        onChange={handleImport}
+      />
     </label>
   );
 }
 
-function ThemeCard({ label, icon, active, onClick, preview, iconColor }: {
-  label: string; icon: string; active: boolean; onClick: () => void; preview: string; iconColor: string;
+function ThemeCard({
+  label,
+  icon,
+  active,
+  onClick,
+  preview,
+  iconColor,
+}: {
+  label: string;
+  icon: string;
+  active: boolean;
+  onClick: () => void;
+  preview: string;
+  iconColor: string;
 }) {
   return (
     <button
@@ -324,15 +465,23 @@ function ThemeCard({ label, icon, active, onClick, preview, iconColor }: {
           : 'border-ink/10 bg-white hover:border-ink/20'
       }`}
     >
-      <div className={`w-10 h-10 rounded-lg ${preview} border border-ink/10 flex items-center justify-center shrink-0`}>
-        <span className={`material-symbols-outlined text-[20px] ${iconColor}`}>{icon}</span>
+      <div
+        className={`w-10 h-10 rounded-lg ${preview} border border-ink/10 flex items-center justify-center shrink-0`}
+      >
+        <span className={`material-symbols-outlined text-[20px] ${iconColor}`}>
+          {icon}
+        </span>
       </div>
       <div className="text-left">
         <p className="font-display font-semibold text-sm">{label}</p>
-        <p className="text-[11px] text-ink/35">{active ? 'Active' : 'Switch'}</p>
+        <p className="text-[11px] text-ink/35">
+          {active ? 'Active' : 'Switch'}
+        </p>
       </div>
       {active && (
-        <span className="material-symbols-outlined text-primary text-[18px] ml-auto">check_circle</span>
+        <span className="material-symbols-outlined text-primary text-[18px] ml-auto">
+          check_circle
+        </span>
       )}
     </button>
   );
@@ -378,12 +527,14 @@ function EditorTab({ settings, updateSettings }: TabProps) {
       {/* Sounds */}
       <Section title="Keystroke Sounds">
         <div className="flex gap-2 flex-wrap">
-          {([
-            { key: 'off', label: 'Off', icon: 'volume_off' },
-            { key: 'typewriter', label: 'Typewriter', icon: 'keyboard' },
-            { key: 'mechanical', label: 'Mechanical', icon: 'piano' },
-            { key: 'pen', label: 'Pen', icon: 'edit' },
-          ] as const).map((theme) => (
+          {(
+            [
+              { key: 'off', label: 'Off', icon: 'volume_off' },
+              { key: 'typewriter', label: 'Typewriter', icon: 'keyboard' },
+              { key: 'mechanical', label: 'Mechanical', icon: 'piano' },
+              { key: 'pen', label: 'Pen', icon: 'edit' },
+            ] as const
+          ).map((theme) => (
             <button
               key={theme.key}
               onClick={() => updateSettings({ keystrokeSounds: theme.key })}
@@ -393,7 +544,9 @@ function EditorTab({ settings, updateSettings }: TabProps) {
                   : 'border-ink/10 text-ink/40 hover:border-ink/20 hover:text-ink/60'
               }`}
             >
-              <span className="material-symbols-outlined text-[16px]">{theme.icon}</span>
+              <span className="material-symbols-outlined text-[16px]">
+                {theme.icon}
+              </span>
               {theme.label}
             </button>
           ))}
@@ -422,31 +575,61 @@ function EditorTab({ settings, updateSettings }: TabProps) {
         <div className="rounded-xl border border-ink/10 bg-white p-6 overflow-hidden">
           <p
             className="text-ink leading-relaxed transition-all duration-300"
-            style={{ fontSize: `${settings.fontSize}px`, lineHeight: settings.lineSpacing }}
+            style={{
+              fontSize: `${settings.fontSize}px`,
+              lineHeight: settings.lineSpacing,
+            }}
           >
-            The old man sat by the window, watching the rain trace silver paths down the glass.
-            Each drop carried a memory — some sharp, some blurred by time.
+            The old man sat by the window, watching the rain trace silver paths
+            down the glass. Each drop carried a memory — some sharp, some
+            blurred by time.
           </p>
         </div>
-        <p className="text-[11px] text-ink/30 mt-2 text-center font-marker">Live preview of your editor settings</p>
+        <p className="text-[11px] text-ink/30 mt-2 text-center font-marker">
+          Live preview of your editor settings
+        </p>
       </Section>
     </div>
   );
 }
 
-function SettingsSlider({ label, value, min, max, step, sliderValue, onChange, leftLabel, rightLabel, icon }: {
-  label: string; value: string; min: number; max: number; step: number;
-  sliderValue: number; onChange: (v: number) => void;
-  leftLabel: string; rightLabel: string; icon: string;
+function SettingsSlider({
+  label,
+  value,
+  min,
+  max,
+  step,
+  sliderValue,
+  onChange,
+  leftLabel,
+  rightLabel,
+  icon,
+}: {
+  label: string;
+  value: string;
+  min: number;
+  max: number;
+  step: number;
+  sliderValue: number;
+  onChange: (v: number) => void;
+  leftLabel: string;
+  rightLabel: string;
+  icon: string;
 }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-2.5">
         <div className="flex items-center gap-2">
-          <span className="material-symbols-outlined text-[18px] text-ink/30">{icon}</span>
-          <span className="font-display font-semibold text-sm text-ink">{label}</span>
+          <span className="material-symbols-outlined text-[18px] text-ink/30">
+            {icon}
+          </span>
+          <span className="font-display font-semibold text-sm text-ink">
+            {label}
+          </span>
         </div>
-        <span className="font-mono text-xs text-primary font-bold bg-primary/8 px-2.5 py-1 rounded-lg">{value}</span>
+        <span className="font-mono text-xs text-primary font-bold bg-primary/8 px-2.5 py-1 rounded-lg">
+          {value}
+        </span>
       </div>
       <input
         type="range"
@@ -478,14 +661,21 @@ function AboutTab() {
       {/* App identity */}
       <div className="flex items-center gap-5">
         <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-mint/30 dark:from-primary/10 dark:to-mint/10 border border-primary/15 dark:border-primary/20 flex items-center justify-center shrink-0">
-          <span className="material-symbols-outlined text-primary text-[32px]">edit_note</span>
+          <span className="material-symbols-outlined text-primary text-[32px]">
+            edit_note
+          </span>
         </div>
         <div>
-          <h3 className="font-heading font-bold text-2xl text-ink dark:text-slate-100">Sable</h3>
+          <h3 className="font-heading font-bold text-2xl text-ink dark:text-slate-100">
+            Sable
+          </h3>
           <p className="text-sm text-ink/40 dark:text-slate-400 font-body mt-0.5">
-            A calm, distraction-free writing space for writers who value privacy.
+            A calm, distraction-free writing space for writers who value
+            privacy.
           </p>
-          <p className="text-xs text-ink/25 dark:text-slate-500 font-mono mt-1">v0.1.0</p>
+          <p className="text-xs text-ink/25 dark:text-slate-500 font-mono mt-1">
+            v0.1.0
+          </p>
         </div>
       </div>
 
@@ -515,23 +705,35 @@ function AboutTab() {
           onClick={() => setFeedbackOpen(true)}
           className="w-full flex items-center gap-3 px-5 py-4 rounded-xl border border-ink/10 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-ink/20 dark:hover:border-slate-500 hover:shadow-sm dark:hover:shadow-lg transition-all group"
         >
-          <span className="material-symbols-outlined text-[20px] text-ink/30 dark:text-slate-400 group-hover:text-ink/50 dark:group-hover:text-slate-200 transition-colors">chat_bubble</span>
+          <span className="material-symbols-outlined text-[20px] text-ink/30 dark:text-slate-400 group-hover:text-ink/50 dark:group-hover:text-slate-200 transition-colors">
+            chat_bubble
+          </span>
           <div className="text-left flex-1">
-            <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">Send feedback</p>
-            <p className="text-[11px] text-ink/35 dark:text-slate-400">Share thoughts or report an issue</p>
+            <p className="font-display font-semibold text-sm text-ink dark:text-slate-100">
+              Send feedback
+            </p>
+            <p className="text-[11px] text-ink/35 dark:text-slate-400">
+              Share thoughts or report an issue
+            </p>
           </div>
-          <span className="material-symbols-outlined text-[16px] text-ink/20 dark:text-slate-500 group-hover:translate-x-0.5 transition-transform">chevron_right</span>
+          <span className="material-symbols-outlined text-[16px] text-ink/20 dark:text-slate-500 group-hover:translate-x-0.5 transition-transform">
+            chevron_right
+          </span>
         </button>
       </Section>
 
       {/* Footer */}
       <div className="text-center pt-8 border-t border-ink/5 mt-8">
         <p className="font-display text-xs text-ink/30">
-          Created by <span className="font-bold text-ink/50">Lavya</span> and <span className="font-bold text-ink/50">Shlok</span>
+          Created by <span className="font-bold text-ink/50">Lavya</span> and{' '}
+          <span className="font-bold text-ink/50">Shlok</span>
         </p>
       </div>
 
-      <FeedbackModal isOpen={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      <FeedbackModal
+        isOpen={feedbackOpen}
+        onClose={() => setFeedbackOpen(false)}
+      />
     </div>
   );
 }
@@ -540,10 +742,18 @@ function AboutTab() {
 /*  Shared Components                                                        */
 /* ═══════════════════════════════════════════════════════════════════════════ */
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
-      <h4 className="font-display font-bold text-xs uppercase tracking-widest text-ink/30 dark:text-slate-400 mb-3">{title}</h4>
+      <h4 className="font-display font-bold text-xs uppercase tracking-widest text-ink/30 dark:text-slate-400 mb-3">
+        {title}
+      </h4>
       {children}
     </section>
   );

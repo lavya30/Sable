@@ -34,7 +34,7 @@ export function WritingStatsPanel() {
   const [totalWords, setTotalWords] = useState(0);
   const [totalDays, setTotalDays] = useState(0);
   const [bestHours, setBestHours] = useState<{ hour: number; words: number }[]>(
-    []
+    [],
   );
 
   // Load all stats on mount (for collapsed summary) and whenever panel opens
@@ -92,7 +92,7 @@ export function WritingStatsPanel() {
 
   const maxHourWords = useMemo(
     () => Math.max(...bestHours.map((h) => h.words), 1),
-    [bestHours]
+    [bestHours],
   );
 
   function formatHour(h: number): string {
@@ -123,13 +123,15 @@ export function WritingStatsPanel() {
           )}
           {!isOpen && totalWords > 0 && (
             <span className="text-xs font-marker text-gray-400 hidden sm:inline">
-              {totalWords.toLocaleString()} {pluralize(totalWords, 'word')} total
+              {totalWords.toLocaleString()} {pluralize(totalWords, 'word')}{' '}
+              total
             </span>
           )}
         </div>
         <span
-          className={`material-symbols-outlined text-gray-400 group-hover:text-ink transition-transform duration-200 ${isOpen ? 'rotate-180' : ''
-            }`}
+          className={`material-symbols-outlined text-gray-400 group-hover:text-ink transition-transform duration-200 ${
+            isOpen ? 'rotate-180' : ''
+          }`}
         >
           expand_more
         </span>
@@ -177,8 +179,20 @@ export function WritingStatsPanel() {
                 <ActivityCalendar
                   data={calendarData}
                   theme={{
-                    dark: ['#161b22', '#0e4429', '#006d32', '#26a641', '#39d353'],
-                    light: ['#ebedf0', '#d1fae5', '#6ee7b7', '#34d399', '#10b981'],
+                    dark: [
+                      '#161b22',
+                      '#0e4429',
+                      '#006d32',
+                      '#26a641',
+                      '#39d353',
+                    ],
+                    light: [
+                      '#ebedf0',
+                      '#d1fae5',
+                      '#6ee7b7',
+                      '#34d399',
+                      '#10b981',
+                    ],
                   }}
                   colorScheme="light"
                   blockSize={13}

@@ -93,16 +93,35 @@ export function SprintTimer({ onSprintComplete, currentWordCount }: Props) {
           className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all"
           title="Cancel sprint"
         >
-          <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 48 48">
-            <circle cx="24" cy="24" r="18" fill="none" stroke="currentColor" strokeWidth="3" className="text-ink/10" />
+          <svg
+            className="absolute inset-0 w-full h-full -rotate-90"
+            viewBox="0 0 48 48"
+          >
             <circle
-              cx="24" cy="24" r="18"
-              fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"
-              strokeDasharray={circumference} strokeDashoffset={strokeDashoffset}
+              cx="24"
+              cy="24"
+              r="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              className="text-ink/10"
+            />
+            <circle
+              cx="24"
+              cy="24"
+              r="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
               className="text-primary transition-all duration-1000"
             />
           </svg>
-          <span className="font-mono text-[9px] font-bold text-ink z-10">{formatTime(timeLeft)}</span>
+          <span className="font-mono text-[9px] font-bold text-ink z-10">
+            {formatTime(timeLeft)}
+          </span>
         </button>
       </div>
     );
@@ -112,8 +131,12 @@ export function SprintTimer({ onSprintComplete, currentWordCount }: Props) {
   if (showResults) {
     return (
       <div className="flex items-center gap-2 bg-white border-2 border-ink rounded-full shadow-hard px-4 py-2">
-        <span className="material-symbols-outlined text-primary text-[18px]">emoji_events</span>
-        <span className="font-display font-bold text-sm text-ink">{sprintWords} words!</span>
+        <span className="material-symbols-outlined text-primary text-[18px]">
+          emoji_events
+        </span>
+        <span className="font-display font-bold text-sm text-ink">
+          {sprintWords} words!
+        </span>
         <button
           onClick={() => setShowResults(false)}
           className="text-ink/30 hover:text-ink ml-1"
@@ -128,7 +151,9 @@ export function SprintTimer({ onSprintComplete, currentWordCount }: Props) {
   if (isOpen) {
     return (
       <div className="flex items-center gap-2 bg-white border-2 border-ink rounded-full shadow-hard px-3 py-1.5">
-        <span className="material-symbols-outlined text-primary text-[18px]">timer</span>
+        <span className="material-symbols-outlined text-primary text-[18px]">
+          timer
+        </span>
         {PRESETS.map((p) => (
           <button
             key={p.minutes}
@@ -154,7 +179,9 @@ export function SprintTimer({ onSprintComplete, currentWordCount }: Props) {
       onClick={() => setIsOpen(true)}
       className="btn-magnetic group relative flex items-center justify-center w-12 h-12 bg-white border-2 border-ink rounded-full shadow-hard hover:shadow-hard-hover transition-all"
     >
-      <span className="material-symbols-outlined text-ink/60 group-hover:text-primary transition-colors">timer</span>
+      <span className="material-symbols-outlined text-ink/60 group-hover:text-primary transition-colors">
+        timer
+      </span>
       <span className="absolute -top-10 right-0 bg-ink text-white text-xs px-2 py-1 rounded font-marker opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
         Sprint
       </span>

@@ -216,7 +216,11 @@ export function MiniCanvas({
         onTouchStart={handleStart}
         onTouchMove={handleMove}
         onTouchEnd={handleEnd}
-        style={{ width: '100%', height: 'auto', aspectRatio: `${width}/${height}` }}
+        style={{
+          width: '100%',
+          height: 'auto',
+          aspectRatio: `${width}/${height}`,
+        }}
       />
       {!readOnly && strokes.length > 0 && (
         <div className="flex gap-1 mt-1">

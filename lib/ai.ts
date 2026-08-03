@@ -12,8 +12,14 @@ export type AgentAction = 'fix_grammar' | 'rewrite' | 'summarize' | 'continue';
 const MAX_TEXT_LENGTH = 10000;
 const MAX_CONTEXT_LENGTH = 20000;
 
-function buildTaskPrompt(action: AgentAction, text: string, instruction?: string): string {
-  const extra = instruction?.trim() ? `\nExtra instruction: ${instruction.trim()}` : '';
+function buildTaskPrompt(
+  action: AgentAction,
+  text: string,
+  instruction?: string,
+): string {
+  const extra = instruction?.trim()
+    ? `\nExtra instruction: ${instruction.trim()}`
+    : '';
 
   if (action === 'fix_grammar') {
     return [
@@ -79,9 +85,12 @@ interface AIResult {
 
 function getDefaultModel(provider: string): string {
   switch (provider) {
-    case 'gemini': return 'gemini-2.0-flash';
-    case 'claude': return 'claude-sonnet-4-20250514';
-    default: return 'gpt-4o-mini';
+    case 'gemini':
+      return 'gemini-2.0-flash';
+    case 'claude':
+      return 'claude-sonnet-4-20250514';
+    default:
+      return 'gpt-4o-mini';
   }
 }
 
@@ -95,7 +104,9 @@ export async function callAI({
   provider = 'openai',
 }: AIRequestParams): Promise<AIResult> {
   if (!apiKey) {
-    return { error: 'No API key provided. Add your key in Settings → AI Assistant.' };
+    return {
+      error: 'No API key provided. Add your key in Settings → AI Assistant.',
+    };
   }
 
   const trimmedText = text.trim();
@@ -106,38 +117,48 @@ export async function callAI({
 
   const safeContext = (context ?? '').slice(0, MAX_CONTEXT_LENGTH);
   const usedModel = model || getDefaultModel(provider);
-  const systemPrompt = 'You are a writing assistant for a notebook app. Output plain text only with no markdown, no bullet points, and no explanations unless explicitly requested.';
-  const userPrompt = buildTaskPrompt(action, trimmedText, instruction) + (safeContext ? `\n\nDocument context (for style continuity):\n${safeContext}` : '');
+  const systemPrompt =
+    'You are a writing assistant for a notebook app. Output plain text only with no markdown, no bullet points, and no explanations unless explicitly requested.';
+  const userPrompt =
+    buildTaskPrompt(action, trimmedText, instruction) +
+    (safeContext
+      ? `\n\nDocument context (for style continuity):\n${safeContext}`
+      : '');
 
   try {
     // ── Gemini ──
     if (provider === 'gemini') {
-      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${usedModel}:generateContent?key=${apiKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
-          generationConfig: { temperature: 0.4 },
-        }),
-        signal: AbortSignal.timeout(30000),
-      });
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${usedModel}:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ role: 'user', parts: [{ text: userPrompt }] }],
+            generationConfig: { temperature: 0.4 },
+          }),
+          signal: AbortSignal.timeout(30000),
+        },
+      );
 
       if (!response.ok) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const errorData = await response.json().catch(() => ({})) as any;
+        const errorData = (await response.json().catch(() => ({}))) as any;
         const msg =
-          response.status === 400 && errorData?.error?.message?.includes('API key')
+          response.status === 400 &&
+          errorData?.error?.message?.includes('API key')
             ? 'Invalid API key. Check your Gemini key in Settings.'
             : response.status === 429
               ? 'Rate limit exceeded. Please wait a moment.'
-              : errorData?.error?.message ?? 'Gemini request failed.';
+              : (errorData?.error?.message ?? 'Gemini request failed.');
         return { error: msg };
       }
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const data = (await response.json()) as any;
-      const suggestion = data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+      const suggestion =
+        data.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
       if (!suggestion) return { error: 'Empty AI response from Gemini.' };
       return { suggestion };
     }
@@ -156,22 +177,20 @@ export async function callAI({
           model: usedModel,
           max_tokens: 4096,
           system: systemPrompt,
-          messages: [
-            { role: 'user', content: userPrompt },
-          ],
+          messages: [{ role: 'user', content: userPrompt }],
         }),
         signal: AbortSignal.timeout(30000),
       });
 
       if (!response.ok) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const errorData = await response.json().catch(() => ({})) as any;
+        const errorData = (await response.json().catch(() => ({}))) as any;
         const msg =
           response.status === 401
             ? 'Invalid API key. Check your Claude key in Settings.'
             : response.status === 429
               ? 'Rate limit exceeded. Please wait a moment.'
-              : errorData?.error?.message ?? 'Claude request failed.';
+              : (errorData?.error?.message ?? 'Claude request failed.');
         return { error: msg };
       }
 
@@ -202,13 +221,13 @@ export async function callAI({
 
     if (!response.ok) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const errorData = await response.json().catch(() => ({})) as any;
+      const errorData = (await response.json().catch(() => ({}))) as any;
       const msg =
         response.status === 401
           ? 'Invalid API key. Check your OpenAI key in Settings.'
           : response.status === 429
             ? 'Rate limit exceeded. Please wait a moment.'
-            : errorData?.error?.message ?? 'OpenAI request failed.';
+            : (errorData?.error?.message ?? 'OpenAI request failed.');
       return { error: msg };
     }
 
@@ -217,7 +236,6 @@ export async function callAI({
     const suggestion = data.choices?.[0]?.message?.content?.trim();
     if (!suggestion) return { error: 'Empty AI response from OpenAI.' };
     return { suggestion };
-
   } catch {
     return { error: 'Network error. Please try again.' };
   }

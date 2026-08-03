@@ -3,8 +3,8 @@ export type MoodBoardItemType = 'image' | 'color' | 'link' | 'note';
 export interface MoodBoardItem {
   id: string;
   type: MoodBoardItemType;
-  content: string;   // data-URL (image), hex (color), URL (link), or text (note)
-  label: string;     // user caption
+  content: string; // data-URL (image), hex (color), URL (link), or text (note)
+  label: string; // user caption
   createdAt: string;
 }
 

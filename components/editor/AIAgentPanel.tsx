@@ -22,7 +22,13 @@ const ACTIONS: Array<{ key: AgentAction; label: string; icon: string }> = [
   { key: 'continue', label: 'Continue', icon: 'arrow_forward' },
 ];
 
-export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_grammar', initialContext = '' }: Props) {
+export function AIAgentPanel({
+  isOpen,
+  onClose,
+  editor,
+  initialAction = 'fix_grammar',
+  initialContext = '',
+}: Props) {
   const { settings } = useSettings();
   const [action, setAction] = useState<AgentAction>(initialAction);
   const [instruction, setInstruction] = useState('');
@@ -30,7 +36,10 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
   const [error, setError] = useState('');
   const [sourceText, setSourceText] = useState('');
   const [suggestion, setSuggestion] = useState('');
-  const [targetRange, setTargetRange] = useState<{ from: number; to: number } | null>(null);
+  const [targetRange, setTargetRange] = useState<{
+    from: number;
+    to: number;
+  } | null>(null);
 
   const hasSelection = useMemo(() => {
     if (!editor) return false;
@@ -40,7 +49,11 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
 
   function getRequestText() {
     if (!editor) {
-      return { text: '', range: null as { from: number; to: number } | null, context: '' };
+      return {
+        text: '',
+        range: null as { from: number; to: number } | null,
+        context: '',
+      };
     }
 
     const { from, to } = editor.state.selection;
@@ -67,12 +80,21 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
     if (initialContext) {
       return {
         text: initialContext,
-        range: { from: editor.state.selection.from, to: editor.state.selection.from },
+        range: {
+          from: editor.state.selection.from,
+          to: editor.state.selection.from,
+        },
         context: fullText.slice(0, 20000),
       };
     }
 
-    const aroundCursor = editor.state.doc.textBetween(Math.max(1, from - 220), Math.min(editor.state.doc.content.size, from + 220), '\n').trim();
+    const aroundCursor = editor.state.doc
+      .textBetween(
+        Math.max(1, from - 220),
+        Math.min(editor.state.doc.content.size, from + 220),
+        '\n',
+      )
+      .trim();
 
     return {
       text: aroundCursor || fullText,
@@ -85,14 +107,28 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
     if (!editor) return;
 
     const providerConfig = {
-      openai:  { key: settings.openaiApiKey,  model: settings.openaiModel,  label: 'OpenAI' },
-      gemini:  { key: settings.geminiApiKey,  model: settings.geminiModel,  label: 'Google Gemini' },
-      claude:  { key: settings.claudeApiKey,  model: settings.claudeModel,  label: 'Anthropic Claude' },
+      openai: {
+        key: settings.openaiApiKey,
+        model: settings.openaiModel,
+        label: 'OpenAI',
+      },
+      gemini: {
+        key: settings.geminiApiKey,
+        model: settings.geminiModel,
+        label: 'Google Gemini',
+      },
+      claude: {
+        key: settings.claudeApiKey,
+        model: settings.claudeModel,
+        label: 'Anthropic Claude',
+      },
     };
     const cfg = providerConfig[settings.aiProvider];
 
     if (!cfg.key) {
-      setError(`No API key configured for ${cfg.label}. Go to Settings → AI Assistant to add your key.`);
+      setError(
+        `No API key configured for ${cfg.label}. Go to Settings → AI Assistant to add your key.`,
+      );
       return;
     }
 
@@ -136,17 +172,29 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
 
     // Validate range is valid for insertion
     if (from > to || from < 0 || to > maxPos) {
-      console.error('Invalid text range for suggestion insertion', { from, to, maxPos });
+      console.error('Invalid text range for suggestion insertion', {
+        from,
+        to,
+        maxPos,
+      });
       return;
     }
 
-    editor.chain().focus().setTextSelection({ from, to }).insertContent(suggestion).run();
+    editor
+      .chain()
+      .focus()
+      .setTextSelection({ from, to })
+      .insertContent(suggestion)
+      .run();
   }
 
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 z-40 bg-ink/20 cursor-pointer" onClick={onClose} />
+        <div
+          className="fixed inset-0 z-40 bg-ink/20 cursor-pointer"
+          onClick={onClose}
+        />
       )}
 
       <aside
@@ -157,21 +205,32 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
         <div className="h-full flex flex-col">
           <div className="px-5 py-4 border-b border-ink/10 dark:border-slate-700 flex items-center justify-between">
             <div>
-              <h2 className="font-display font-bold text-lg text-ink dark:text-slate-100">AI Assistant</h2>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Suggest, then apply changes safely</p>
+              <h2 className="font-display font-bold text-lg text-ink dark:text-slate-100">
+                AI Assistant
+              </h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Suggest, then apply changes safely
+              </p>
             </div>
             <button
               onClick={onClose}
               className="w-9 h-9 rounded-full border border-ink/20 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center justify-center"
               aria-label="Close AI panel"
             >
-              <span className="material-symbols-outlined text-[18px] text-ink dark:text-slate-100">close</span>
+              <span className="material-symbols-outlined text-[18px] text-ink dark:text-slate-100">
+                close
+              </span>
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar" data-lenis-prevent>
+          <div
+            className="flex-1 overflow-y-auto p-5 space-y-5 custom-scrollbar"
+            data-lenis-prevent
+          >
             <div>
-              <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Action</p>
+              <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                Action
+              </p>
               <div className="grid grid-cols-2 gap-2">
                 {ACTIONS.map((item) => (
                   <button
@@ -183,7 +242,9 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
                         : 'border-ink/10 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700'
                     }`}
                   >
-                    <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                    <span className="material-symbols-outlined text-[18px]">
+                      {item.icon}
+                    </span>
                     {item.label}
                   </button>
                 ))}
@@ -191,7 +252,9 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
             </div>
 
             <div>
-              <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Instruction (optional)</p>
+              <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                Instruction (optional)
+              </p>
               <textarea
                 value={instruction}
                 onChange={(e) => setInstruction(e.target.value)}
@@ -203,7 +266,9 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
 
             <div className="flex items-center justify-between">
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                {hasSelection ? 'Using selected text' : 'Using nearby text/document context'}
+                {hasSelection
+                  ? 'Using selected text'
+                  : 'Using nearby text/document context'}
               </p>
               <button
                 onClick={handleGenerate}
@@ -222,7 +287,9 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
 
             {sourceText && (
               <div>
-                <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Source</p>
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                  Source
+                </p>
                 <div className="rounded-lg border border-ink/10 dark:border-slate-600 bg-gray-50 dark:bg-slate-700/70 px-3 py-2 text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap max-h-28 overflow-auto custom-scrollbar">
                   {sourceText}
                 </div>
@@ -231,7 +298,9 @@ export function AIAgentPanel({ isOpen, onClose, editor, initialAction = 'fix_gra
 
             {suggestion && (
               <div>
-                <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Suggestion</p>
+                <p className="text-xs font-display font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">
+                  Suggestion
+                </p>
                 <textarea
                   value={suggestion}
                   onChange={(e) => setSuggestion(e.target.value)}

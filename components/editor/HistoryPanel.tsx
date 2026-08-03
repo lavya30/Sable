@@ -2,7 +2,13 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Editor } from '@tiptap/react';
-import { Snapshot, loadSnapshots, clearHistory, relativeSnapshotTime, extractPlainText } from '@/lib/history';
+import {
+  Snapshot,
+  loadSnapshots,
+  clearHistory,
+  relativeSnapshotTime,
+  extractPlainText,
+} from '@/lib/history';
 import { diffWords } from 'diff';
 
 interface Props {
@@ -13,7 +19,13 @@ interface Props {
   onRestore: (content: string) => void;
 }
 
-export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Props) {
+export function HistoryPanel({
+  isOpen,
+  onClose,
+  docId,
+  editor,
+  onRestore,
+}: Props) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
   const [selected, setSelected] = useState<Snapshot | null>(null);
@@ -35,7 +47,9 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
 
   useEffect(() => {
     document.body.style.overflow = isOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen]);
 
   function handleRestore(snap: Snapshot) {
@@ -62,7 +76,10 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
   return (
     <>
       {isOpen && (
-        <div className="fixed inset-0 bg-black/20 z-40 cursor-pointer" onClick={onClose} />
+        <div
+          className="fixed inset-0 bg-black/20 z-40 cursor-pointer"
+          onClick={onClose}
+        />
       )}
 
       <div
@@ -71,7 +88,9 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 dark:border-slate-700">
-          <h2 className="text-lg font-display font-bold text-ink dark:text-slate-100">History</h2>
+          <h2 className="text-lg font-display font-bold text-ink dark:text-slate-100">
+            History
+          </h2>
           <button
             onClick={onClose}
             className="p-1.5 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-md transition-colors text-ink/70 dark:text-slate-400 hover:text-ink dark:hover:text-slate-200"
@@ -87,8 +106,12 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
           <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-slate-700">
             {snapshots.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full gap-3 px-6 text-center">
-                <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-slate-700">history</span>
-                <p className="text-sm text-gray-500 dark:text-gray-400">No snapshots yet. Snapshots save every 5 minutes.</p>
+                <span className="material-symbols-outlined text-4xl text-gray-300 dark:text-slate-700">
+                  history
+                </span>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  No snapshots yet. Snapshots save every 5 minutes.
+                </p>
               </div>
             ) : (
               <div className="divide-y divide-gray-100 dark:divide-slate-800">
@@ -97,12 +120,18 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
                     key={snap.id}
                     onClick={() => setSelected(snap)}
                     className={`w-full text-left px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-slate-800 ${
-                      selected?.id === snap.id ? 'bg-lavender/20 dark:bg-slate-800 border-l-3 border-lavender' : 'border-l-3 border-transparent'
+                      selected?.id === snap.id
+                        ? 'bg-lavender/20 dark:bg-slate-800 border-l-3 border-lavender'
+                        : 'border-l-3 border-transparent'
                     }`}
                   >
                     <div className="flex items-start justify-between gap-2 mb-1">
-                      <span className="text-sm font-medium text-ink dark:text-slate-200">{relativeSnapshotTime(snap.savedAt)}</span>
-                      <span className="text-xs text-gray-400 dark:text-gray-500">{snap.wordCount} words</span>
+                      <span className="text-sm font-medium text-ink dark:text-slate-200">
+                        {relativeSnapshotTime(snap.savedAt)}
+                      </span>
+                      <span className="text-xs text-gray-400 dark:text-gray-500">
+                        {snap.wordCount} words
+                      </span>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">
                       {snap.preview || '(empty)'}
@@ -141,7 +170,9 @@ export function HistoryPanel({ isOpen, onClose, docId, editor, onRestore }: Prop
                 onClick={() => handleRestore(selected)}
                 className="w-full px-3 py-2 bg-ink text-white text-sm font-medium rounded-lg hover:bg-ink/90 transition-colors dark:bg-slate-700 dark:hover:bg-slate-600 flex items-center justify-center gap-2"
               >
-                <span className="material-symbols-outlined text-[18px]">undo</span>
+                <span className="material-symbols-outlined text-[18px]">
+                  undo
+                </span>
                 Restore
               </button>
             </div>

@@ -19,7 +19,10 @@ export function loadDocuments(): SableDocument[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? (JSON.parse(raw) as SableDocument[]) : [];
   } catch (error) {
-    console.error('Failed to load documents from localStorage:', error instanceof Error ? error.message : String(error));
+    console.error(
+      'Failed to load documents from localStorage:',
+      error instanceof Error ? error.message : String(error),
+    );
     return [];
   }
 }
@@ -33,7 +36,9 @@ export function saveDocuments(docs: SableDocument[]): void {
   }
 }
 
-export function createDocument(templateId: TemplateId = 'blank'): SableDocument {
+export function createDocument(
+  templateId: TemplateId = 'blank',
+): SableDocument {
   const now = new Date().toISOString();
   const template = TEMPLATES.find((t) => t.id === templateId) || TEMPLATES[0];
 
@@ -55,7 +60,10 @@ export function createDocument(templateId: TemplateId = 'blank'): SableDocument 
 }
 
 /** Extract plain-text preview from Tiptap JSON string */
-export function extractTextPreview(contentJson: string, maxChars = 160): string {
+export function extractTextPreview(
+  contentJson: string,
+  maxChars = 160,
+): string {
   try {
     const doc = JSON.parse(contentJson) as { content?: unknown[] };
     let text = '';

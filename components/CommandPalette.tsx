@@ -39,7 +39,9 @@ export function CommandPalette() {
       <div cmdk-overlay="" />
       <div className="relative z-[10000] bg-white dark:bg-slate-800 border-2 border-ink dark:border-slate-600 rounded-[16px] shadow-hard overflow-hidden flex flex-col">
         <div className="flex items-center px-4 border-b-2 border-ink/10 dark:border-slate-600">
-          <span className="material-symbols-outlined text-ink/40 dark:text-slate-500 mr-2 text-[20px]">search</span>
+          <span className="material-symbols-outlined text-ink/40 dark:text-slate-500 mr-2 text-[20px]">
+            search
+          </span>
           <Command.Input
             autoFocus
             placeholder="Search documents or run commands..."
@@ -59,31 +61,41 @@ export function CommandPalette() {
           </Command.Empty>
 
           <Command.Group heading="Actions">
-            <Command.Item
-              onSelect={() => runCommand(() => router.push('/'))}
-            >
-              <span className="material-symbols-outlined text-[18px]">home</span>
+            <Command.Item onSelect={() => runCommand(() => router.push('/'))}>
+              <span className="material-symbols-outlined text-[18px]">
+                home
+              </span>
               Go to Library
             </Command.Item>
             <Command.Item
-              onSelect={() => runCommand(() => {
-                const doc = createDoc();
-                router.push(`/editor?id=${doc.id}`);
-              })}
+              onSelect={() =>
+                runCommand(() => {
+                  const doc = createDoc();
+                  router.push(`/editor?id=${doc.id}`);
+                })
+              }
             >
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
+              <span className="material-symbols-outlined text-[18px]">
+                add_circle
+              </span>
               Create New Document
             </Command.Item>
             <Command.Item
               onSelect={() => runCommand(() => router.push('/settings'))}
             >
-              <span className="material-symbols-outlined text-[18px]">settings</span>
+              <span className="material-symbols-outlined text-[18px]">
+                settings
+              </span>
               Open Settings
             </Command.Item>
             <Command.Item
-              onSelect={() => runCommand(() => {
-                updateSettings({ theme: settings.theme === 'dark' ? 'light' : 'dark' });
-              })}
+              onSelect={() =>
+                runCommand(() => {
+                  updateSettings({
+                    theme: settings.theme === 'dark' ? 'light' : 'dark',
+                  });
+                })
+              }
             >
               <span className="material-symbols-outlined text-[18px]">
                 {settings.theme === 'dark' ? 'light_mode' : 'dark_mode'}
@@ -98,14 +110,21 @@ export function CommandPalette() {
                 <Command.Item
                   key={doc.id}
                   value={doc.title || 'Untitled'}
-                  onSelect={() => runCommand(() => router.push(`/editor?id=${doc.id}`))}
+                  onSelect={() =>
+                    runCommand(() => router.push(`/editor?id=${doc.id}`))
+                  }
                 >
-                  <span className="material-symbols-outlined text-[18px] opacity-70 border-r border-ink/20 pr-2 mr-1">description</span>
+                  <span className="material-symbols-outlined text-[18px] opacity-70 border-r border-ink/20 pr-2 mr-1">
+                    description
+                  </span>
                   {doc.title || 'Untitled'}
                   {doc.tags?.length > 0 && (
                     <div className="ml-auto flex gap-1">
                       {doc.tags.slice(0, 2).map((t) => (
-                        <span key={t} className="px-1.5 py-0.5 text-[9px] bg-ink/5 dark:bg-white/10 rounded uppercase font-bold tracking-wider opacity-60">
+                        <span
+                          key={t}
+                          className="px-1.5 py-0.5 text-[9px] bg-ink/5 dark:bg-white/10 rounded uppercase font-bold tracking-wider opacity-60"
+                        >
                           {t}
                         </span>
                       ))}

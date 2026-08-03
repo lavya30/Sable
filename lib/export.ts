@@ -86,19 +86,40 @@ function buildStyledHTML(doc: SableDocument, bodyHtml: string): string {
 }
 
 export function exportHTML(doc: SableDocument, html: string): void {
-  const fullHtml = buildStyledHTML(doc, `<h1>${escapeHtml(doc.title)}</h1>\n${html}`);
-  downloadBlob(fullHtml, `${sanitizeFilename(doc.title)}.html`, 'text/html;charset=utf-8');
+  const fullHtml = buildStyledHTML(
+    doc,
+    `<h1>${escapeHtml(doc.title)}</h1>\n${html}`,
+  );
+  downloadBlob(
+    fullHtml,
+    `${sanitizeFilename(doc.title)}.html`,
+    'text/html;charset=utf-8',
+  );
 }
 
-export async function exportMarkdown(doc: SableDocument, html: string): Promise<void> {
+export async function exportMarkdown(
+  doc: SableDocument,
+  html: string,
+): Promise<void> {
   const { default: TurndownService } = await import('turndown');
-  const td = new TurndownService({ headingStyle: 'atx', codeBlockStyle: 'fenced', bulletListMarker: '-' });
+  const td = new TurndownService({
+    headingStyle: 'atx',
+    codeBlockStyle: 'fenced',
+    bulletListMarker: '-',
+  });
   const body = td.turndown(html);
   const markdown = `# ${doc.title}\n\n${body}`;
-  downloadBlob(markdown, `${sanitizeFilename(doc.title)}.md`, 'text/markdown;charset=utf-8');
+  downloadBlob(
+    markdown,
+    `${sanitizeFilename(doc.title)}.md`,
+    'text/markdown;charset=utf-8',
+  );
 }
 
-export async function exportZine(doc: SableDocument, html: string): Promise<void> {
+export async function exportZine(
+  doc: SableDocument,
+  html: string,
+): Promise<void> {
   const sections = html
     .replace(/<hr\s*\/?>/gi, '---PAGE-BREAK---')
     .split('---PAGE-BREAK---')
@@ -207,7 +228,8 @@ export async function exportZine(doc: SableDocument, html: string): Promise<void
 </html>`;
 
   const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
+  iframe.style.cssText =
+    'position:fixed;width:0;height:0;border:none;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
   document.body.appendChild(iframe);
 
   await new Promise<void>((resolve, reject) => {
@@ -231,11 +253,14 @@ export async function exportZine(doc: SableDocument, html: string): Promise<void
   });
 }
 
-export async function exportPDF(doc: SableDocument, html: string): Promise<void> {
+export async function exportPDF(
+  doc: SableDocument,
+  html: string,
+): Promise<void> {
   // Replace <hr> with page-break markers so chapters start on new pages
   const contentWithBreaks = html.replace(
     /<hr\s*\/?>/gi,
-    '<div class="page-break"></div>'
+    '<div class="page-break"></div>',
   );
 
   const fullHtml = `<!DOCTYPE html>
@@ -283,7 +308,8 @@ export async function exportPDF(doc: SableDocument, html: string): Promise<void>
 
   // Use a hidden iframe so no new tab ever appears
   const iframe = document.createElement('iframe');
-  iframe.style.cssText = 'position:fixed;width:0;height:0;border:none;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
+  iframe.style.cssText =
+    'position:fixed;width:0;height:0;border:none;left:-9999px;top:-9999px;opacity:0;pointer-events:none;';
   document.body.appendChild(iframe);
 
   await new Promise<void>((resolve, reject) => {

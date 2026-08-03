@@ -6,13 +6,18 @@ import { MarginNote } from '@/lib/types';
 import gsap from 'gsap';
 
 /* ── Note-color palette ──────────────────────────────────────────────────── */
-const NOTE_COLORS: MarginNote['color'][] = ['peach', 'lavender', 'mint', 'rose'];
+const NOTE_COLORS: MarginNote['color'][] = [
+  'peach',
+  'lavender',
+  'mint',
+  'rose',
+];
 
 const COLOR_MAP: Record<MarginNote['color'], { bg: string; border: string }> = {
-  peach:    { bg: 'bg-peach/40',    border: 'border-peach/60' },
+  peach: { bg: 'bg-peach/40', border: 'border-peach/60' },
   lavender: { bg: 'bg-lavender/40', border: 'border-lavender/60' },
-  mint:     { bg: 'bg-mint/40',     border: 'border-mint/60' },
-  rose:     { bg: 'bg-rose/40',     border: 'border-rose/60' },
+  mint: { bg: 'bg-mint/40', border: 'border-mint/60' },
+  rose: { bg: 'bg-rose/40', border: 'border-rose/60' },
 };
 
 function randomRotation(): number {
@@ -26,11 +31,14 @@ function pickColor(): MarginNote['color'] {
 /* ── Paragraph position helpers ──────────────────────────────────────────── */
 interface ParaPos {
   index: number;
-  top: number;   // relative to the editor wrapper
+  top: number; // relative to the editor wrapper
   height: number;
 }
 
-function getParagraphPositions(editor: Editor, wrapperEl: HTMLElement | null): ParaPos[] {
+function getParagraphPositions(
+  editor: Editor,
+  wrapperEl: HTMLElement | null,
+): ParaPos[] {
   if (!editor || !wrapperEl) return [];
   const positions: ParaPos[] = [];
   const wrapperRect = wrapperEl.getBoundingClientRect();
@@ -74,9 +82,18 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
   // GSAP entrance animation
   useEffect(() => {
     if (cardRef.current) {
-      gsap.fromTo(cardRef.current,
+      gsap.fromTo(
+        cardRef.current,
         { x: 30, opacity: 0, scale: 0.9, rotation: note.rotation + 5 },
-        { x: 0, opacity: 1, scale: 1, rotation: note.rotation, duration: 0.5, ease: 'back.out(1.7)', overwrite: true }
+        {
+          x: 0,
+          opacity: 1,
+          scale: 1,
+          rotation: note.rotation,
+          duration: 0.5,
+          ease: 'back.out(1.7)',
+          overwrite: true,
+        },
       );
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -116,7 +133,10 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
 
       {/* Delete button */}
       <button
-        onClick={(e) => { e.stopPropagation(); onDelete(note.id); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDelete(note.id);
+        }}
         className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-ink text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity z-10 hover:bg-red-500"
         aria-label="Delete note"
       >
@@ -130,8 +150,14 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
           onChange={(e) => setDraft(e.target.value)}
           onBlur={commit}
           onKeyDown={(e) => {
-            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commit(); }
-            if (e.key === 'Escape') { setDraft(note.content); setEditing(false); }
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              commit();
+            }
+            if (e.key === 'Escape') {
+              setDraft(note.content);
+              setEditing(false);
+            }
           }}
           placeholder="Scribble a note…"
           className="w-full bg-transparent border-none resize-none outline-none font-marker text-sm text-ink leading-snug placeholder:text-ink/40 min-h-9"
@@ -144,7 +170,10 @@ function NoteCard({ note, top, onUpdate, onDelete }: NoteCardProps) {
       )}
 
       <span className="block text-right text-[9px] font-marker text-ink/30 mt-1 select-none">
-        {new Date(note.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+        {new Date(note.createdAt).toLocaleDateString(undefined, {
+          month: 'short',
+          day: 'numeric',
+        })}
       </span>
     </div>
   );
@@ -222,7 +251,11 @@ export function MarginNoteGutter({ editor, marginNotes, onChange }: Props) {
   }
 
   return (
-    <div ref={wrapperRef} className="margin-note-gutter absolute top-0 left-0 w-full h-full pointer-events-none select-none pl-4" style={{ minHeight: '100%' }}>
+    <div
+      ref={wrapperRef}
+      className="margin-note-gutter absolute top-0 left-0 w-full h-full pointer-events-none select-none pl-4"
+      style={{ minHeight: '100%' }}
+    >
       {/* Clickable "add" markers beside each paragraph */}
       {paraPositions.map((p) => (
         <button
@@ -241,7 +274,11 @@ export function MarginNoteGutter({ editor, marginNotes, onChange }: Props) {
         const notes = notesByPara[p.index];
         if (!notes?.length) return null;
         return notes.map((note, stackIdx) => (
-          <div key={note.id} className="pointer-events-auto" style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+          <div
+            key={note.id}
+            className="pointer-events-auto"
+            style={{ position: 'absolute', top: 0, left: 0, right: 0 }}
+          >
             <NoteCard
               note={note}
               top={p.top + stackIdx * 28} // stack offset

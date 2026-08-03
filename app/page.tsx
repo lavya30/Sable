@@ -40,9 +40,18 @@ export default function LibraryPage() {
     if (gridRef.current) {
       const cards = gridRef.current.querySelectorAll(':scope > *');
       if (cards.length) {
-        gsap.fromTo(cards,
+        gsap.fromTo(
+          cards,
           { y: 25, opacity: 0, scale: 0.96 },
-          { y: 0, opacity: 1, scale: 1, duration: 0.45, stagger: 0.05, ease: 'power3.out', overwrite: true }
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.45,
+            stagger: 0.05,
+            ease: 'power3.out',
+            overwrite: true,
+          },
         );
       }
     }
@@ -61,7 +70,7 @@ export default function LibraryPage() {
         (d) =>
           d.title.toLowerCase().includes(q) ||
           d.content.toLowerCase().includes(q) ||
-          (d.tags && d.tags.some(t => t.toLowerCase().includes(q)))
+          (d.tags && d.tags.some((t) => t.toLowerCase().includes(q))),
       );
     }
 
@@ -74,10 +83,14 @@ export default function LibraryPage() {
 
   const getTabLabel = (t: LibraryTab) => {
     switch (t) {
-      case 'recent': return 'All notes';
-      case 'favorites': return 'Favorites';
-      case 'archived': return 'Archived';
-      default: return 'Notes';
+      case 'recent':
+        return 'All notes';
+      case 'favorites':
+        return 'Favorites';
+      case 'archived':
+        return 'Archived';
+      default:
+        return 'Notes';
     }
   };
 
@@ -87,32 +100,41 @@ export default function LibraryPage() {
     <div className="flex h-screen bg-white dark:bg-slate-900 text-ink dark:text-slate-100 font-body selection:bg-mint selection:text-ink overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 shrink-0 flex flex-col border-r-2 border-ink/5 dark:border-slate-700 bg-white dark:bg-slate-800">
-        <div className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar" data-lenis-prevent>
+        <div
+          className="p-6 pb-2 flex-1 overflow-y-auto custom-scrollbar"
+          data-lenis-prevent
+        >
           <div className="space-y-8">
             {/* MAIN Section */}
             <div>
-              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Main</h3>
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">
+                Main
+              </h3>
               <nav className="space-y-1">
                 <button
                   onClick={() => setTab('recent')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                    tab === 'recent' 
-                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                    tab === 'recent'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100'
                       : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px] filled-icon">description</span>
+                  <span className="material-symbols-outlined text-[20px] filled-icon">
+                    description
+                  </span>
                   All notes
                 </button>
                 <button
                   onClick={() => setTab('favorites')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                    tab === 'favorites' 
-                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                    tab === 'favorites'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100'
                       : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px] filled-icon">bookmark</span>
+                  <span className="material-symbols-outlined text-[20px] filled-icon">
+                    bookmark
+                  </span>
                   Favorites
                 </button>
               </nav>
@@ -120,17 +142,21 @@ export default function LibraryPage() {
 
             {/* ORDER Section */}
             <div>
-              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Order</h3>
+              <h3 className="text-xs font-bold text-gray-900 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">
+                Order
+              </h3>
               <nav className="space-y-1">
                 <button
                   onClick={() => setTab('archived')}
                   className={`w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
-                    tab === 'archived' 
-                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100' 
+                    tab === 'archived'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm ring-1 ring-ink/5 dark:ring-slate-500/50 text-ink dark:text-slate-100'
                       : 'text-gray-900 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100'
                   }`}
                 >
-                  <span className="material-symbols-outlined text-[20px]">archive</span>
+                  <span className="material-symbols-outlined text-[20px]">
+                    archive
+                  </span>
                   Archived
                 </button>
               </nav>
@@ -141,27 +167,35 @@ export default function LibraryPage() {
         {/* SETTINGS Section (pinned to bottom) */}
         <div className="p-6 pt-0 mt-auto">
           <div className="space-y-1">
-            <h3 className="text-xs font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">Settings</h3>
+            <h3 className="text-xs font-bold text-gray-800 dark:text-gray-300 uppercase tracking-wider mb-3 px-3">
+              Settings
+            </h3>
             <Link
               href="/settings"
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
-              <span className="material-symbols-outlined text-[20px]">settings</span>
+              <span className="material-symbols-outlined text-[20px]">
+                settings
+              </span>
               Settings
             </Link>
-             {/* Import / Export moved here */}
-             <button
+            {/* Import / Export moved here */}
+            <button
               onClick={exportAllData}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
-              <span className="material-symbols-outlined text-[20px]">download</span>
+              <span className="material-symbols-outlined text-[20px]">
+                download
+              </span>
               Export Data
             </button>
             <button
               onClick={() => importInputRef.current?.click()}
               className="w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg transition-all text-gray-800 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 hover:text-ink dark:hover:text-slate-100"
             >
-              <span className="material-symbols-outlined text-[20px]">upload</span>
+              <span className="material-symbols-outlined text-[20px]">
+                upload
+              </span>
               Import Data
             </button>
             <input
@@ -185,79 +219,103 @@ export default function LibraryPage() {
           {/* Breadcrumb + Search Row */}
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="flex items-center gap-2 text-sm font-bold text-gray-400 dark:text-gray-500">
-                <span className="hover:text-ink dark:hover:text-slate-200 cursor-pointer transition-colors">Home</span>
-                <span>/</span>
-                <span className="text-ink dark:text-slate-100">{getTabLabel(tab)}</span>
+              <span className="hover:text-ink dark:hover:text-slate-200 cursor-pointer transition-colors">
+                Home
+              </span>
+              <span>/</span>
+              <span className="text-ink dark:text-slate-100">
+                {getTabLabel(tab)}
+              </span>
             </div>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
-                 {/* Search */}
-                <div className="relative w-full max-w-md">
-                    <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-[20px] pointer-events-none">
-                    search
+              {/* Search */}
+              <div className="relative w-full max-w-md">
+                <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-[20px] pointer-events-none">
+                  search
+                </span>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search a note"
+                  className="w-full bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-600 text-ink dark:text-slate-100 text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 dark:focus:border-slate-500 rounded-lg transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                />
+                {search && (
+                  <button
+                    onClick={() => setSearch('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-ink dark:hover:text-slate-100"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">
+                      close
                     </span>
-                    <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search a note"
-                    className="w-full bg-white dark:bg-slate-700 hover:bg-gray-50 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-600 text-ink dark:text-slate-100 text-sm px-4 py-2.5 pl-10 border border-transparent focus:border-ink/20 dark:focus:border-slate-500 rounded-lg transition-all outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
-                    />
-                     {search && (
-                    <button
-                        onClick={() => setSearch('')}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 hover:text-ink dark:hover:text-slate-100"
-                    >
-                        <span className="material-symbols-outlined text-[18px]">close</span>
-                    </button>
-                    )}
-                </div>
+                  </button>
+                )}
+              </div>
 
-                {/* Filters */}
-                <div className="flex items-center gap-2">
-                    <button
-                    onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
-                    className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg transition-colors border border-gray-200 dark:border-slate-700"
-                    >
-                    <span className="material-symbols-outlined text-[18px]">filter_list</span>
-                    {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
-                    </button>
-                </div>
+              {/* Filters */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() =>
+                    setSortOrder((prev) => (prev === 'desc' ? 'asc' : 'desc'))
+                  }
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-700 rounded-lg transition-colors border border-gray-200 dark:border-slate-700"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    filter_list
+                  </span>
+                  {sortOrder === 'desc' ? 'Newest' : 'Oldest'}
+                </button>
+              </div>
             </div>
           </div>
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar" data-lenis-prevent>
-          <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 w-full max-w-7xl mx-auto">
+        <div
+          className="flex-1 overflow-y-auto p-8 custom-scrollbar"
+          data-lenis-prevent
+        >
+          <div
+            ref={gridRef}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-24 w-full max-w-7xl mx-auto"
+          >
             {/* Show New Document Card only in 'All notes' (recent) tab when not searching */}
             {tab === 'recent' && !search && (
               <div className="col-span-1">
-                  <NewDocumentCard />
+                <NewDocumentCard />
               </div>
             )}
 
             {filtered.map((doc) => (
               <div key={doc.id} className="col-span-1">
-                 <DocumentCard doc={doc} />
+                <DocumentCard doc={doc} />
               </div>
             ))}
-            
+
             {filtered.length === 0 && !search && tab !== 'recent' && (
               <div className="col-span-full py-20 text-center">
-                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
-                    <span className="material-symbols-outlined text-3xl text-gray-300">folder_off</span>
-                 </div>
-                <p className="text-gray-400 font-medium">No documents found in {getTabLabel(tab)}</p>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
+                  <span className="material-symbols-outlined text-3xl text-gray-300">
+                    folder_off
+                  </span>
+                </div>
+                <p className="text-gray-400 font-medium">
+                  No documents found in {getTabLabel(tab)}
+                </p>
               </div>
             )}
-            
+
             {filtered.length === 0 && search && (
               <div className="col-span-full py-20 text-center">
-                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
-                    <span className="material-symbols-outlined text-3xl text-gray-300">search_off</span>
-                 </div>
-                <p className="text-gray-400 font-medium">No results for "{search}"</p>
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-50 mb-4">
+                  <span className="material-symbols-outlined text-3xl text-gray-300">
+                    search_off
+                  </span>
+                </div>
+                <p className="text-gray-400 font-medium">
+                  No results for "{search}"
+                </p>
               </div>
             )}
           </div>

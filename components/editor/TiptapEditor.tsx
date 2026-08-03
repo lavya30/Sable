@@ -10,10 +10,22 @@ import Link from '@tiptap/extension-link';
 import { ResizableImage } from './ResizableImage';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { FontFamily } from '@tiptap/extension-font-family';
-import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table';
+import {
+  Table,
+  TableRow,
+  TableHeader,
+  TableCell,
+} from '@tiptap/extension-table';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
-import { useEffect, useRef, useState, forwardRef, useImperativeHandle, useCallback } from 'react';
+import {
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useCallback,
+} from 'react';
 import { Editor } from '@tiptap/react';
 import { checkGrammar, buildTextAndMap, LTMatch } from '@/lib/grammar';
 import { lookupWord, DictResult } from '@/lib/dictionary';
@@ -35,7 +47,7 @@ const FocusWordDecoration = Extension.create({
             // Only apply in collapsed (cursor) selection
             if (!empty || $from.depth < 1) return DecorationSet.empty;
 
-            const parentStart = $from.start();   // start of the text block
+            const parentStart = $from.start(); // start of the text block
             const parentText = $from.parent.textContent;
             const offsetInParent = $from.pos - parentStart;
 
@@ -86,7 +98,9 @@ function createGrammarPlugin(): Plugin {
         const meta = tr.getMeta(GRAMMAR_META_KEY);
         if (meta) return meta as GrammarPluginState;
         if (tr.docChanged && old.map.length > 0) {
-          const newMap = old.map.map((pos) => (pos < 0 ? -1 : tr.mapping.map(pos)));
+          const newMap = old.map.map((pos) =>
+            pos < 0 ? -1 : tr.mapping.map(pos),
+          );
           return { matches: old.matches, map: newMap };
         }
         return old;
@@ -108,11 +122,14 @@ function createGrammarPlugin(): Plugin {
           try {
             list.push(
               Decoration.inline(from, to, {
-                class: match.issueType === 'misspelling' ? 'lt-spelling' : 'lt-grammar',
+                class:
+                  match.issueType === 'misspelling'
+                    ? 'lt-spelling'
+                    : 'lt-grammar',
                 'data-lt-idx': String(idx),
-              })
+              }),
             );
-          } catch { }
+          } catch {}
         });
         return DecorationSet.create(state.doc, list);
       },
@@ -146,15 +163,34 @@ interface Props {
 }
 
 const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
-  { content, onChange, onEditorReady, fontSize, lineSpacing, focusMode, readOnly = false, onSlashCommand },
-  ref
+  {
+    content,
+    onChange,
+    onEditorReady,
+    fontSize,
+    lineSpacing,
+    focusMode,
+    readOnly = false,
+    onSlashCommand,
+  },
+  ref,
 ) {
   const grammarMatchesRef = useRef<LTMatch[]>([]);
   const grammarTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const tooltipHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [grammarTooltip, setGrammarTooltip] = useState<{ match: LTMatch; x: number; y: number } | null>(null);
+  const tooltipHideTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null,
+  );
+  const [grammarTooltip, setGrammarTooltip] = useState<{
+    match: LTMatch;
+    x: number;
+    y: number;
+  } | null>(null);
   const [grammarChecking, setGrammarChecking] = useState(false);
-  const [dictPopover, setDictPopover] = useState<{ word: string; result: DictResult | null; loading: boolean } | null>(null);
+  const [dictPopover, setDictPopover] = useState<{
+    word: string;
+    result: DictResult | null;
+    loading: boolean;
+  } | null>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
 
   // Link popover state
@@ -165,7 +201,8 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   function normalizeUrl(url: string): string {
     const trimmed = url.trim();
     if (!trimmed) return '';
-    if (/^https?:\/\//i.test(trimmed) || /^mailto:/i.test(trimmed)) return trimmed;
+    if (/^https?:\/\//i.test(trimmed) || /^mailto:/i.test(trimmed))
+      return trimmed;
     return `https://${trimmed}`;
   }
 
@@ -227,7 +264,10 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         const reader = new FileReader();
         reader.onload = () => {
           const src = reader.result as string;
-          const { pos } = view.posAtCoords({ left: event.clientX, top: event.clientY }) ?? { pos: view.state.selection.from };
+          const { pos } = view.posAtCoords({
+            left: event.clientX,
+            top: event.clientY,
+          }) ?? { pos: view.state.selection.from };
           const node = view.state.schema.nodes.image.create({ src });
           const tr = view.state.tr.insert(pos, node);
           view.dispatch(tr);
@@ -278,7 +318,10 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
         console.warn('Invalid Tiptap JSON structure, using empty doc');
         return { type: 'doc', content: [] };
       } catch (error) {
-        console.error('Error parsing editor content:', error instanceof Error ? error.message : String(error));
+        console.error(
+          'Error parsing editor content:',
+          error instanceof Error ? error.message : String(error),
+        );
         return { type: 'doc', content: [] };
       }
     })(),
@@ -325,7 +368,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       }
     };
     editor.on('selectionUpdate', handler);
-    return () => { editor.off('selectionUpdate', handler); };
+    return () => {
+      editor.off('selectionUpdate', handler);
+    };
   }, [editor]);
 
   // When the document changes externally (e.g. new doc loaded), reset content
@@ -334,13 +379,22 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     const newJson = (() => {
       try {
         const parsed = JSON.parse(content);
-        if (typeof parsed === 'object' && parsed !== null && parsed.type === 'doc') {
+        if (
+          typeof parsed === 'object' &&
+          parsed !== null &&
+          parsed.type === 'doc'
+        ) {
           return parsed;
         }
-        console.warn('Invalid Tiptap JSON structure in external update, preserving current content');
+        console.warn(
+          'Invalid Tiptap JSON structure in external update, preserving current content',
+        );
         return editor.getJSON();
       } catch (error) {
-        console.error('Error parsing external content update:', error instanceof Error ? error.message : String(error));
+        console.error(
+          'Error parsing external content update:',
+          error instanceof Error ? error.message : String(error),
+        );
         return editor.getJSON();
       }
     })();
@@ -362,7 +416,7 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
       setGrammarChecking(false);
       grammarMatchesRef.current = matches;
       editor.view.dispatch(
-        editor.state.tr.setMeta(GRAMMAR_META_KEY, { matches, map })
+        editor.state.tr.setMeta(GRAMMAR_META_KEY, { matches, map }),
       );
     };
     const schedule = () => {
@@ -386,7 +440,10 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
 
   const scheduleTooltipHide = () => {
     cancelTooltipHide();
-    tooltipHideTimerRef.current = setTimeout(() => setGrammarTooltip(null), 180);
+    tooltipHideTimerRef.current = setTimeout(
+      () => setGrammarTooltip(null),
+      180,
+    );
   };
 
   useEffect(() => {
@@ -434,7 +491,11 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     const to = map[toCharIdx] + 1;
     if (to <= from) return;
     editor.view.dispatch(
-      editor.state.tr.replaceWith(from, to, editor.state.schema.text(replacement))
+      editor.state.tr.replaceWith(
+        from,
+        to,
+        editor.state.schema.text(replacement),
+      ),
     );
     setGrammarTooltip(null);
   }
@@ -467,22 +528,19 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
     {
       label: 'H1',
       icon: 'format_h1',
-      action: () =>
-        editor?.chain().focus().toggleHeading({ level: 1 }).run(),
+      action: () => editor?.chain().focus().toggleHeading({ level: 1 }).run(),
       isActive: () => editor?.isActive('heading', { level: 1 }) ?? false,
     },
     {
       label: 'H2',
       icon: 'format_h2',
-      action: () =>
-        editor?.chain().focus().toggleHeading({ level: 2 }).run(),
+      action: () => editor?.chain().focus().toggleHeading({ level: 2 }).run(),
       isActive: () => editor?.isActive('heading', { level: 2 }) ?? false,
     },
     {
       label: 'H3',
       icon: 'format_h3',
-      action: () =>
-        editor?.chain().focus().toggleHeading({ level: 3 }).run(),
+      action: () => editor?.chain().focus().toggleHeading({ level: 3 }).run(),
       isActive: () => editor?.isActive('heading', { level: 3 }) ?? false,
     },
   ];
@@ -490,8 +548,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
   return (
     <div
       ref={editorContainerRef}
-      className={`relative transition-all duration-300 ${focusMode ? 'focus-mode-active' : ''
-        }`}
+      className={`relative transition-all duration-300 ${
+        focusMode ? 'focus-mode-active' : ''
+      }`}
     >
       {editor && (
         <BubbleMenu
@@ -506,80 +565,116 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
             {/* ── Link input mode ────────────────────────────────────────── */}
             {linkMode === 'input' && (
               <div className="flex items-center bg-white border-2 border-ink rounded-rough shadow-hard px-3 py-2 gap-2 min-w-[280px]">
-                <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">link</span>
+                <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">
+                  link
+                </span>
                 <input
                   ref={linkInputRef}
                   type="text"
                   value={linkInput}
                   onChange={(e) => setLinkInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') { e.preventDefault(); handleSetLink(); }
-                    if (e.key === 'Escape') { setLinkMode('idle'); setLinkInput(''); }
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSetLink();
+                    }
+                    if (e.key === 'Escape') {
+                      setLinkMode('idle');
+                      setLinkInput('');
+                    }
                   }}
                   placeholder="Paste or type a URL…"
                   className="flex-1 text-sm font-body text-ink bg-transparent outline-none placeholder:text-ink/30"
                   autoFocus
                 />
                 <button
-                  onMouseDown={(e) => { e.preventDefault(); handleSetLink(); }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    handleSetLink();
+                  }}
                   disabled={!linkInput.trim()}
                   className="flex items-center gap-1 px-2.5 py-1 bg-primary text-ink text-xs font-display font-bold rounded-md hover:bg-primary/80 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
                 >
-                  <span className="material-symbols-outlined text-[14px]">check</span>
+                  <span className="material-symbols-outlined text-[14px]">
+                    check
+                  </span>
                   Apply
                 </button>
                 <button
-                  onMouseDown={(e) => { e.preventDefault(); setLinkMode('idle'); setLinkInput(''); }}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    setLinkMode('idle');
+                    setLinkInput('');
+                  }}
                   className="p-1 rounded hover:bg-gray-100 transition-colors text-ink/40 hover:text-ink flex-shrink-0"
                   aria-label="Cancel"
                 >
-                  <span className="material-symbols-outlined text-[16px]">close</span>
+                  <span className="material-symbols-outlined text-[16px]">
+                    close
+                  </span>
                 </button>
                 <div className="absolute -bottom-2 left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
               </div>
             )}
 
             {/* ── Link active mode (on a link) ───────────────────────────── */}
-            {linkMode === 'active' && (() => {
-              const href = editor.getAttributes('link').href ?? '';
-              return (
-                <div className="flex items-center bg-white border-2 border-ink rounded-rough shadow-hard px-3 py-2 gap-2 max-w-[320px]">
-                  <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">link</span>
-                  <span className="flex-1 text-xs font-mono text-ink/70 truncate" title={href}>{href}</span>
-                  <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
-                  <a
-                    href={normalizeUrl(href)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onMouseDown={(e) => e.stopPropagation()}
-                    className="p-1 rounded hover:bg-primary/10 transition-colors text-ink/50 hover:text-primary flex-shrink-0"
-                    title="Open link"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">open_in_new</span>
-                  </a>
-                  <button
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      setLinkInput(href);
-                      setLinkMode('input');
-                      setTimeout(() => linkInputRef.current?.focus(), 50);
-                    }}
-                    className="p-1 rounded hover:bg-lavender/40 transition-colors text-ink/50 hover:text-ink flex-shrink-0"
-                    title="Edit link"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">edit</span>
-                  </button>
-                  <button
-                    onMouseDown={(e) => { e.preventDefault(); handleRemoveLink(); }}
-                    className="p-1 rounded hover:bg-red-50 transition-colors text-ink/50 hover:text-red-500 flex-shrink-0"
-                    title="Remove link"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">link_off</span>
-                  </button>
-                  <div className="absolute -bottom-2 left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
-                </div>
-              );
-            })()}
+            {linkMode === 'active' &&
+              (() => {
+                const href = editor.getAttributes('link').href ?? '';
+                return (
+                  <div className="flex items-center bg-white border-2 border-ink rounded-rough shadow-hard px-3 py-2 gap-2 max-w-[320px]">
+                    <span className="material-symbols-outlined text-primary text-[18px] flex-shrink-0">
+                      link
+                    </span>
+                    <span
+                      className="flex-1 text-xs font-mono text-ink/70 truncate"
+                      title={href}
+                    >
+                      {href}
+                    </span>
+                    <div className="w-px h-4 bg-gray-200 flex-shrink-0" />
+                    <a
+                      href={normalizeUrl(href)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className="p-1 rounded hover:bg-primary/10 transition-colors text-ink/50 hover:text-primary flex-shrink-0"
+                      title="Open link"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        open_in_new
+                      </span>
+                    </a>
+                    <button
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        setLinkInput(href);
+                        setLinkMode('input');
+                        setTimeout(() => linkInputRef.current?.focus(), 50);
+                      }}
+                      className="p-1 rounded hover:bg-lavender/40 transition-colors text-ink/50 hover:text-ink flex-shrink-0"
+                      title="Edit link"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        edit
+                      </span>
+                    </button>
+                    <button
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleRemoveLink();
+                      }}
+                      className="p-1 rounded hover:bg-red-50 transition-colors text-ink/50 hover:text-red-500 flex-shrink-0"
+                      title="Remove link"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">
+                        link_off
+                      </span>
+                    </button>
+                    <div className="absolute -bottom-2 left-6 w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-ink" />
+                  </div>
+                );
+              })()}
 
             {/* ── Normal formatting menu ─────────────────────────────────── */}
             {linkMode === 'idle' && (
@@ -591,11 +686,14 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                       e.preventDefault();
                       item.action();
                     }}
-                    className={`p-1.5 rounded transition-colors hover:text-mint ${item.isActive() ? 'text-mint' : 'text-white'
-                      }`}
+                    className={`p-1.5 rounded transition-colors hover:text-mint ${
+                      item.isActive() ? 'text-mint' : 'text-white'
+                    }`}
                     aria-label={item.label}
                   >
-                    <span className="material-symbols-outlined text-[18px]">{item.icon}</span>
+                    <span className="material-symbols-outlined text-[18px]">
+                      {item.icon}
+                    </span>
                   </button>
                 ))}
 
@@ -607,11 +705,14 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                     e.preventDefault();
                     editor.chain().focus().toggleHighlight().run();
                   }}
-                  className={`p-1.5 rounded transition-colors hover:text-peach ${editor.isActive('highlight') ? 'text-peach' : 'text-white'
-                    }`}
+                  className={`p-1.5 rounded transition-colors hover:text-peach ${
+                    editor.isActive('highlight') ? 'text-peach' : 'text-white'
+                  }`}
                   aria-label="Highlight"
                 >
-                  <span className="material-symbols-outlined text-[18px]">comment</span>
+                  <span className="material-symbols-outlined text-[18px]">
+                    comment
+                  </span>
                 </button>
 
                 {/* Link button */}
@@ -626,11 +727,14 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                       setTimeout(() => linkInputRef.current?.focus(), 50);
                     }
                   }}
-                  className={`p-1.5 rounded transition-colors hover:text-mint ${editor.isActive('link') ? 'text-mint' : 'text-white'
-                    }`}
+                  className={`p-1.5 rounded transition-colors hover:text-mint ${
+                    editor.isActive('link') ? 'text-mint' : 'text-white'
+                  }`}
                   aria-label="Add link"
                 >
-                  <span className="material-symbols-outlined text-[18px]">link</span>
+                  <span className="material-symbols-outlined text-[18px]">
+                    link
+                  </span>
                 </button>
 
                 {/* Define */}
@@ -645,7 +749,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
                       className="p-1.5 rounded transition-colors hover:text-mint text-white"
                       aria-label="Define word"
                     >
-                      <span className="material-symbols-outlined text-[18px]">book_2</span>
+                      <span className="material-symbols-outlined text-[18px]">
+                        book_2
+                      </span>
                     </button>
                   </>
                 )}
@@ -665,32 +771,106 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           }
         >
           <div className="flex items-center bg-ink text-white rounded-rough shadow-xl px-2 py-1.5 gap-0.5">
-            <span className="text-[10px] font-display font-bold uppercase tracking-wider px-1 text-white/50 border-r border-white/20 mr-0.5 pr-2">Table</span>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addRowBefore().run(); }} title="Add row above" className="p-1.5 rounded hover:text-mint transition-colors">
-              <span className="material-symbols-outlined text-[16px]">arrow_upward</span>
+            <span className="text-[10px] font-display font-bold uppercase tracking-wider px-1 text-white/50 border-r border-white/20 mr-0.5 pr-2">
+              Table
+            </span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().addRowBefore().run();
+              }}
+              title="Add row above"
+              className="p-1.5 rounded hover:text-mint transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                arrow_upward
+              </span>
             </button>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addRowAfter().run(); }} title="Add row below" className="p-1.5 rounded hover:text-mint transition-colors">
-              <span className="material-symbols-outlined text-[16px]">arrow_downward</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().addRowAfter().run();
+              }}
+              title="Add row below"
+              className="p-1.5 rounded hover:text-mint transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                arrow_downward
+              </span>
             </button>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addColumnBefore().run(); }} title="Add column left" className="p-1.5 rounded hover:text-mint transition-colors">
-              <span className="material-symbols-outlined text-[16px]">arrow_back</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().addColumnBefore().run();
+              }}
+              title="Add column left"
+              className="p-1.5 rounded hover:text-mint transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                arrow_back
+              </span>
             </button>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().addColumnAfter().run(); }} title="Add column right" className="p-1.5 rounded hover:text-mint transition-colors">
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().addColumnAfter().run();
+              }}
+              title="Add column right"
+              className="p-1.5 rounded hover:text-mint transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                arrow_forward
+              </span>
             </button>
             <div className="w-px h-4 bg-gray-600 mx-0.5" />
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteRow().run(); }} title="Delete row" className="p-1.5 rounded hover:text-red-400 transition-colors">
-              <span className="material-symbols-outlined text-[16px]">table_rows</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().deleteRow().run();
+              }}
+              title="Delete row"
+              className="p-1.5 rounded hover:text-red-400 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                table_rows
+              </span>
             </button>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteColumn().run(); }} title="Delete column" className="p-1.5 rounded hover:text-red-400 transition-colors">
-              <span className="material-symbols-outlined text-[16px]">view_column</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().deleteColumn().run();
+              }}
+              title="Delete column"
+              className="p-1.5 rounded hover:text-red-400 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                view_column
+              </span>
             </button>
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().mergeOrSplit().run(); }} title="Merge / split cells" className="p-1.5 rounded hover:text-mint transition-colors">
-              <span className="material-symbols-outlined text-[16px]">merge</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().mergeOrSplit().run();
+              }}
+              title="Merge / split cells"
+              className="p-1.5 rounded hover:text-mint transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                merge
+              </span>
             </button>
             <div className="w-px h-4 bg-gray-600 mx-0.5" />
-            <button onMouseDown={(e) => { e.preventDefault(); editor.chain().focus().deleteTable().run(); }} title="Delete table" className="p-1.5 rounded hover:text-red-400 transition-colors">
-              <span className="material-symbols-outlined text-[16px]">table_chart</span>
+            <button
+              onMouseDown={(e) => {
+                e.preventDefault();
+                editor.chain().focus().deleteTable().run();
+              }}
+              title="Delete table"
+              className="p-1.5 rounded hover:text-red-400 transition-colors"
+            >
+              <span className="material-symbols-outlined text-[16px]">
+                table_chart
+              </span>
             </button>
           </div>
         </BubbleMenu>
@@ -708,7 +888,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
 
       {grammarChecking && (
         <div className="absolute top-0 right-0 flex items-center gap-1.5 px-2 py-1 rounded-bl-lg bg-white/80 dark:bg-surface/80 border-b border-l border-ink/10 text-[10px] font-marker text-gray-400 pointer-events-none select-none">
-          <span className="material-symbols-outlined text-[13px] animate-spin">progress_activity</span>
+          <span className="material-symbols-outlined text-[13px] animate-spin">
+            progress_activity
+          </span>
           Checking...
         </div>
       )}
@@ -721,10 +903,14 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           onMouseEnter={cancelTooltipHide}
           onMouseLeave={scheduleTooltipHide}
         >
-          <p className="text-white/80 dark:text-ink/80 mb-2 text-xs leading-snug">{grammarTooltip.match.message}</p>
+          <p className="text-white/80 dark:text-ink/80 mb-2 text-xs leading-snug">
+            {grammarTooltip.match.message}
+          </p>
           {grammarTooltip.match.replacements.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mt-1">
-              <p className="w-full text-[10px] text-white/50 dark:text-ink/50 mb-0.5">Suggestions:</p>
+              <p className="w-full text-[10px] text-white/50 dark:text-ink/50 mb-0.5">
+                Suggestions:
+              </p>
               {grammarTooltip.match.replacements.map((r) => (
                 <button
                   key={r}
@@ -737,7 +923,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
             </div>
           )}
           {grammarTooltip.match.replacements.length === 0 && (
-            <p className="text-white/40 dark:text-ink/40 text-[10px] mt-1">No suggestions available</p>
+            <p className="text-white/40 dark:text-ink/40 text-[10px] mt-1">
+              No suggestions available
+            </p>
           )}
         </div>
       )}
@@ -750,7 +938,9 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
               onClick={() => setDictPopover(null)}
               className="text-ink/40 hover:text-ink transition-colors ml-4 flex-shrink-0"
             >
-              <span className="material-symbols-outlined text-[20px]">close</span>
+              <span className="material-symbols-outlined text-[20px]">
+                close
+              </span>
             </button>
           </div>
           {dictPopover.loading && (
@@ -759,19 +949,27 @@ const TiptapEditor = forwardRef<TiptapEditorRef, Props>(function TiptapEditor(
           {!dictPopover.loading && !dictPopover.result && (
             <p className="text-ink/50 text-sm">No definition found.</p>
           )}
-          {!dictPopover.loading && dictPopover.result?.meanings.map((m, i) => (
-            <div key={i} className={i > 0 ? 'mt-3 pt-3 border-t border-ink/10' : ''}>
-              <span className="text-xs font-bold text-primary/80 uppercase tracking-wide">{m.partOfSpeech}</span>
-              {m.definitions.map((d, j) => (
-                <div key={j} className="mt-1.5">
-                  <p className="text-ink text-sm">{d.definition}</p>
-                  {d.example && (
-                    <p className="text-ink/50 text-xs mt-0.5 italic">&ldquo;{d.example}&rdquo;</p>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
+          {!dictPopover.loading &&
+            dictPopover.result?.meanings.map((m, i) => (
+              <div
+                key={i}
+                className={i > 0 ? 'mt-3 pt-3 border-t border-ink/10' : ''}
+              >
+                <span className="text-xs font-bold text-primary/80 uppercase tracking-wide">
+                  {m.partOfSpeech}
+                </span>
+                {m.definitions.map((d, j) => (
+                  <div key={j} className="mt-1.5">
+                    <p className="text-ink text-sm">{d.definition}</p>
+                    {d.example && (
+                      <p className="text-ink/50 text-xs mt-0.5 italic">
+                        &ldquo;{d.example}&rdquo;
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
         </div>
       )}
     </div>

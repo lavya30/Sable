@@ -1,0 +1,22 @@
+# Package managers and dependencies
+node_modules/
+bun.lock
+
+# Build directories and outputs
+.next/
+dist/
+out/
+build/
+electron/dist/
+icon.ico
+
+# Configuration files to preserve original formatting
+package.json
+tsconfig.json
+eslint.config.mjs
+postcss.config.mjs
+next.config.ts
+
+# Production environment & host configs
+.env*
+.vercel/

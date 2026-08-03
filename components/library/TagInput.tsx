@@ -6,7 +6,11 @@ interface Props {
   placeholder?: string;
 }
 
-export function TagInput({ tags, onChange, placeholder = 'Add tags...' }: Props) {
+export function TagInput({
+  tags,
+  onChange,
+  placeholder = 'Add tags...',
+}: Props) {
   const [inputValue, setInputValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 

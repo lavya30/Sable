@@ -2,23 +2,28 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-export type AmbientSoundType = 'off' | 'rain' | 'lofi' | 'cafe' | 'fireplace' | 'whitenoise';
+export type AmbientSoundType =
+  'off' | 'rain' | 'lofi' | 'cafe' | 'fireplace' | 'whitenoise';
 
-export const AMBIENT_SOUNDS: { value: AmbientSoundType; icon: string; label: string }[] = [
-  { value: 'off',        icon: 'volume_off',    label: 'Off' },
-  { value: 'rain',       icon: 'water_drop',    label: 'Rain' },
-  { value: 'lofi',       icon: 'headphones',    label: 'Lo-fi' },
-  { value: 'cafe',       icon: 'local_cafe',    label: 'Café' },
-  { value: 'fireplace',  icon: 'local_fire_department', label: 'Fire' },
-  { value: 'whitenoise', icon: 'waves',         label: 'Noise' },
+export const AMBIENT_SOUNDS: {
+  value: AmbientSoundType;
+  icon: string;
+  label: string;
+}[] = [
+  { value: 'off', icon: 'volume_off', label: 'Off' },
+  { value: 'rain', icon: 'water_drop', label: 'Rain' },
+  { value: 'lofi', icon: 'headphones', label: 'Lo-fi' },
+  { value: 'cafe', icon: 'local_cafe', label: 'Café' },
+  { value: 'fireplace', icon: 'local_fire_department', label: 'Fire' },
+  { value: 'whitenoise', icon: 'waves', label: 'Noise' },
 ];
 
 /** Map each sound type to its MP3 file in public/sounds/ */
 const SOUND_FILES: Record<Exclude<AmbientSoundType, 'off'>, string> = {
-  rain:       '/sounds/rain.mp3',
-  lofi:       '/sounds/lofi.mp3',
-  cafe:       '/sounds/cafe.mp3',
-  fireplace:  '/sounds/fireplace.mp3',
+  rain: '/sounds/rain.mp3',
+  lofi: '/sounds/lofi.mp3',
+  cafe: '/sounds/cafe.mp3',
+  fireplace: '/sounds/fireplace.mp3',
   whitenoise: '/sounds/whitenoise.mp3',
 };
 
@@ -26,7 +31,10 @@ const SOUND_FILES: Record<Exclude<AmbientSoundType, 'off'>, string> = {
  * Plays ambient background audio from MP3 files in public/sounds/.
  * Audio loops seamlessly and volume can be adjusted live.
  */
-export function useAmbientSound(soundType: AmbientSoundType, volume: number = 0.5) {
+export function useAmbientSound(
+  soundType: AmbientSoundType,
+  volume: number = 0.5,
+) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -59,7 +67,10 @@ export function useAmbientSound(soundType: AmbientSoundType, volume: number = 0.
         .catch(() => {
           // Autoplay blocked — wait for next user interaction to resume
           const resume = () => {
-            audio.play().then(() => setIsPlaying(true)).catch(() => {});
+            audio
+              .play()
+              .then(() => setIsPlaying(true))
+              .catch(() => {});
             document.removeEventListener('click', resume);
             document.removeEventListener('keydown', resume);
           };

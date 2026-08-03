@@ -1,6 +1,13 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, forwardRef, useImperativeHandle } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+} from 'react';
 import { ReactRenderer } from '@tiptap/react';
 import tippy, { Instance as TippyInstance } from 'tippy.js';
 import { SuggestionProps, SuggestionKeyDownProps } from '@tiptap/suggestion';
@@ -17,7 +24,7 @@ interface SlashMenuRef {
 
 const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(function SlashMenu(
   { items, command },
-  ref
+  ref,
 ) {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -61,7 +68,9 @@ const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(function SlashMenu(
           onMouseEnter={() => setSelectedIndex(index)}
         >
           <div className="slash-icon">
-            <span className="material-symbols-outlined text-primary text-[18px]">{item.icon}</span>
+            <span className="material-symbols-outlined text-primary text-[18px]">
+              {item.icon}
+            </span>
           </div>
           <div>
             <div className="slash-label">{item.title}</div>
@@ -73,12 +82,15 @@ const SlashMenu = forwardRef<SlashMenuRef, SlashMenuProps>(function SlashMenu(
   );
 });
 
-export function createSlashSuggestion(onCommand: (command: string, context: string) => void) {
+export function createSlashSuggestion(
+  onCommand: (command: string, context: string) => void,
+) {
   return {
     items: ({ query }: { query: string }) => {
-      return SLASH_COMMANDS.filter((item) =>
-        item.title.toLowerCase().includes(query.toLowerCase()) ||
-        item.command.toLowerCase().includes(query.toLowerCase())
+      return SLASH_COMMANDS.filter(
+        (item) =>
+          item.title.toLowerCase().includes(query.toLowerCase()) ||
+          item.command.toLowerCase().includes(query.toLowerCase()),
       );
     },
 
@@ -93,18 +105,14 @@ export function createSlashSuggestion(onCommand: (command: string, context: stri
               ...props,
               command: (item: SlashCommandItem) => {
                 // Delete the slash command text
-                props.editor
-                  .chain()
-                  .focus()
-                  .deleteRange(props.range)
-                  .run();
+                props.editor.chain().focus().deleteRange(props.range).run();
 
                 // Get context (previous paragraph text)
                 const { state } = props.editor;
                 const { from } = state.selection;
                 const $from = state.doc.resolve(from);
                 let context = '';
-                
+
                 // Walk backwards to find text content
                 for (let i = $from.depth; i > 0; i--) {
                   const parent = $from.node(i);
@@ -145,11 +153,7 @@ export function createSlashSuggestion(onCommand: (command: string, context: stri
           component?.updateProps({
             ...props,
             command: (item: SlashCommandItem) => {
-              props.editor
-                .chain()
-                .focus()
-                .deleteRange(props.range)
-                .run();
+              props.editor.chain().focus().deleteRange(props.range).run();
 
               const { state } = props.editor;
               const { from } = state.selection;
