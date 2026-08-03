@@ -60,7 +60,7 @@
     "electron": "41.1.0",
     "electron-builder": "^26.8.1",
     "eslint": "^10",
-    "eslint-config-next": "16.2.1",
+    "eslint-config-next": "16.2.12",
     "prettier": "3.9.6",
     "tailwindcss": "^4",
     "typescript": "^5",
